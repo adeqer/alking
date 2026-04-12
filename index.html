@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#4f46e5">
-  <meta name="description" content="ماسح QR ذكي، سريع، وآمن. يدعم الصور، الكاميرا، وتحليل الروابط تلقائياً.">
-  <title>ALHYTHAM.NET | ماسح الكود الذكي</title>
+  <title>ALHYTHAM.NET | QR code</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
@@ -36,10 +35,8 @@
     .brand { font-weight: 800; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
     .brand span {
       background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8a2be2, #ff0000);
-      background-size: 400% 400%;
-      -webkit-background-clip: text; background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: rainbow-flow 5s ease infinite;
+      background-size: 400% 400%; -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; animation: rainbow-flow 5s ease infinite;
     }
     @keyframes rainbow-flow { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
 
@@ -62,7 +59,7 @@
       width: 100%; min-height: 260px; border-radius: 12px; overflow: hidden;
       background: #000; position: relative;
     }
-    #reader video { width: 100% !important; height: 100% !important; object-fit: cover; border-radius: 12px; }
+    #reader video { width: 100% !important; height: 100% !important; object-fit: cover; border-radius: 12px; transform-origin: center center; transition: transform 0.2s ease; }
     #reader > div:not(video), #reader a, #reader button { display: none !important; }
     .scan-overlay {
       position: absolute; inset: 0.8rem; border: 2px solid rgba(99, 102, 241, 0.4);
@@ -107,9 +104,10 @@
     .ctrl-btn:hover { transform: translateY(-3px); border-color: var(--primary); }
     .ctrl-btn:active { transform: scale(0.96); }
     .ctrl-btn.active { background: var(--primary); color: #fff; border-color: transparent; }
+    .ctrl-btn.disabled { opacity: 0.35; cursor: not-allowed; }
 
-    /* Zoom Slider Styles */
-    .zoom-container { padding: 0.7rem; cursor: default; }
+    /* Zoom Styles */
+    .zoom-container { padding: 0.6rem; cursor: default; }
     .zoom-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; font-size: 0.85rem; font-weight: 600; }
     .zoom-header i { color: var(--primary); }
     #zoom-slider {
@@ -117,17 +115,10 @@
       background: var(--border); outline: none; cursor: pointer;
       -webkit-appearance: none; appearance: none;
     }
-    #zoom-slider::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 18px; height: 18px; background: var(--primary);
-      border-radius: 50%; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    #zoom-slider::-moz-range-thumb {
-      width: 18px; height: 18px; background: var(--primary);
-      border-radius: 50%; cursor: pointer; border: none;
-    }
-    #zoom-slider:disabled { opacity: 0.35; cursor: not-allowed; }
-    .zoom-reset { font-size: 0.75rem; color: var(--text-muted); cursor: pointer; margin-top: 0.3rem; text-align: center; display: block; }
-    .zoom-reset:hover { color: var(--primary); text-decoration: underline; }
+    #zoom-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--primary); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    #zoom-slider::-moz-range-thumb { width: 18px; height: 18px; background: var(--primary); border-radius: 50%; cursor: pointer; border: none; }
+    #zoom-slider:disabled { opacity: 0.3; cursor: not-allowed; }
+    .zoom-note { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.3rem; text-align: center; display: block; }
 
     .result-panel {
       background: var(--surface); border-radius: var(--radius); padding: 1.2rem;
@@ -166,8 +157,7 @@
     .hist-time { font-size: 0.7rem; color: var(--text-muted); }
     .clear-hist {
       width: 100%; margin-top: 0.8rem; background: transparent; border: 1px dashed var(--border);
-      color: var(--text-muted); padding: 0.6rem; border-radius: 10px; cursor: pointer;
-      font-weight: 600; transition: var(--transition);
+      color: var(--text-muted); padding: 0.6rem; border-radius: 10px; cursor: pointer; font-weight: 600; transition: var(--transition);
     }
     .clear-hist:hover { border-color: #ef4444; color: #ef4444; }
 
@@ -183,10 +173,7 @@
     .modal-overlay.active .modal { transform: scale(1); }
     .modal h3 { margin-bottom: 1rem; text-align: center; }
     .style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1rem; }
-    .style-opt {
-      padding: 0.8rem; border: 2px solid var(--border); border-radius: 12px; cursor: pointer;
-      text-align: center; font-weight: 600; transition: var(--transition);
-    }
+    .style-opt { padding: 0.8rem; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; text-align: center; font-weight: 600; transition: var(--transition); }
     .style-opt:hover { border-color: var(--primary); }
     .style-opt.selected { border-color: var(--primary); background: rgba(99, 102, 241, 0.1); }
     .close-modal { width: 100%; padding: 0.7rem; border: none; background: var(--primary); color: #fff; border-radius: 10px; cursor: pointer; font-weight: 600; }
@@ -232,8 +219,8 @@
           <i class="fa-solid fa-magnifying-glass-plus"></i>
           <span id="zoom-val">1.0x</span>
         </div>
-        <input type="range" id="zoom-slider" min="1" max="3" step="0.1" value="1" disabled>
-        <span class="zoom-reset" id="zoom-reset" style="display:none">إعادة تعيين</span>
+        <input type="range" id="zoom-slider" min="1" max="5" step="0.1" value="1" disabled>
+        <span class="zoom-note" id="zoom-note">غير متاح</span>
       </div>
       <button class="ctrl-btn" id="sound-btn"><i class="fa-solid fa-volume-high"></i> صوت</button>
       <button class="ctrl-btn" id="copy-all-btn"><i class="fa-solid fa-clipboard"></i> نسخ الكل</button>
@@ -264,7 +251,7 @@
   </main>
 
   <footer style="text-align:center;padding:1.5rem 1rem;color:var(--text-muted);font-size:0.8rem;border-top:1px solid var(--border);margin-top:auto;">
-    © 2026 ALHYTHAM.NET | ماسح الكود الذكي | سريع، آمن، واحترافي
+    © 2026 ALHYTHAM.NET | Qr Code
   </footer>
 
   <div class="toast" id="toast"></div>
@@ -291,193 +278,171 @@
       let isPaused = false;
       let soundOn = true;
       let track = null;
+      let isNativeZoom = false;
+      let isTorchSupported = false;
 
       const $ = id => document.getElementById(id);
       const uploadBtn = $('upload-btn'), fileIn = $('file-input');
       const switchBtn = $('switch-cam-btn'), torchBtn = $('torch-btn');
-      const zoomSlider = $('zoom-slider'), zoomVal = $('zoom-val'), zoomReset = $('zoom-reset');
+      const zoomSlider = $('zoom-slider'), zoomVal = $('zoom-val'), zoomNote = $('zoom-note');
       const soundBtn = $('sound-btn'), resPanel = $('result-panel');
       const resText = $('res-text'), resType = $('res-type');
       const openBtn = $('open-res'), shareBtn = $('share-res');
       const histList = $('hist-list'), searchIn = $('hist-search');
       const themeBtn = $('theme-btn'), styleBtn = $('style-btn');
       const modal = $('style-modal'), closeStyle = $('close-style');
-      const toast = $('toast'), scanLine = document.querySelector('.scan-line');
+      const toast = $('toast');
 
       const toastFn = msg => { toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2200); };
       const vibrate = () => navigator.vibrate?.(80);
       const playSound = () => {
         if (!soundOn) return;
-        try {
-          const ctx = new (window.AudioContext || window.webkitAudioContext)();
-          const osc = ctx.createOscillator(), gain = ctx.createGain();
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.frequency.value = 1200; gain.gain.value = 0.15;
-          osc.start(); osc.stop(ctx.currentTime + 0.1);
-        } catch(e) {}
+        try { const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=1200;g.gain.value=0.15;o.start();o.stop(c.currentTime+0.1);}catch(e){}
       };
 
-      const isUrl = s => { try { new URL(s); return true; } catch { return /^(https?:\/\/|mailto:|tel:|ftp:)/i.test(s); } };
+      const isUrl = s => { try{new URL(s);return true}catch{return/^(https?:\/\/|mailto:|tel:|ftp:)/i.test(s)} };
       const getType = s => {
-        if (isUrl(s)) return '🌐 رابط';
-        if (/^[\+]?[0-9\s\-]+$/.test(s)) return '📞 هاتف';
-        if (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(s)) return '📧 بريد';
-        if (s.startsWith('WIFI:')) return '📶 واي فاي';
-        if (s.startsWith('BEGIN:VCARD')) return '👤 جهة اتصال';
-        if (/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(s)) return '📍 موقع';
+        if(isUrl(s)) return '🌐 رابط';
+        if(/^[\+]?[0-9\s\-]+$/.test(s)) return '📞 هاتف';
+        if(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(s)) return '📧 بريد';
+        if(s.startsWith('WIFI:')) return '📶 واي فاي';
+        if(s.startsWith('BEGIN:VCARD')) return '👤 جهة اتصال';
+        if(/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(s)) return '📍 موقع';
         return '📝 نص';
       };
 
       const showRes = text => {
-        lastRes = text;
-        resText.textContent = text;
-        resType.textContent = getType(text);
+        lastRes = text; resText.textContent = text; resType.textContent = getType(text);
         openBtn.style.display = isUrl(text) ? 'flex' : 'none';
-        resPanel.classList.add('show');
-        addHist(text);
-        playSound(); vibrate();
-        setTimeout(() => window.scrollTo({ top: resPanel.offsetTop - 20, behavior: 'smooth' }), 100);
+        resPanel.classList.add('show'); addHist(text); playSound(); vibrate();
+        setTimeout(()=>window.scrollTo({top:resPanel.offsetTop-20,behavior:'smooth'}),100);
       };
 
       const loadHist = () => {
-        const h = JSON.parse(localStorage.getItem('qr_hist') || '[]');
+        const h = JSON.parse(localStorage.getItem('qr_hist')||'[]');
         const term = searchIn.value.toLowerCase();
-        const filtered = term ? h.filter(i => i.t.toLowerCase().includes(term)) : h;
+        const filtered = term ? h.filter(i=>i.t.toLowerCase().includes(term)) : h;
         histList.innerHTML = filtered.length ? '' : '<div style="text-align:center;color:var(--text-muted);padding:1rem">فارغ</div>';
-        filtered.slice(0, 8).forEach(i => {
-          const d = document.createElement('div'); d.className = 'hist-item';
-          d.innerHTML = `<span class="hist-text">${i.t}</span><span class="hist-time">${new Date(i.time).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</span>`;
-          d.onclick = () => showRes(i.t);
-          histList.appendChild(d);
+        filtered.slice(0,8).forEach(i=>{
+          const d=document.createElement('div'); d.className='hist-item';
+          d.innerHTML=`<span class="hist-text">${i.t}</span><span class="hist-time">${new Date(i.time).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</span>`;
+          d.onclick=()=>showRes(i.t); histList.appendChild(d);
         });
       };
       const addHist = text => {
-        let h = JSON.parse(localStorage.getItem('qr_hist') || '[]');
-        h.unshift({ t: text, time: Date.now() });
-        h = h.filter((v,i,a) => a.findIndex(t => t.t === v.t) === i).slice(0, 50);
-        localStorage.setItem('qr_hist', JSON.stringify(h));
-        loadHist();
+        let h = JSON.parse(localStorage.getItem('qr_hist')||'[]');
+        h.unshift({t:text,time:Date.now()});
+        h=h.filter((v,i,a)=>a.findIndex(t=>t.t===v.t)===i).slice(0,50);
+        localStorage.setItem('qr_hist',JSON.stringify(h)); loadHist();
       };
-      $('clear-hist').onclick = () => { localStorage.removeItem('qr_hist'); loadHist(); toastFn('تم المسح'); };
-      $('search-hist').onclick = () => { searchIn.style.display = searchIn.style.display === 'none' ? 'block' : 'none'; };
-      searchIn.oninput = loadHist;
+      $('clear-hist').onclick=()=>{localStorage.removeItem('qr_hist');loadHist();toastFn('تم المسح');};
+      $('search-hist').onclick=()=>{searchIn.style.display=searchIn.style.display==='none'?'block':'none';};
+      searchIn.oninput=loadHist;
 
-      // Zoom Slider Logic
-      zoomSlider.addEventListener('input', async (e) => {
-        if (!track || track.readyState !== 'live') return;
-        const val = parseFloat(e.target.value);
-        zoomVal.textContent = `${val.toFixed(1)}x`;
-        zoomReset.style.display = val > 1.05 ? 'block' : 'none';
-        try { await track.applyConstraints({ advanced: [{ zoom: val }] }); } 
-        catch { toastFn('⚠️ تعذر ضبط التكبير'); }
-      });
-      zoomReset.onclick = async () => {
-        zoomSlider.value = 1.0;
-        zoomSlider.dispatchEvent(new Event('input'));
+      // Zoom Logic (Hybrid: Native -> CSS Fallback)
+      const applyCssZoom = val => {
+        const vid = document.querySelector('#reader video');
+        if(vid) vid.style.transform = `scale(${val})`;
       };
+      zoomSlider.addEventListener('input', e => {
+        const val = parseFloat(e.target.value);
+        zoomVal.textContent = `${val.toFixed(1)}x${isNativeZoom?'':' (بصري)'}`;
+        zoomNote.textContent = isNativeZoom ? '' : 'تكبير بصري للعرض فقط';
+        zoomNote.style.opacity = val>1 ? '1' : '0.3';
+        
+        if(isNativeZoom && track) {
+          track.applyConstraints({advanced:[{zoom:val}]}).catch(()=>applyCssZoom(val));
+        } else {
+          applyCssZoom(val);
+        }
+      });
 
       const startCam = async facing => {
-        try { await qr.stop(); } catch(e) {}
-        isPaused = false; scanLine.style.animationPlayState = 'running';
+        try{await qr.stop();}catch(e){}
+        isPaused=false;
+        const scanLine=document.querySelector('.scan-line'); if(scanLine)scanLine.style.animationPlayState='running';
+        
         try {
-          await qr.start({ facingMode: facing }, { fps: 14, qrbox: { width: 230, height: 230 } }, onScan, () => {});
+          await qr.start({facingMode:facing}, {fps:14, qrbox:{width:230,height:230}}, onScan, ()=>{});
           const vid = document.querySelector('#reader video');
           track = vid?.srcObject?.getVideoTracks()[0] || null;
           
-          if (track) {
-            const caps = track.getCapabilities();
-            torchBtn.style.opacity = caps.torch ? 1 : 0.3;
-            if (caps.zoom) {
-              zoomSlider.min = caps.zoom.min;
-              zoomSlider.max = caps.zoom.max;
-              zoomSlider.step = caps.zoom.step || 0.1;
-              zoomSlider.value = track.getSettings().zoom || 1.0;
-              zoomSlider.disabled = false;
-              zoomVal.textContent = `${parseFloat(zoomSlider.value).toFixed(1)}x`;
-              zoomReset.style.display = parseFloat(zoomSlider.value) > 1.05 ? 'block' : 'none';
+          if(track) {
+            const caps = track.getCapabilities() || {};
+            isNativeZoom = !!caps.zoom && caps.zoom.max > 1;
+            isTorchSupported = !!caps.torch;
+
+            // Setup Zoom Slider
+            zoomSlider.disabled = false;
+            if(isNativeZoom) {
+              zoomSlider.min=caps.zoom.min; zoomSlider.max=caps.zoom.max; zoomSlider.step=caps.zoom.step||0.1;
+              zoomSlider.value=track.getSettings().zoom||1.0;
+              zoomVal.textContent=`${parseFloat(zoomSlider.value).toFixed(1)}x`;
+              zoomNote.textContent='تكبير أصلي (دقيق)';
             } else {
-              zoomSlider.disabled = true;
-              zoomVal.textContent = 'غير مدعوم';
-              zoomReset.style.display = 'none';
+              zoomSlider.min=1; zoomSlider.max=5; zoomSlider.step=0.1; zoomSlider.value=1;
+              zoomVal.textContent='1.0x (بصري)';
+              zoomNote.textContent='تكبير بصري للعرض فقط';
             }
+
+            // Setup Torch Button
+            torchBtn.disabled = !isTorchSupported;
+            torchBtn.classList.toggle('disabled', !isTorchSupported);
+            torchBtn.querySelector('i').style.opacity = isTorchSupported ? '1' : '0.4';
           }
-          switchBtn.innerHTML = facing === 'environment' ? '<i class="fa-solid fa-camera-rotate"></i> أمامية' : '<i class="fa-solid fa-camera-rotate"></i> خلفية';
+          switchBtn.innerHTML = facing==='environment'?'<i class="fa-solid fa-camera-rotate"></i> أمامية':'<i class="fa-solid fa-camera-rotate"></i> خلفية';
         } catch(e) {
-          document.getElementById('reader').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);padding:1rem;text-align:center">📷 يرجى السماح بالكاميرا أو استخدم رفع الصور</div>';
+          document.getElementById('reader').innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);padding:1rem;text-align:center">📷 يرجى السماح بالكاميرا أو استخدم رفع الصور</div>';
         }
       };
 
-      switchBtn.onclick = () => { camMode = camMode === 'environment' ? 'user' : 'environment'; startCam(camMode); };
+      switchBtn.onclick = () => { camMode=camMode==='environment'?'user':'environment'; startCam(camMode); };
       torchBtn.onclick = async () => {
-        if (!track) return toastFn('الكاميرا غير نشطة');
+        if(!track) return toastFn('الكاميرا غير نشطة');
+        if(!isTorchSupported) return toastFn('⚠️ متصفحك/جهازك لا يدعم التحكم بالإضاءة عبر الويب');
+        
         const state = track.getSettings().torch;
         try {
-          await track.applyConstraints({ advanced: [{ torch: !state }] });
+          await track.applyConstraints({advanced:[{torch:!state}]});
           torchBtn.classList.toggle('active', !state);
-          toastFn(!state ? '🔦 تم تشغيل الإضاءة' : '💡 تم إيقاف الإضاءة');
-        } catch { toastFn('⚠️ الجهاز لا يدعم التحكم بالإضاءة'); }
+          toastFn(!state?'🔦 تم تشغيل الإضاءة':'💡 تم إيقاف الإضاءة');
+        } catch { toastFn('❌ فشل التحكم بالإضاءة (جرب إضاءة النظام)'); }
       };
 
       const onScan = decoded => {
-        if (isPaused || decoded === lastRes) return;
-        isPaused = true; qr.pause(); scanLine.style.animationPlayState = 'paused';
-        showRes(decoded);
-        toastFn('✅ تم التعرف بنجاح');
-        setTimeout(() => { qr.resume(); isPaused = false; lastRes = ''; scanLine.style.animationPlayState = 'running'; }, 2500);
+        if(isPaused||decoded===lastRes) return;
+        isPaused=true; qr.pause(); document.querySelector('.scan-line')?.stop();
+        showRes(decoded); toastFn('✅ تم التعرف بنجاح');
+        setTimeout(()=>{qr.resume();isPaused=false;lastRes='';document.querySelector('.scan-line')?.start();},2500);
       };
 
-      uploadBtn.onclick = () => fileIn.click();
-      fileIn.onchange = async e => {
-        const f = e.target.files[0]; if (!f) return;
-        uploadBtn.classList.add('loading'); uploadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التحليل...';
-        try {
-          const res = await qr.scanFile(f, false);
-          showRes(res); toastFn('📷 تم استخراج البيانات');
-        } catch { toastFn('❌ لم يتم العثور على رمز واضح'); }
-        uploadBtn.classList.remove('loading'); uploadBtn.innerHTML = '<i class="fa-solid fa-image"></i> رفع صورة QR من المعرض';
-        fileIn.value = '';
+      uploadBtn.onclick=()=>fileIn.click();
+      fileIn.onchange=async e=>{
+        const f=e.target.files[0]; if(!f) return;
+        uploadBtn.classList.add('loading'); uploadBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> جاري التحليل...';
+        try{const res=await qr.scanFile(f,false);showRes(res);toastFn('📷 تم استخراج البيانات');}
+        catch{toastFn('❌ لم يتم العثور على رمز واضح');}
+        uploadBtn.classList.remove('loading'); uploadBtn.innerHTML='<i class="fa-solid fa-image"></i> رفع صورة QR من المعرض';
+        fileIn.value='';
       };
 
-      $('copy-all-btn').onclick = () => { if(lastRes) navigator.clipboard.writeText(lastRes).then(()=>toastFn('📋 تم النسخ')); };
-      openBtn.onclick = () => isUrl(lastRes) && window.open(lastRes, '_blank');
-      shareBtn.onclick = () => {
-        if (navigator.share) navigator.share({ title: 'ALHYTHAM QR', text: lastRes, url: isUrl(lastRes) ? lastRes : undefined });
-        else $('copy-all-btn').click();
-      };
-      soundBtn.onclick = () => { soundOn = !soundOn; soundBtn.classList.toggle('active', soundOn); toastFn(soundOn ? '🔊 الصوت مفعل' : '🔇 الصوت صامت'); };
-      $('export-hist-btn').onclick = () => {
-        const h = JSON.parse(localStorage.getItem('qr_hist') || '[]');
-        const txt = h.map(i => `[${new Date(i.time).toLocaleString()}] ${i.t}`).join('\n') || 'السجل فارغ';
-        const blob = new Blob([txt], { type: 'text/plain' });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `ALHYTHAM_QR_History_${new Date().toISOString().slice(0,10)}.txt`;
-        a.click(); toastFn('📥 تم تصدير السجل');
+      $('copy-all-btn').onclick=()=>{if(lastRes)navigator.clipboard.writeText(lastRes).then(()=>toastFn('📋 تم النسخ'));};
+      openBtn.onclick=()=>isUrl(lastRes)&&window.open(lastRes,'_blank');
+      shareBtn.onclick=()=>{if(navigator.share)navigator.share({title:'ALHYTHAM QR',text:lastRes,url:isUrl(lastRes)?lastRes:undefined});else$('copy-all-btn').click();};
+      soundBtn.onclick=()=>{soundOn=!soundOn;soundBtn.classList.toggle('active',soundOn);toastFn(soundOn?'🔊 الصوت مفعل':'🔇 الصوت صامت');};
+      $('export-hist-btn').onclick=()=>{
+        const h=JSON.parse(localStorage.getItem('qr_hist')||'[]');
+        const txt=h.map(i=>`[${new Date(i.time).toLocaleString()}] ${i.t}`).join('\n')||'السجل فارغ';
+        const blob=new Blob([txt],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`ALHYTHAM_QR_History_${new Date().toISOString().slice(0,10)}.txt`;a.click();toastFn('📥 تم تصدير السجل');
       };
 
-      themeBtn.onclick = () => {
-        document.body.classList.toggle('style-dark');
-        const dark = document.body.classList.contains('style-dark');
-        themeBtn.innerHTML = dark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
-        localStorage.setItem('theme', dark ? 'dark' : 'light');
-        document.querySelector('meta[name="theme-color"]').content = dark ? '#0b1120' : '#4f46e5';
-      };
-      styleBtn.onclick = () => modal.classList.add('active');
-      closeStyle.onclick = () => modal.classList.remove('active');
-      document.querySelectorAll('.style-opt').forEach(opt => {
-        opt.onclick = () => {
-          document.querySelectorAll('.style-opt').forEach(o => o.classList.remove('selected'));
-          opt.classList.add('selected');
-          document.body.className = document.body.className.replace(/style-\w+/g, '');
-          if (opt.dataset.style) document.body.classList.add(opt.dataset.style);
-          localStorage.setItem('style', opt.dataset.style);
-        };
-      });
+      themeBtn.onclick=()=>{document.body.classList.toggle('style-dark');const dark=document.body.classList.contains('style-dark');themeBtn.innerHTML=dark?'<i class="fa-solid fa-sun"></i>':'<i class="fa-solid fa-moon"></i>';localStorage.setItem('theme',dark?'dark':'light');};
+      styleBtn.onclick=()=>modal.classList.add('active'); closeStyle.onclick=()=>modal.classList.remove('active');
+      document.querySelectorAll('.style-opt').forEach(opt=>{opt.onclick=()=>{document.querySelectorAll('.style-opt').forEach(o=>o.classList.remove('selected'));opt.classList.add('selected');document.body.className=document.body.className.replace(/style-\w+/g,'');if(opt.dataset.style)document.body.classList.add(opt.dataset.style);localStorage.setItem('style',opt.dataset.style);};});
 
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark') { document.body.classList.add('style-dark'); themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>'; }
-      const savedStyle = localStorage.getItem('style');
-      if (savedStyle) { document.body.classList.add(savedStyle); document.querySelectorAll('.style-opt').forEach(o => o.classList.toggle('selected', o.dataset.style === savedStyle)); }
-      loadHist();
-      startCam(camMode);
+      const savedTheme=localStorage.getItem('theme');if(savedTheme==='dark'){document.body.classList.add('style-dark');themeBtn.innerHTML='<i class="fa-solid fa-sun"></i>';}
+      const savedStyle=localStorage.getItem('style');if(savedStyle){document.body.classList.add(savedStyle);document.querySelectorAll('.style-opt').forEach(o=>o.classList.toggle('selected',o.dataset.style===savedStyle));}
+      loadHist(); startCam(camMode);
     });
   </script>
 </body>
