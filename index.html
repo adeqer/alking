@@ -43,14 +43,8 @@
         }
 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .card {
@@ -62,17 +56,6 @@
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 100px rgba(0, 212, 255, 0.1);
             position: relative;
             overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
-            pointer-events: none;
         }
 
         .header {
@@ -139,11 +122,6 @@
             box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
         }
 
-        .mode-btn:hover:not(.active) {
-            border-color: var(--primary);
-            background: rgba(0, 212, 255, 0.1);
-        }
-
         .content-section {
             display: none;
             position: relative;
@@ -207,41 +185,6 @@
             100% { top: 100%; }
         }
 
-        .corner {
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 3px solid var(--primary);
-        }
-
-        .corner.top-left {
-            top: -3px;
-            left: -3px;
-            border-right: none;
-            border-bottom: none;
-        }
-
-        .corner.top-right {
-            top: -3px;
-            right: -3px;
-            border-left: none;
-            border-bottom: none;
-        }
-
-        .corner.bottom-left {
-            bottom: -3px;
-            left: -3px;
-            border-right: none;
-            border-top: none;
-        }
-
-        .corner.bottom-right {
-            bottom: -3px;
-            right: -3px;
-            border-left: none;
-            border-top: none;
-        }
-
         .upload-zone {
             border: 3px dashed var(--primary);
             border-radius: 20px;
@@ -256,40 +199,6 @@
         .upload-zone:hover {
             background: rgba(0, 212, 255, 0.1);
             border-color: var(--accent);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
-        }
-
-        .upload-zone.dragover {
-            background: rgba(0, 212, 255, 0.15);
-            border-color: var(--accent);
-            transform: scale(1.02);
-        }
-
-        .upload-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .upload-text {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-        }
-
-        .upload-subtext {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            opacity: 0.7;
-        }
-
-        #imageInput {
-            display: none;
         }
 
         .preview-image {
@@ -307,14 +216,8 @@
         }
 
         @keyframes zoomIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
 
         .button-group {
@@ -341,22 +244,6 @@
             text-decoration: none;
             position: relative;
             overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            transition: left 0.3s ease;
-            z-index: -1;
-        }
-
-        .btn:hover::before {
-            left: 0;
         }
 
         .btn-primary {
@@ -389,6 +276,15 @@
             font-size: 1.3rem;
         }
 
+        .controls-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
         .result-box {
             margin-top: 20px;
             padding: 20px;
@@ -404,62 +300,14 @@
             z-index: 1;
         }
 
-        .result-box.success {
-            background: rgba(0, 255, 136, 0.1);
-            border-color: var(--accent);
-        }
-
-        .result-box.error {
-            background: rgba(255, 51, 102, 0.1);
-            border-color: var(--danger);
-        }
-
-        .result-text {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
+        .result-box.success { background: rgba(0, 255, 136, 0.1); border-color: var(--accent); }
+        .result-box.error { background: rgba(255, 51, 102, 0.1); border-color: var(--danger); }
 
         .result-link {
             color: var(--primary);
             text-decoration: none;
             word-break: break-all;
             font-weight: 600;
-        }
-
-        .result-link:hover {
-            text-decoration: underline;
-            color: var(--accent);
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 15px;
-            flex-wrap: wrap;
-            position: relative;
-            z-index: 1;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            color: var(--text-secondary);
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border: 3px solid rgba(0, 212, 255, 0.3);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
 
         .footer {
@@ -487,22 +335,14 @@
         }
 
         @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         @media (max-width: 600px) {
             .card { padding: 25px; }
             .brand-title { font-size: 2.2rem; }
             .button-group { grid-template-columns: 1fr; }
-            .mode-selector { flex-direction: column; }
-            .mode-btn { width: 100%; }
         }
     </style>
 </head>
@@ -526,10 +366,6 @@
                     <video id="cameraVideo" autoplay playsinline></video>
                     <div class="scan-frame">
                         <div class="scan-line"></div>
-                        <div class="corner top-left"></div>
-                        <div class="corner top-right"></div>
-                        <div class="corner bottom-left"></div>
-                        <div class="corner bottom-right"></div>
                     </div>
                 </div>
 
@@ -537,9 +373,14 @@
                     <button class="btn btn-primary" onclick="reloadCamera()">
                         <span>🔄</span> إعادة تحميل
                     </button>
-                    <button class="btn btn-secondary btn-icon" id="cameraToggle" onclick="toggleCamera()" title="تبديل الكاميرا">
-                        🔀
-                    </button>
+                    <div class="controls-row">
+                        <button class="btn btn-secondary btn-icon" onclick="openBrowserSelector()" title="فتح في المتصفح">
+                            🌐
+                        </button>
+                        <button class="btn btn-secondary btn-icon" id="cameraToggle" onclick="toggleCamera()" title="تبديل الكاميرا">
+                            🔀
+                        </button>
+                    </div>
                 </div>
 
                 <div id="cameraResult" class="result-box">
@@ -552,22 +393,12 @@
                 <div class="upload-zone" onclick="document.getElementById('imageInput').click()">
                     <div class="upload-icon">📸</div>
                     <div class="upload-text">اسحب صورة هنا أو انقر للاختيار</div>
-                    <div class="upload-subtext">صيغ مدعومة: JPG, PNG, GIF, WebP</div>
                 </div>
-
-                <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)">
-
+                <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)" style="display:none;">
                 <img id="previewImage" class="preview-image" alt="معاينة الصورة">
-
                 <div id="uploadResult" class="result-box">
                     <span class="result-text">اختر صورة تحتوي على كود QR</span>
                 </div>
-
-                <div id="uploadLoading" class="loading">
-                    <div class="spinner"></div>
-                    <p style="margin-top: 10px;">جاري المسح...</p>
-                </div>
-
                 <div class="button-group" style="margin-top: 20px;">
                     <button class="btn btn-primary" onclick="document.getElementById('imageInput').click()">
                         <span>📁</span> اختر صورة
@@ -592,77 +423,55 @@
         let currentStream = null;
         let facingMode = 'environment';
         let isScanning = false;
+        let lastResult = "";
 
-        // تهيئة مكتبة ZXing
         function initZXing() {
-            if (!codeReader) {
-                codeReader = new ZXing.BrowserQRCodeReader();
-            }
+            if (!codeReader) codeReader = new ZXing.BrowserQRCodeReader();
         }
 
-        // بدء الكاميرا
         async function startCamera() {
             try {
                 initZXing();
                 const video = document.getElementById('cameraVideo');
-                const constraints = {
-                    video: { facingMode: facingMode },
-                    audio: false
-                };
-
+                const constraints = { video: { facingMode: facingMode }, audio: false };
                 const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 currentStream = stream;
                 video.srcObject = stream;
-
-                // بدء المسح
                 startScanning();
                 showNotification('تم تشغيل الكاميرا بنجاح', 'success');
             } catch (error) {
                 showResult('cameraResult', 'خطأ: ' + error.message, 'error');
-                showNotification('فشل الوصول للكاميرا', 'error');
             }
         }
 
-        // بدء عملية المسح
         function startScanning() {
             if (isScanning) return;
             isScanning = true;
-
             const video = document.getElementById('cameraVideo');
             const canvas = document.getElementById('qrCanvas');
             const ctx = canvas.getContext('2d');
 
             function scan() {
                 if (!isScanning || !video.srcObject) return;
-
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
-
                 if (canvas.width && canvas.height) {
                     ctx.drawImage(video, 0, 0);
-
                     try {
-                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                         const luminanceSource = new ZXing.HTMLCanvasElementLuminanceSource(canvas);
                         const binaryBitmap = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(luminanceSource));
                         const result = new ZXing.MultiFormatReader().decode(binaryBitmap);
-
                         if (result) {
                             handleQRDetected(result.text);
                             return;
                         }
-                    } catch (e) {
-                        // لا توجد نتيجة في هذا الإطار
-                    }
+                    } catch (e) {}
                 }
-
                 requestAnimationFrame(scan);
             }
-
             scan();
         }
 
-        // إيقاف المسح
         function stopScanning() {
             isScanning = false;
             if (currentStream) {
@@ -671,7 +480,6 @@
             }
         }
 
-        // تبديل الكاميرا
         async function toggleCamera() {
             stopScanning();
             facingMode = facingMode === 'environment' ? 'user' : 'environment';
@@ -679,21 +487,17 @@
             showNotification(facingMode === 'environment' ? 'الكاميرا الخلفية' : 'الكاميرا الأمامية', 'info');
         }
 
-        // إعادة تحميل الكاميرا
-        async function reloadCamera() {
+        function reloadCamera() {
             stopScanning();
-            await startCamera();
+            startCamera();
         }
 
-        // التبديل بين الأوضاع
         function switchMode(mode) {
             document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.mode-btn').forEach(el => el.classList.remove('active'));
-
             if (mode === 'camera') {
                 document.getElementById('cameraMode').classList.add('active');
                 document.querySelector('[onclick="switchMode(\'camera\')"]').classList.add('active');
-                stopScanning();
                 startCamera();
             } else {
                 document.getElementById('uploadMode').classList.add('active');
@@ -702,142 +506,114 @@
             }
         }
 
-        // معالجة رفع الصور
-        async function handleImageUpload(event) {
+        function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
-            reader.onload = async (e) => {
+            reader.onload = (e) => {
                 const img = new Image();
                 img.onload = async () => {
                     const preview = document.getElementById('previewImage');
                     preview.src = img.src;
                     preview.classList.add('show');
-
-                    showLoading(true);
                     await decodeImageQR(img);
-                    showLoading(false);
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
 
-        // فك تشفير QR من الصورة
         async function decodeImageQR(img) {
             try {
                 initZXing();
                 const canvas = document.getElementById('qrCanvas');
                 const ctx = canvas.getContext('2d');
-
                 canvas.width = img.width;
                 canvas.height = img.height;
                 ctx.drawImage(img, 0, 0);
-
                 const luminanceSource = new ZXing.HTMLCanvasElementLuminanceSource(canvas);
                 const binaryBitmap = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(luminanceSource));
                 const result = new ZXing.MultiFormatReader().decode(binaryBitmap);
-
-                if (result) {
-                    handleQRDetected(result.text, 'upload');
-                } else {
-                    showResult('uploadResult', 'لم يتم العثور على كود QR في الصورة', 'error');
-                }
+                if (result) handleQRDetected(result.text, 'upload');
+                else showResult('uploadResult', 'لم يتم العثور على كود QR', 'error');
             } catch (error) {
-                showResult('uploadResult', 'خطأ في مسح الصورة: ' + error.message, 'error');
+                showResult('uploadResult', 'خطأ في المسح', 'error');
             }
         }
 
-        // معالجة الكود المكتشف
         function handleQRDetected(data, mode = 'camera') {
+            lastResult = data;
             const resultId = mode === 'camera' ? 'cameraResult' : 'uploadResult';
             
-            if (data.startsWith('http://') || data.startsWith('https://')) {
+            if (data.startsWith('http')) {
                 showResult(resultId, `<a href="${data}" target="_blank" class="result-link">${data}</a>`, 'success');
-                showNotification('تم العثور على رابط!', 'success');
+                showNotification('تم العثور على رابط! جاري الفتح...', 'success');
                 
-                // فتح الرابط تلقائياً بعد ثانية
+                // فتح الرابط فوراً وبشكل مباشر
+                window.location.href = data;
+                
+                // نسخة احتياطية في حال فشل التوجيه المباشر
                 setTimeout(() => {
                     window.open(data, '_blank');
-                }, 500);
+                }, 100);
             } else {
                 showResult(resultId, `<span class="result-link">${data}</span>`, 'success');
-                showNotification('تم قراءة الكود بنجاح!', 'success');
+                showNotification('تم القراءة بنجاح!', 'success');
             }
-
+            
             if (mode === 'camera') {
                 stopScanning();
-                setTimeout(() => startScanning(), 2000);
+                // إعادة التشغيل بعد فترة قصيرة في حال لم يتم التوجيه
+                setTimeout(() => startScanning(), 3000);
             }
         }
 
-        // إعادة تعيين وضع الرفع
+        function openBrowserSelector() {
+            const url = lastResult && lastResult.startsWith('http') ? lastResult : window.location.href;
+            // استخدام Web Intent لفتح قائمة اختيار المتصفحات على أندرويد
+            const intentUrl = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=http;action=android.intent.action.VIEW;end`;
+            
+            showNotification('جاري فتح قائمة المتصفحات...', 'info');
+            
+            // محاولة فتح الـ Intent
+            window.location.href = intentUrl;
+            
+            // Fallback للمتصفحات التي لا تدعم الـ Intent
+            setTimeout(() => {
+                if (document.hasFocus()) {
+                    window.open(url, '_blank');
+                }
+            }, 500);
+        }
+
         function resetUpload() {
             document.getElementById('imageInput').value = '';
             document.getElementById('previewImage').classList.remove('show');
             showResult('uploadResult', 'اختر صورة تحتوي على كود QR', 'default');
         }
 
-        // عرض النتيجة
         function showResult(elementId, message, type) {
             const element = document.getElementById(elementId);
             element.innerHTML = `<span class="result-text">${message}</span>`;
             element.classList.remove('success', 'error');
-            if (type !== 'default') {
-                element.classList.add(type);
-            }
+            if (type !== 'default') element.classList.add(type);
         }
 
-        // عرض التحميل
-        function showLoading(show) {
-            document.getElementById('uploadLoading').style.display = show ? 'block' : 'none';
-        }
-
-        // عرض الإشعارات
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.className = 'notification';
             notification.textContent = message;
             notification.style.borderColor = type === 'error' ? 'var(--danger)' : 'var(--primary)';
             document.body.appendChild(notification);
-
             setTimeout(() => {
                 notification.style.animation = 'slideInRight 0.3s ease reverse';
                 setTimeout(() => notification.remove(), 300);
             }, 3000);
         }
 
-        // دعم السحب والإفلات
-        const uploadZone = document.querySelector('.upload-zone');
-        uploadZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadZone.classList.add('dragover');
-        });
-
-        uploadZone.addEventListener('dragleave', () => {
-            uploadZone.classList.remove('dragover');
-        });
-
-        uploadZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadZone.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                document.getElementById('imageInput').files = files;
-                handleImageUpload({ target: { files: files } });
-            }
-        });
-
-        // بدء التطبيق
         window.addEventListener('load', () => {
             initZXing();
             startCamera();
-        });
-
-        // إيقاف الكاميرا عند إغلاق الصفحة
-        window.addEventListener('beforeunload', () => {
-            stopScanning();
         });
     </script>
 </body>
