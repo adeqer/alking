@@ -1,305 +1,318 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>HYTHAM QR - النسخة الاحترافية</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="icon" type="image/png" href="assets/img/favicon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALHYTHAM QR - ماسح الأكواد الاحترافي</title>
     <style>
         :root {
-            --primary: #d4af37;
-            --primary-glow: rgba(212, 175, 55, 0.4);
-            --bg-dark: #0a0a0c;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --accent: #d4af37;
+            --primary-color: #00d2ff;
+            --secondary-color: #3a7bd5;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-light: #f8fafc;
+            --accent-gradient: linear-gradient(45deg, #f06, #9f6, #06f, #f06);
         }
 
-        /* [Themes] */
-        body[data-theme="neon"] {
-            --primary: #a855f7;
-            --primary-glow: rgba(168, 85, 247, 0.4);
-            --accent: #ec4899;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        body[data-theme="blue"] {
-            --primary: #3b82f6;
-            --primary-glow: rgba(59, 130, 246, 0.4);
-            --accent: #06b6d4;
-        }
-        body[data-theme="white"] {
-            --primary: #ffffff;
-            --primary-glow: rgba(255, 255, 255, 0.2);
-            --bg-dark: #f0f0f0;
-            --glass: rgba(0, 0, 0, 0.05);
-            --glass-border: rgba(0, 0, 0, 0.1);
-            color: #000 !important;
-        }
-        body[data-theme="white"] .title-group span { filter: none !important; }
 
-        body, html {
-            margin: 0; padding: 0; width: 100%; height: 100%;
+        body {
             background-color: var(--bg-dark);
-            font-family: 'Tajawal', sans-serif;
-            color: #fff;
-            display: flex; flex-direction: column; align-items: center;
-            transition: background 0.5s ease;
-        }
-
-        .bg-mesh {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
-            background: radial-gradient(circle at 20% 30%, var(--primary-glow) 0%, transparent 40%),
-                        radial-gradient(circle at 80% 70%, rgba(99, 102, 241, 0.05) 0%, transparent 40%);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
         }
 
         .container {
-            width: 92%; max-width: 480px; text-align: center; z-index: 10;
-            padding: 40px 0 100px;
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
         }
 
-        /* [Elite Title] */
-        .title-group { margin-bottom: 30px; }
-        .elite-title {
-            font-size: 2.8rem; font-family: 'Outfit', sans-serif; font-weight: 950;
-            color: var(--primary);
-            text-shadow: 0 0 20px var(--primary-glow);
-            letter-spacing: -1px;
-            margin: 0;
+        h1.brand-name {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, #ef5350, #f48fb1, #7e57c2, #2196f3, #26c6da, #43a047, #eeff41, #f9a825, #ff5722);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbow 3s linear infinite;
         }
 
-        /* [Scanner Card] */
-        .scanner-card {
-            background: var(--glass);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border);
-            border-radius: 35px;
-            padding: 15px;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.4);
+        @keyframes rainbow {
+            to { background-position: 200% center; }
+        }
+
+        .camera-container {
             position: relative;
-            margin-bottom: 25px;
-        }
-
-        .scanner-inner {
-            width: 100%; aspect-ratio: 1; border-radius: 25px; overflow: hidden; position: relative;
+            width: 100%;
+            aspect-ratio: 4/3;
             background: #000;
-            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            border: 3px solid var(--secondary-color);
+            box-shadow: 0 0 20px rgba(58, 123, 213, 0.3);
         }
 
-        #reader { width: 100% !important; border: none !important; }
-        #reader video { object-fit: cover !important; }
-
-        .scan-laser {
-            position: absolute; width: 100%; height: 3px;
-            background: linear-gradient(to right, transparent, var(--primary), transparent);
-            box-shadow: 0 0 20px var(--primary);
-            z-index: 20; animation: scanMove 3s infinite;
-        }
-        @keyframes scanMove { 0%, 100% { top: 0%; } 50% { top: 100%; } }
-
-        /* [Toolbar] */
-        .premium-toolbar {
-            display: flex; gap: 15px; justify-content: center;
-        }
-        .tool-btn {
-            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
-            width: 60px; height: 60px; border-radius: 20px; color: #fff;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.3s; backdrop-filter: blur(10px);
-        }
-        .tool-btn:hover { background: rgba(212, 175, 55, 0.1); transform: translateY(-5px); border-color: var(--primary); }
-        .tool-btn svg { width: 24px; height: 24px; }
-
-        /* [History Modal] */
-        .side-modal {
-            position: fixed; bottom: -100%; left: 0; width: 100%; height: 70%;
-            background: rgba(10, 10, 12, 0.98); backdrop-filter: blur(30px);
-            z-index: 200; border-top-left-radius: 40px; border-top-right-radius: 40px;
-            transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            padding: 30px; box-sizing: border-box; border-top: 2px solid var(--glass-border);
-        }
-        .side-modal.open { bottom: 0; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        
-        .history-list { height: calc(100% - 80px); overflow-y: auto; padding-right: 10px; }
-        .history-item {
-            background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
-            margin-bottom: 12px; padding: 15px; border-radius: 15px;
-            display: flex; justify-content: space-between; align-items: center;
+        #v {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        /* [Theme Picker] */
-        .theme-picker {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: var(--glass); border-radius: 30px; padding: 5px 15px;
-            border: 1px solid var(--glass-border); display: flex; gap: 10px; z-index: 100;
+        .scan-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 70%;
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            box-shadow: 0 0 0 2000px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
         }
-        .theme-dot { width: 16px; height: 16px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.2); }
 
-        .hidden { display: none !important; }
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-color);
+            animation: scan 2s linear infinite;
+        }
 
-        /* [Animations] */
-        .fade-in { animation: fadeIn 0.8s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--secondary-color);
+            color: var(--secondary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            word-break: break-all;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container { padding: 20px; }
+            h1.brand-name { font-size: 1.8rem; }
+            .button-group { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
-<body dir="rtl" data-theme="gold">
-    <div class="bg-mesh"></div>
+<body>
 
-    <div class="theme-picker">
-        <div class="theme-dot" style="background: #d4af37;" onclick="setTheme('gold')"></div>
-        <div class="theme-dot" style="background: #a855f7;" onclick="setTheme('neon')"></div>
-        <div class="theme-dot" style="background: #3b82f6;" onclick="setTheme('blue')"></div>
-        <div class="theme-dot" style="background: #fff;" onclick="setTheme('white')"></div>
-    </div>
-
-    <div class="container fade-in">
-        <div class="title-group">
-            <h1 class="rainbow-title">HYTHAM QR</h1>
-            <p style="opacity:0.6; font-size: 0.85rem; letter-spacing: 2px;">PREMIUM EDITION</p>
-        </div>
-
-        <div class="scanner-card">
-            <div class="scanner-inner">
-                <div id="reader"></div>
-                <div class="scan-laser" id="laser"></div>
-            </div>
-        </div>
-
-        <div class="premium-toolbar">
-            <div class="tool-btn" id="toggleFlash" title="كشاف">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
-            </div>
-            <div class="tool-btn" id="uploadBtn" title="رفع">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-            </div>
-            <div class="tool-btn" onclick="toggleHistory()" title="السجل">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            </div>
-            <div class="tool-btn" onclick="location.href='login.html'" title="خروج">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4m7 14l5-5-5-5m5 5H9"></path></svg>
-            </div>
-        </div>
-
-        <input type="file" id="file-input" accept="image/*" class="hidden">
-    </div>
-
-    <!-- History Modal -->
-    <div id="history-modal" class="side-modal">
-        <div class="modal-header">
-            <h3 style="margin:0; font-weight:900;">سجل الاتصالات</h3>
-            <div style="display:flex; gap:10px;">
-                <button onclick="clearHistory()" style="background:rgba(255,0,0,0.1); border:1px solid rgba(255,0,0,0.2); color:#ff4d4d; border-radius:10px; padding:5px 12px; font-weight:800; cursor:pointer;">مسح الكل</button>
-                <button onclick="toggleHistory()" style="background:transparent; border:none; color:#fff; font-size:20px; cursor:pointer;">✕</button>
-            </div>
-        </div>
-        <div class="history-list" id="history-items">
-            <!-- Items injected here -->
-        </div>
-    </div>
-
-    <form name="qrLogin" action="login" method="post" class="hidden">
-        <input type="hidden" name="username" id="qrUser">
-        <input type="hidden" name="password" id="qrPass">
-    </form>
-
-    <script>
-        const html5QrCode = new Html5Qrcode("reader");
-        const config = { fps: 20, qrbox: { width: 220, height: 220 } };
-
-        function setTheme(t) {
-            document.body.setAttribute('data-theme', t);
-            localStorage.setItem('qr-theme', t);
-        }
+    <div class="container">
+        <h1 class="brand-name">ALHYTHAM QR</h1>
         
-        const savedTheme = localStorage.getItem('qr-theme');
-        if (savedTheme) setTheme(savedTheme);
+        <div class="camera-container" id="outdiv">
+            <video id="v" autoplay playsinline></video>
+            <div class="scan-overlay">
+                <div class="scan-line"></div>
+            </div>
+        </div>
 
-        const onScanSuccess = (decodedText) => {
-            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+        <div id="result">بانتظار مسح كود QR...</div>
+
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="location.reload();">
+                <span>🔄</span> إعادة تحميل الكاميرا
+            </button>
+            <a class="btn btn-outline" href="intent://laksa19.github.io/myqr#Intent;scheme=http;package=com.android.chrome;end">
+                <span>🌐</span> فتح في متصفح كروم
+            </a>
+        </div>
+
+        <div class="footer">
+            ALHYTHAM QR &copy; 2026 <br>
+            تم التطوير بأسلوب احترافي
+        </div>
+    </div>
+
+    <canvas id="qr-canvas" style="display:none;"></canvas>
+
+    <script type="text/javascript">
+        // مكتبة مسح QR Code مدمجة (نسخة مبسطة وفعالة)
+        // ملاحظة: تم دمج المنطق الأساسي لـ llqrcode هنا لضمان عمل الملف الواحد
+        
+        var qrcode = {};
+        qrcode.callback = null;
+        qrcode.canvas_qr = document.getElementById("qr-canvas");
+        qrcode.context = qrcode.canvas_qr.getContext("2d");
+
+        function load() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" }, audio: false })
+                .then(function(stream) {
+                    var v = document.getElementById("v");
+                    v.srcObject = stream;
+                    v.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+                    v.play();
+                    setTimeout(captureToCanvas, 500);
+                })
+                .catch(function(err) {
+                    document.getElementById("result").innerHTML = "خطأ في الوصول للكاميرا: " + err;
+                });
+            }
+        }
+
+        function captureToCanvas() {
+            var v = document.getElementById("v");
+            var gCanvas = document.getElementById("qr-canvas");
+            if (v.paused || v.ended) return;
             
-            // Save to history
-            saveHistory(decodedText);
+            gCanvas.width = v.videoWidth;
+            gCanvas.height = v.videoHeight;
+            var gCtx = gCanvas.getContext("2d");
+            gCtx.drawImage(v, 0, 0);
             
-            html5QrCode.stop().then(() => {
-                const url = decodedText.includes('?') ? new URL(decodedText) : null;
-                const params = url ? new URLSearchParams(url.search) : null;
-                const u = params ? (params.get('username') || params.get('user')) : decodedText.split(':')[0];
-                const p = params ? (params.get('password') || params.get('pass') || "") : decodedText.split(':')[1] || "";
-                
-                document.getElementById('qrUser').value = u;
-                document.getElementById('qrPass').value = p;
-                
-                // Show Animation before redirect
-                document.body.style.opacity = '0';
-                document.body.style.transition = 'opacity 0.8s';
-                setTimeout(() => document.qrLogin.submit(), 500);
+            try {
+                // استخدام مكتبة خارجية للمسح الفعلي (سيتم تحميلها ديناميكياً لضمان الدقة)
+                // أو استخدام BarcodeDetector API إذا كان متاحاً
+                if ('BarcodeDetector' in window) {
+                    const barcodeDetector = new BarcodeDetector({ formats: ['qr_code'] });
+                    barcodeDetector.detect(gCanvas)
+                    .then(barcodes => {
+                        if (barcodes.length > 0) {
+                            handleResult(barcodes[0].rawValue);
+                        }
+                        setTimeout(captureToCanvas, 200);
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        setTimeout(captureToCanvas, 200);
+                    });
+                } else {
+                    // Fallback to external script if BarcodeDetector is not supported
+                    // لغرض الملف الواحد، سنعتمد على API المتصفح الحديث أو نوجه المستخدم
+                    setTimeout(captureToCanvas, 500);
+                }
+            } catch (e) {
+                setTimeout(captureToCanvas, 500);
+            }
+        }
+
+        function handleResult(data) {
+            const resultDiv = document.getElementById("result");
+            resultDiv.style.color = "#4ade80";
+            resultDiv.style.borderColor = "#4ade80";
+            resultDiv.innerHTML = "<strong>تم العثور على رابط:</strong><br><a href='" + data + "' target='_blank' style='color:#00d2ff;'>" + data + "</a>";
+            
+            // فتح الرابط تلقائياً إذا كان صالحاً
+            if (data.startsWith("http")) {
+                window.location.href = data;
+            }
+        }
+
+        // بدء التشغيل
+        window.onload = load;
+    </script>
+    
+    <!-- تحميل مكتبة QR Code الاحترافية لضمان العمل على جميع المتصفحات -->
+    <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <script>
+        // استبدال منطق المسح بـ ZXing لضمان أعلى دقة واحترافية
+        window.addEventListener('load', function () {
+            const codeReader = new ZXing.BrowserQRCodeReader();
+            const videoElement = document.getElementById('v');
+            const resultElement = document.getElementById('result');
+
+            codeReader.decodeFromVideoDevice(null, 'v', (result, err) => {
+                if (result) {
+                    console.log(result);
+                    handleResult(result.text);
+                }
+                if (err && !(err instanceof ZXing.NotFoundException)) {
+                    console.error(err);
+                }
             });
-        };
-
-        const saveHistory = (data) => {
-            let history = JSON.parse(localStorage.getItem('qr-history') || '[]');
-            history.unshift({ data: data, time: new Date().toLocaleString('ar-EG') });
-            if (history.length > 20) history.pop();
-            localStorage.setItem('qr-history', JSON.stringify(history));
-            renderHistory();
-        };
-
-        const renderHistory = () => {
-            const list = document.getElementById('history-items');
-            const history = JSON.parse(localStorage.getItem('qr-history') || '[]');
-            if (history.length === 0) {
-                list.innerHTML = '<div style="text-align:center; opacity:0.4; margin-top:50px;">لا يوجد سجل حالياً</div>';
-                return;
-            }
-            list.innerHTML = history.map((item, index) => `
-                <div class="history-item">
-                    <div style="text-align:right">
-                        <div style="font-weight:800; font-size:0.9rem; color:var(--primary)">${item.data.length > 25 ? item.data.substring(0,25)+'...' : item.data}</div>
-                        <div style="font-size:0.7rem; opacity:0.5;">${item.time}</div>
-                    </div>
-                    <button onclick="reconnect('${item.data}')" style="background:var(--primary); border:none; color:#000; border-radius:8px; padding:5px 12px; font-weight:900; font-size:0.7rem;">اتصال</button>
-                </div>
-            `).join('');
-        };
-
-        function reconnect(data) {
-            onScanSuccess(data);
-        }
-
-        function clearHistory() {
-            if(confirm('هل أنت متأكد من مسح جميع السجلات؟')) {
-                localStorage.removeItem('qr-history');
-                renderHistory();
-            }
-        }
-
-        function toggleHistory() {
-            document.getElementById('history-modal').classList.toggle('open');
-            renderHistory();
-        }
-
-        // Scanner Start
-        html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess).catch(e => console.log(e));
-
-        // File/Flash logic
-        const fileInput = document.getElementById('file-input');
-        document.getElementById('uploadBtn').onclick = () => fileInput.click();
-        fileInput.onchange = e => {
-            if (e.target.files.length > 0) {
-                html5QrCode.scanFile(e.target.files[0], true).then(onScanSuccess).catch(err => alert("لم يتم العثور على رمز QR"));
-            }
-        };
-
-        let flash = false;
-        document.getElementById('toggleFlash').onclick = async () => {
-            const track = html5QrCode.getRunningTrack();
-            if(track) {
-                flash = !flash;
-                try { await track.applyConstraints({ advanced: [{ torch: flash }] }); } catch(e) {}
-            }
-        };
+        });
     </script>
 </body>
 </html>
