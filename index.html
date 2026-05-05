@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0e27">
     <title>ALHYTHAM QR</title>
     <style>
         :root {
@@ -26,22 +27,29 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
             font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
             background: linear-gradient(135deg, var(--bg-dark) 0%, #1a0033 50%, var(--bg-dark) 100%);
             color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        body {
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             min-height: 100vh;
             padding: 15px;
-            overflow-x: hidden;
         }
 
         .main-container {
             width: 100%;
             max-width: 1400px;
-            margin: 0 auto;
             display: grid;
-            grid-template-columns: 1fr 350px;
+            grid-template-columns: 1fr 380px;
             gap: 20px;
             animation: slideUp 0.6s ease-out;
         }
@@ -52,7 +60,7 @@
         }
 
         .card {
-            background: rgba(26, 31, 58, 0.8);
+            background: rgba(26, 31, 58, 0.85);
             backdrop-filter: blur(20px);
             border: 1px solid var(--border-color);
             border-radius: 28px;
@@ -83,7 +91,6 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: rainbowShift 4s linear infinite;
-            text-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
         }
 
         @keyframes rainbowShift {
@@ -117,8 +124,6 @@
             font-weight: 600;
             transition: all 0.3s ease;
             font-size: 0.9rem;
-            flex: 1;
-            min-width: 120px;
         }
 
         .mode-btn.active {
@@ -144,8 +149,7 @@
             to { opacity: 1; }
         }
 
-        .camera-wrapper {
-            position: relative;
+        #outdiv {
             width: 100%;
             aspect-ratio: 4/3;
             background: #000;
@@ -154,86 +158,23 @@
             margin-bottom: 20px;
             border: 2px solid var(--primary);
             box-shadow: 0 0 25px rgba(0, 212, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
 
-        #cameraVideo {
-            width: 100%;
-            height: 100%;
+        #outdiv video {
+            width: 100% !important;
+            height: 100% !important;
             object-fit: cover;
         }
 
-        .scan-frame {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 70%;
-            height: 70%;
-            border: 2px solid var(--accent);
-            border-radius: 16px;
-            box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.5);
-            pointer-events: none;
-        }
-
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            box-shadow: 0 0 15px var(--accent);
-            animation: scanMove 2s linear infinite;
-        }
-
-        @keyframes scanMove {
-            0% { top: 0; }
-            100% { top: 100%; }
-        }
-
-        .upload-zone {
-            border: 3px dashed var(--primary);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            background: rgba(0, 212, 255, 0.05);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-        }
-
-        .upload-zone:hover {
-            background: rgba(0, 212, 255, 0.1);
-            border-color: var(--accent);
-        }
-
-        .preview-image {
-            width: 100%;
-            max-height: 350px;
-            border-radius: 16px;
-            margin-bottom: 15px;
-            display: none;
-            border: 2px solid var(--primary);
-            object-fit: contain;
-        }
-
-        .preview-image.show {
-            display: block;
-            animation: zoomIn 0.3s ease;
-        }
-
-        @keyframes zoomIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .button-group {
+        .camera-controls {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-bottom: 15px;
-            position: relative;
-            z-index: 1;
         }
 
         .btn {
@@ -294,20 +235,53 @@
             position: relative;
             z-index: 1;
             word-break: break-all;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        .result-box.success { background: rgba(0, 255, 136, 0.1); border-color: var(--accent); }
-        .result-box.error { background: rgba(255, 51, 102, 0.1); border-color: var(--danger); }
+        .result-box.success { 
+            background: rgba(0, 255, 136, 0.1); 
+            border-color: var(--accent); 
+        }
+
+        .result-box.error { 
+            background: rgba(255, 51, 102, 0.1); 
+            border-color: var(--danger); 
+        }
 
         .result-link {
             color: var(--primary);
             text-decoration: none;
             word-break: break-all;
             font-weight: 600;
+            cursor: pointer;
         }
 
         .result-link:hover {
             text-decoration: underline;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .result-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--primary);
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--primary);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .result-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
         }
 
         .footer {
@@ -456,11 +430,6 @@
             color: var(--primary);
         }
 
-        .history-item-type.text {
-            background: rgba(255, 165, 0, 0.2);
-            color: var(--warning);
-        }
-
         .history-item-actions {
             display: flex;
             gap: 5px;
@@ -520,59 +489,6 @@
             color: var(--danger);
         }
 
-        /* نمط QR Generator */
-        .qr-generator-section {
-            margin-top: 20px;
-        }
-
-        .generator-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .generator-input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(0, 212, 255, 0.05);
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            color: var(--text-primary);
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-            resize: vertical;
-            min-height: 60px;
-        }
-
-        .generator-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(0, 212, 255, 0.1);
-        }
-
-        .generator-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .qr-preview {
-            width: 100%;
-            max-width: 200px;
-            margin: 0 auto 15px;
-            padding: 10px;
-            background: white;
-            border-radius: 10px;
-            display: none;
-        }
-
-        .qr-preview.show {
-            display: block;
-        }
-
         /* Scrollbar Styling */
         .history-container::-webkit-scrollbar {
             width: 6px;
@@ -592,6 +508,42 @@
             background: rgba(0, 212, 255, 0.5);
         }
 
+        .upload-zone {
+            border: 3px dashed var(--primary);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            background: rgba(0, 212, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-zone:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: var(--accent);
+        }
+
+        .preview-image {
+            width: 100%;
+            max-height: 350px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            display: none;
+            border: 2px solid var(--primary);
+            object-fit: contain;
+        }
+
+        .preview-image.show {
+            display: block;
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
         @media (max-width: 1024px) {
             .main-container {
                 grid-template-columns: 1fr;
@@ -609,9 +561,10 @@
         @media (max-width: 600px) {
             .card { padding: 20px; }
             .brand-title { font-size: 2.2rem; }
-            .button-group { grid-template-columns: 1fr; }
+            .camera-controls { grid-template-columns: 1fr; }
             .mode-selector { gap: 8px; }
-            .mode-btn { min-width: 100px; padding: 10px 16px; }
+            .mode-btn { padding: 10px 16px; font-size: 0.85rem; }
+            #outdiv { aspect-ratio: 1; }
         }
     </style>
 </head>
@@ -622,7 +575,7 @@
         <div class="permission-icon">📷</div>
         <h2 class="permission-title">مطلوب إذن الكاميرا</h2>
         <p class="permission-text">
-            من فضلك اضغط على "سماح" أو "Allow" عندما يطلب المتصفح الوصول للكاميرا لكي تتمكن من مسح الأكواد.
+            من فضلك اضغط على "سماح" أو "Allow" عندما يطلب المتصفح الوصول للكاميرا لكي تتمكن من مسح الأكواس.
             <br><br>
             إذا لم تظهر الرسالة، يرجى تحديث الصفحة أو التأكد من إعدادات المتصفح.
         </p>
@@ -642,19 +595,13 @@
             <div class="mode-selector">
                 <button class="mode-btn active" id="btnCameraMode" onclick="switchMode('camera')">📷 الكاميرا</button>
                 <button class="mode-btn" id="btnUploadMode" onclick="switchMode('upload')">📁 رفع صورة</button>
-                <button class="mode-btn" id="btnGeneratorMode" onclick="switchMode('generator')">✨ توليد</button>
             </div>
 
             <!-- وضع الكاميرا -->
             <div id="cameraMode" class="content-section active">
-                <div class="camera-wrapper">
-                    <video id="cameraVideo" autoplay playsinline muted></video>
-                    <div class="scan-frame">
-                        <div class="scan-line"></div>
-                    </div>
-                </div>
+                <div id="outdiv"></div>
 
-                <div class="button-group">
+                <div class="camera-controls">
                     <button class="btn btn-primary" onclick="reloadCamera()">
                         <span>🔄</span> إعادة تحميل
                     </button>
@@ -684,32 +631,13 @@
                 <div id="uploadResult" class="result-box">
                     <span class="result-text">اختر صورة تحتوي على كود QR</span>
                 </div>
-                <div class="button-group" style="margin-top: 20px;">
+                <div class="camera-controls" style="margin-top: 20px;">
                     <button class="btn btn-primary" onclick="document.getElementById('imageInput').click()">
                         <span>📁</span> اختر صورة
                     </button>
                     <button class="btn btn-secondary" onclick="resetUpload()">
                         <span>🗑️</span> مسح
                     </button>
-                </div>
-            </div>
-
-            <!-- وضع التوليد -->
-            <div id="generatorMode" class="content-section">
-                <div class="qr-generator-section">
-                    <div class="generator-title">توليد كود QR</div>
-                    <textarea id="generatorInput" class="generator-input" placeholder="أدخل النص أو الرابط الذي تريد تحويله إلى كود QR..."></textarea>
-                    <div class="generator-buttons">
-                        <button class="btn btn-primary" onclick="generateQR()">
-                            <span>✨</span> توليد
-                        </button>
-                        <button class="btn btn-secondary" onclick="downloadQR()">
-                            <span>⬇️</span> تحميل
-                        </button>
-                    </div>
-                    <div id="qrPreview" class="qr-preview">
-                        <img id="qrImage" src="" alt="QR Code" style="width: 100%; height: auto;">
-                    </div>
                 </div>
             </div>
 
@@ -731,38 +659,136 @@
         </div>
     </div>
 
-    <canvas id="qrCanvas" style="display:none;"></canvas>
+    <canvas id="qr-canvas" style="display:none;" width="800" height="600"></canvas>
 
-    <script src="https://unpkg.com/@zxing/library@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- مكتبة llqrcode.js من الموقع المرجعي -->
+    <script src="https://laksa19.github.io/myqr/llqrcode.js"></script>
     <script>
-        let codeReader = null;
-        let currentStream = null;
-        let facingMode = 'environment';
-        let isScanning = false;
         let lastResult = "";
         let scanHistory = JSON.parse(localStorage.getItem('qrHistory')) || [];
-        let currentQRCode = null;
+        let facingMode = 'environment';
+        let currentStream = null;
+        let isScanning = false;
 
-        function initZXing() {
-            if (!codeReader) codeReader = new ZXing.BrowserQRCodeReader();
+        // متغيرات عامة للمسح
+        var gCtx = null;
+        var gCanvas = null;
+        var imageData = null;
+        var stype = 0;
+        var webkit = false;
+
+        // دالة تحميل البيانات من localStorage
+        function loadHistory() {
+            updateHistoryDisplay();
         }
 
-        // طلب إذن الكاميرا بشكل صريح
+        // دالة إضافة إلى السجل
+        function addToHistory(data) {
+            const historyItem = {
+                id: Date.now(),
+                data: data,
+                timestamp: new Date().toLocaleString('ar-SA'),
+                type: data.startsWith('http') ? 'link' : 'text'
+            };
+            
+            scanHistory.unshift(historyItem);
+            if (scanHistory.length > 100) scanHistory.pop();
+            
+            localStorage.setItem('qrHistory', JSON.stringify(scanHistory));
+            updateHistoryDisplay();
+        }
+
+        // دالة تحديث عرض السجل
+        function updateHistoryDisplay() {
+            const container = document.getElementById('historyContainer');
+            
+            if (scanHistory.length === 0) {
+                container.innerHTML = '<div class="history-empty">لا توجد عمليات بعد</div>';
+                return;
+            }
+            
+            container.innerHTML = scanHistory.map(item => `
+                <div class="history-item">
+                    <div class="history-item-time">⏰ ${item.timestamp}</div>
+                    <div class="history-item-type ${item.type === 'link' ? 'link' : ''}">${item.type === 'link' ? 'رابط' : 'نص'}</div>
+                    <div class="history-item-text">${item.data}</div>
+                    <div class="history-item-actions">
+                        <button class="history-btn" onclick="copyToClipboard('${item.data.replace(/'/g, "\\'")}')">📋 نسخ</button>
+                        <button class="history-btn" onclick="deleteHistoryItem(${item.id})">🗑️ حذف</button>
+                        ${item.type === 'link' ? `<button class="history-btn" onclick="window.open('${item.data}', '_blank')">🌐 فتح</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // دالة نسخ إلى الحافظة
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('تم النسخ بنجاح!', 'success');
+            });
+        }
+
+        // دالة حذف عنصر من السجل
+        function deleteHistoryItem(id) {
+            scanHistory = scanHistory.filter(item => item.id !== id);
+            localStorage.setItem('qrHistory', JSON.stringify(scanHistory));
+            updateHistoryDisplay();
+            showNotification('تم الحذف', 'info');
+        }
+
+        // دالة مسح السجل
+        function clearHistory() {
+            if (confirm('هل أنت متأكد من حذف جميع السجلات؟')) {
+                scanHistory = [];
+                localStorage.setItem('qrHistory', JSON.stringify(scanHistory));
+                updateHistoryDisplay();
+                showNotification('تم حذف جميع السجلات', 'info');
+            }
+        }
+
+        // دالة تصدير السجل
+        function exportHistory() {
+            const dataStr = JSON.stringify(scanHistory, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `qr_history_${new Date().getTime()}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showNotification('تم تصدير السجل', 'success');
+        }
+
+        // دالة عرض الإشعارات
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.borderColor = type === 'error' ? 'var(--danger)' : 'var(--primary)';
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.animation = 'slideInRight 0.3s ease reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // دالة عرض النتيجة
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<span class="result-text">${message}</span>`;
+            element.classList.remove('success', 'error');
+            if (type !== 'default') element.classList.add(type);
+        }
+
+        // دالة طلب إذن الكاميرا
         async function requestCameraPermission() {
             document.getElementById('permissionOverlay').classList.remove('show');
             await startCamera();
         }
 
+        // دالة بدء الكاميرا
         async function startCamera() {
             try {
-                initZXing();
-                const video = document.getElementById('cameraVideo');
-                
-                if (currentStream) {
-                    currentStream.getTracks().forEach(track => track.stop());
-                }
-
                 const constraints = { 
                     video: { 
                         facingMode: facingMode,
@@ -772,15 +798,20 @@
                     audio: false 
                 };
 
-                const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                currentStream = stream;
-                video.srcObject = stream;
-                
-                video.onloadedmetadata = () => {
-                    video.play().catch(e => console.error("Video play failed:", e));
-                };
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                }
 
-                startScanning();
+                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+                
+                gCanvas = document.getElementById('qr-canvas');
+                gCtx = gCanvas.getContext('2d');
+                
+                // استدعاء دالة load من llqrcode.js
+                if (typeof load === 'function') {
+                    load();
+                }
+                
                 showNotification('تم تشغيل الكاميرا بنجاح', 'success');
             } catch (error) {
                 console.error("Camera Error:", error);
@@ -792,58 +823,33 @@
             }
         }
 
-        function startScanning() {
-            if (isScanning) return;
-            isScanning = true;
-            const video = document.getElementById('cameraVideo');
-            const canvas = document.getElementById('qrCanvas');
-            const ctx = canvas.getContext('2d');
-
-            function scan() {
-                if (!isScanning || !video.srcObject) return;
-                
-                if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    
-                    try {
-                        const luminanceSource = new ZXing.HTMLCanvasElementLuminanceSource(canvas);
-                        const binaryBitmap = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(luminanceSource));
-                        const result = new ZXing.MultiFormatReader().decode(binaryBitmap);
-                        if (result) {
-                            handleQRDetected(result.text);
-                            return;
-                        }
-                    } catch (e) {
-                        // لم يتم العثور على كود في هذا الإطار
-                    }
-                }
-                requestAnimationFrame(scan);
-            }
-            scan();
+        // دالة إعادة تحميل الكاميرا
+        function reloadCamera() {
+            location.reload();
         }
 
-        function stopScanning() {
-            isScanning = false;
+        // دالة تبديل الكاميرا
+        async function toggleCamera() {
+            facingMode = facingMode === 'environment' ? 'user' : 'environment';
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
-                currentStream = null;
             }
-        }
-
-        async function toggleCamera() {
-            stopScanning();
-            facingMode = facingMode === 'environment' ? 'user' : 'environment';
             await startCamera();
             showNotification(facingMode === 'environment' ? 'الكاميرا الخلفية' : 'الكاميرا الأمامية', 'info');
         }
 
-        function reloadCamera() {
-            stopScanning();
-            startCamera();
+        // دالة فتح في متصفح آخر
+        function openBrowserSelector() {
+            const url = lastResult && lastResult.startsWith('http') ? lastResult : window.location.href;
+            const intentUrl = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=http;action=android.intent.action.VIEW;end`;
+            showNotification('جاري فتح قائمة المتصفحات...', 'info');
+            window.location.href = intentUrl;
+            setTimeout(() => {
+                if (document.hasFocus()) window.open(url, '_blank');
+            }, 500);
         }
 
+        // دالة تبديل الأوضاع
         function switchMode(mode) {
             document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.mode-btn').forEach(el => el.classList.remove('active'));
@@ -855,14 +861,13 @@
             } else if (mode === 'upload') {
                 document.getElementById('uploadMode').classList.add('active');
                 document.getElementById('btnUploadMode').classList.add('active');
-                stopScanning();
-            } else if (mode === 'generator') {
-                document.getElementById('generatorMode').classList.add('active');
-                document.getElementById('btnGeneratorMode').classList.add('active');
-                stopScanning();
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                }
             }
         }
 
+        // دالة معالجة رفع الصور
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -880,24 +885,30 @@
             reader.readAsDataURL(file);
         }
 
+        // دالة فك تشفير صورة QR
         async function decodeImageQR(img) {
             try {
-                initZXing();
-                const canvas = document.getElementById('qrCanvas');
+                const canvas = document.getElementById('qr-canvas');
                 const ctx = canvas.getContext('2d');
                 canvas.width = img.width;
                 canvas.height = img.height;
                 ctx.drawImage(img, 0, 0);
-                const luminanceSource = new ZXing.HTMLCanvasElementLuminanceSource(canvas);
-                const binaryBitmap = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(luminanceSource));
-                const result = new ZXing.MultiFormatReader().decode(binaryBitmap);
-                if (result) handleQRDetected(result.text, 'upload');
-                else showResult('uploadResult', 'لم يتم العثور على كود QR', 'error');
+                
+                // استخدام qrcode.decode من llqrcode.js
+                if (typeof qrcode !== 'undefined' && typeof qrcode.decode === 'function') {
+                    try {
+                        const result = qrcode.decode();
+                        handleQRDetected(result, 'upload');
+                    } catch (e) {
+                        showResult('uploadResult', 'لم يتم العثور على كود QR', 'error');
+                    }
+                }
             } catch (error) {
-                showResult('uploadResult', 'خطأ في المسح', 'error');
+                showResult('uploadResult', 'خطأ في المسح: ' + error.message, 'error');
             }
         }
 
+        // دالة معالجة الكود المكتشف
         function handleQRDetected(data, mode = 'camera') {
             lastResult = data;
             const resultId = mode === 'camera' ? 'cameraResult' : 'uploadResult';
@@ -906,181 +917,49 @@
             addToHistory(data);
             
             if (data.startsWith('http')) {
-                showResult(resultId, `<a href="${data}" target="_blank" class="result-link">${data}</a>`, 'success');
-                showNotification('تم العثور على رابط! جاري الفتح...', 'success');
+                const resultBox = document.getElementById(resultId);
+                resultBox.innerHTML = `
+                    <div>
+                        <a href="${data}" target="_blank" class="result-link">${data}</a>
+                        <div class="result-actions">
+                            <button class="result-btn" onclick="copyToClipboard('${data.replace(/'/g, "\\'")}')">📋 نسخ</button>
+                            <button class="result-btn" onclick="window.open('${data}', '_blank')">🌐 فتح</button>
+                        </div>
+                    </div>
+                `;
+                resultBox.classList.remove('error');
+                resultBox.classList.add('success');
+                showNotification('تم العثور على رابط!', 'success');
                 
-                window.location.href = data;
                 setTimeout(() => {
-                    window.open(data, '_blank');
-                }, 100);
+                    window.location.href = data;
+                }, 500);
             } else {
-                showResult(resultId, `<span class="result-link">${data}</span>`, 'success');
+                const resultBox = document.getElementById(resultId);
+                resultBox.innerHTML = `
+                    <div>
+                        <span class="result-link">${data}</span>
+                        <div class="result-actions">
+                            <button class="result-btn" onclick="copyToClipboard('${data.replace(/'/g, "\\'")}')">📋 نسخ</button>
+                        </div>
+                    </div>
+                `;
+                resultBox.classList.remove('error');
+                resultBox.classList.add('success');
                 showNotification('تم القراءة بنجاح!', 'success');
             }
-            
-            if (mode === 'camera') {
-                stopScanning();
-                setTimeout(() => startScanning(), 3000);
-            }
         }
 
-        function openBrowserSelector() {
-            const url = lastResult && lastResult.startsWith('http') ? lastResult : window.location.href;
-            const intentUrl = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=http;action=android.intent.action.VIEW;end`;
-            showNotification('جاري فتح قائمة المتصفحات...', 'info');
-            window.location.href = intentUrl;
-            setTimeout(() => {
-                if (document.hasFocus()) window.open(url, '_blank');
-            }, 500);
-        }
-
+        // دالة إعادة تعيين رفع الصور
         function resetUpload() {
             document.getElementById('imageInput').value = '';
             document.getElementById('previewImage').classList.remove('show');
             showResult('uploadResult', 'اختر صورة تحتوي على كود QR', 'default');
         }
 
-        function showResult(elementId, message, type) {
-            const element = document.getElementById(elementId);
-            element.innerHTML = `<span class="result-text">${message}</span>`;
-            element.classList.remove('success', 'error');
-            if (type !== 'default') element.classList.add(type);
-        }
-
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.textContent = message;
-            notification.style.borderColor = type === 'error' ? 'var(--danger)' : 'var(--primary)';
-            document.body.appendChild(notification);
-            setTimeout(() => {
-                notification.style.animation = 'slideInRight 0.3s ease reverse';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        // نظام السجل
-        function addToHistory(data) {
-            const historyItem = {
-                id: Date.now(),
-                data: data,
-                timestamp: new Date().toLocaleString('ar-SA'),
-                type: data.startsWith('http') ? 'link' : 'text'
-            };
-            
-            scanHistory.unshift(historyItem);
-            if (scanHistory.length > 100) scanHistory.pop();
-            
-            localStorage.setItem('qrHistory', JSON.stringify(scanHistory));
-            updateHistoryDisplay();
-        }
-
-        function updateHistoryDisplay() {
-            const container = document.getElementById('historyContainer');
-            
-            if (scanHistory.length === 0) {
-                container.innerHTML = '<div class="history-empty">لا توجد عمليات بعد</div>';
-                return;
-            }
-            
-            container.innerHTML = scanHistory.map(item => `
-                <div class="history-item">
-                    <div class="history-item-time">⏰ ${item.timestamp}</div>
-                    <div class="history-item-type ${item.type}">${item.type === 'link' ? 'رابط' : 'نص'}</div>
-                    <div class="history-item-text">${item.data}</div>
-                    <div class="history-item-actions">
-                        <button class="history-btn" onclick="copyToClipboard('${item.data.replace(/'/g, "\\'")}')">📋 نسخ</button>
-                        <button class="history-btn" onclick="deleteHistoryItem(${item.id})">🗑️ حذف</button>
-                        ${item.type === 'link' ? `<button class="history-btn" onclick="window.open('${item.data}', '_blank')">🌐 فتح</button>` : ''}
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showNotification('تم النسخ بنجاح!', 'success');
-            });
-        }
-
-        function deleteHistoryItem(id) {
-            scanHistory = scanHistory.filter(item => item.id !== id);
-            localStorage.setItem('qrHistory', JSON.stringify(scanHistory));
-            updateHistoryDisplay();
-            showNotification('تم الحذف', 'info');
-        }
-
-        function clearHistory() {
-            if (confirm('هل أنت متأكد من حذف جميع السجلات؟')) {
-                scanHistory = [];
-                localStorage.setItem('qrHistory', JSON.stringify(scanHistory));
-                updateHistoryDisplay();
-                showNotification('تم حذف جميع السجلات', 'info');
-            }
-        }
-
-        function exportHistory() {
-            const dataStr = JSON.stringify(scanHistory, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `qr_history_${new Date().getTime()}.json`;
-            link.click();
-            URL.revokeObjectURL(url);
-            showNotification('تم تصدير السجل', 'success');
-        }
-
-        // نظام توليد QR
-        function generateQR() {
-            const input = document.getElementById('generatorInput').value.trim();
-            if (!input) {
-                showNotification('الرجاء إدخال نص أو رابط', 'error');
-                return;
-            }
-
-            const preview = document.getElementById('qrPreview');
-            const qrImage = document.getElementById('qrImage');
-            
-            // حذف QR السابق
-            preview.innerHTML = '<img id="qrImage" src="" alt="QR Code" style="width: 100%; height: auto;">';
-            
-            // توليد QR جديد
-            currentQRCode = new QRCode(preview, {
-                text: input,
-                width: 200,
-                height: 200,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-            
-            preview.classList.add('show');
-            addToHistory(input);
-            showNotification('تم توليد الكود بنجاح!', 'success');
-        }
-
-        function downloadQR() {
-            const preview = document.getElementById('qrPreview');
-            if (!preview.classList.contains('show')) {
-                showNotification('الرجاء توليد كود QR أولاً', 'error');
-                return;
-            }
-
-            const canvas = preview.querySelector('canvas');
-            if (canvas) {
-                const link = document.createElement('a');
-                link.href = canvas.toDataURL('image/png');
-                link.download = `qrcode_${new Date().getTime()}.png`;
-                link.click();
-                showNotification('تم تحميل الكود', 'success');
-            }
-        }
-
         // بدء التشغيل عند تحميل الصفحة
         window.addEventListener('load', () => {
-            initZXing();
-            updateHistoryDisplay();
+            loadHistory();
             startCamera();
         });
 
