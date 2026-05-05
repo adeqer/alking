@@ -2,50 +2,40 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ALHYTHAM QR - التوجيه السريع</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ALHYTHAM QR</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-        
-        body, html {
+        * {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #000;
-            font-family: 'Cairo', sans-serif;
-            overflow: hidden;
+            box-sizing: border-box;
         }
 
-        /* حاوية الكاميرا الصافية */
-        #reader {
-            width: 100% !important;
-            height: 100% !important;
+        body {
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Cairo', sans-serif;
+            overflow: hidden;
+            position: fixed;
+        }
+
+        #video {
             position: fixed;
             top: 0;
             left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
         }
 
-        #reader video {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover !important;
+        #canvas {
+            display: none;
         }
 
-        /* إخفاء كل شيء يخص المكتبة */
-        #reader__dashboard_section_csr, 
-        #reader__dashboard_section_fsit,
-        #reader__header_message,
-        #reader__status_span,
-        #reader img {
-            display: none !important;
-        }
-
-        /* واجهة المستخدم المخصصة والشفافة */
-        .overlay {
+        .ui {
             position: fixed;
             inset: 0;
             z-index: 10;
@@ -55,27 +45,27 @@
         }
 
         .header {
-            padding: 40px 20px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            padding: 30px 20px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.7) 0%, transparent 100%);
             text-align: center;
         }
 
-        .header h1 {
-            color: #a855f7;
-            font-size: 28px;
+        .title {
+            font-size: 24px;
             font-weight: 700;
+            color: #a855f7;
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(168,85,247,0.6);
             margin: 0;
-            text-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
         }
 
-        .header p {
-            color: #ddd;
-            font-size: 14px;
+        .subtitle {
+            font-size: 12px;
+            color: #999;
             margin-top: 5px;
         }
 
-        /* إطار المسح */
-        .scan-area {
+        .scanner {
             flex: 1;
             display: flex;
             align-items: center;
@@ -83,206 +73,258 @@
             position: relative;
         }
 
-        .finder {
-            width: 260px;
-            height: 260px;
-            border: 2px solid rgba(168, 85, 247, 0.4);
-            border-radius: 30px;
+        .frame {
+            width: 280px;
+            height: 280px;
+            border: 2px solid rgba(168,85,247,0.5);
+            border-radius: 20px;
             position: relative;
-            box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
         }
 
-        /* زوايا الإطار */
         .corner {
             position: absolute;
-            width: 40px;
-            height: 40px;
-            border: 4px solid #a855f7;
-            border-radius: 10px;
+            width: 35px;
+            height: 35px;
+            border: 3px solid #a855f7;
         }
-        .tl { top: -5px; left: -5px; border-right: 0; border-bottom: 0; }
-        .tr { top: -5px; right: -5px; border-left: 0; border-bottom: 0; }
-        .bl { bottom: -5px; left: -5px; border-right: 0; border-top: 0; }
-        .br { bottom: -5px; right: -5px; border-left: 0; border-top: 0; }
 
-        .scan-line {
+        .corner.tl {
+            top: -8px;
+            left: -8px;
+            border-right: none;
+            border-bottom: none;
+            border-radius: 8px 0 0 0;
+        }
+
+        .corner.tr {
+            top: -8px;
+            right: -8px;
+            border-left: none;
+            border-bottom: none;
+            border-radius: 0 8px 0 0;
+        }
+
+        .corner.bl {
+            bottom: -8px;
+            left: -8px;
+            border-right: none;
+            border-top: none;
+            border-radius: 0 0 0 8px;
+        }
+
+        .corner.br {
+            bottom: -8px;
+            right: -8px;
+            border-left: none;
+            border-top: none;
+            border-radius: 0 0 8px 0;
+        }
+
+        .line {
             position: absolute;
             top: 0;
             left: 10%;
             width: 80%;
-            height: 4px;
+            height: 3px;
             background: #a855f7;
             box-shadow: 0 0 20px #a855f7;
-            border-radius: 2px;
-            animation: moveLine 2.5s ease-in-out infinite;
+            animation: scan 2s ease-in-out infinite;
         }
 
-        @keyframes moveLine {
+        @keyframes scan {
             0%, 100% { top: 10%; opacity: 0.3; }
             50% { top: 90%; opacity: 1; }
         }
 
         .footer {
-            padding: 40px 20px;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 30px 20px;
+            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, transparent 100%);
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
             pointer-events: auto;
         }
 
-        .btn-round {
-            width: 60px;
-            height: 60px;
+        .btn {
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.2s;
         }
 
-        .btn-round:active {
-            transform: scale(0.9);
+        .btn:active {
             background: #a855f7;
+            transform: scale(0.9);
         }
 
-        /* شاشة التحميل والتوجيه */
-        #statusOverlay {
+        #loading {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             z-index: 100;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.5s;
+            gap: 20px;
         }
 
-        .loader {
-            width: 48px;
-            height: 48px;
-            border: 5px solid #FFF;
-            border-bottom-color: #a855f7;
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #333;
+            border-top-color: #a855f7;
             border-radius: 50%;
-            display: inline-block;
-            box-sizing: border-box;
-            animation: rotation 1s linear infinite;
+            animation: spin 1s linear infinite;
         }
 
-        @keyframes rotation {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status {
+            color: #a855f7;
+            font-weight: 600;
+        }
+
+        #fileInput {
+            display: none;
         }
     </style>
 </head>
 <body>
 
-    <div id="reader"></div>
+<video id="video" playsinline></video>
+<canvas id="canvas"></canvas>
 
-    <div class="overlay">
-        <div class="header">
-            <h1>ALHYTHAM QR</h1>
-            <p>سيتم توجيهك للرابط تلقائياً عند المسح</p>
-        </div>
+<div class="ui">
+    <div class="header">
+        <h1 class="title">ALHYTHAM QR</h1>
+        <p class="subtitle">الماسح الضوئي الاحترافي</p>
+    </div>
 
-        <div class="scan-area">
-            <div class="finder">
-                <div class="corner tl"></div>
-                <div class="corner tr"></div>
-                <div class="corner bl"></div>
-                <div class="corner br"></div>
-                <div class="scan-line"></div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <button onclick="location.reload()" class="btn-round" title="تحديث">
-                <i class="fas fa-sync-alt"></i>
-            </button>
-            <button onclick="openInChrome()" class="btn-round" title="Chrome">
-                <i class="fab fa-chrome"></i>
-            </button>
+    <div class="scanner">
+        <div class="frame">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+            <div class="line"></div>
         </div>
     </div>
 
-    <div id="statusOverlay">
-        <span class="loader"></span>
-        <p id="statusText" class="mt-4 text-purple-400 font-bold">جاري تشغيل الكاميرا...</p>
+    <div class="footer">
+        <button class="btn" onclick="location.reload()" title="تحديث">
+            ↻
+        </button>
+        <button class="btn" onclick="document.getElementById('fileInput').click()" title="صورة">
+            🖼️
+        </button>
     </div>
+</div>
 
-    <script>
-        let html5QrCode;
-        const statusOverlay = document.getElementById('statusOverlay');
-        const statusText = document.getElementById('statusText');
+<div id="loading">
+    <div class="spinner"></div>
+    <p class="status">جاري تشغيل الكاميرا...</p>
+</div>
 
-        async function startApp() {
-            try {
-                // استخدام Html5Qrcode مباشرة بدلاً من Scanner UI لمنع "التشويش"
-                html5QrCode = new Html5Qrcode("reader");
-                
-                const config = { 
-                    fps: 25, 
-                    qrbox: { width: 260, height: 260 },
-                    aspectRatio: 1.0
-                };
+<input type="file" id="fileInput" accept="image/*" onchange="scanImage(event)">
 
-                await html5QrCode.start(
-                    { facingMode: "environment" }, 
-                    config,
-                    onScanSuccess
-                );
-                
-                // إخفاء شاشة التحميل بمجرد عمل الكاميرا
-                setTimeout(() => {
-                    statusOverlay.style.opacity = '0';
-                    setTimeout(() => statusOverlay.style.display = 'none', 500);
-                }, 1000);
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const loading = document.getElementById('loading');
+    let isScanning = true;
 
-            } catch (err) {
-                console.error(err);
-                statusText.innerText = "خطأ: يرجى السماح بالوصول للكاميرا";
-                statusText.classList.replace('text-purple-400', 'text-red-500');
-            }
-        }
-
-        function onScanSuccess(decodedText) {
-            // 1. اهتزاز فوري للتنبيه
-            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-
-            // 2. إظهار شاشة التوجيه
-            statusOverlay.style.display = 'flex';
-            statusOverlay.style.opacity = '1';
-            statusText.innerText = "تم المسح! جاري التوجيه...";
-            
-            // 3. إيقاف الكاميرا فوراً
-            html5QrCode.stop().then(() => {
-                // 4. التوجيه المباشر
-                const targetUrl = decodedText.startsWith('http') ? decodedText : 'https://' + decodedText;
-                
-                // التحقق إذا كان الرابط صالحاً
-                try {
-                    new URL(targetUrl);
-                    window.location.href = targetUrl;
-                } catch (e) {
-                    // إذا لم يكن رابطاً، اعرضه كنص
-                    alert("النتيجة: " + decodedText);
-                    location.reload();
-                }
+    async function init() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
             });
+
+            video.srcObject = stream;
+            video.onloadedmetadata = () => {
+                video.play();
+                loading.style.display = 'none';
+                startScanning();
+            };
+        } catch (err) {
+            loading.innerHTML = '<p class="status">❌ خطأ: تحقق من إذن الكاميرا</p>';
+        }
+    }
+
+    function startScanning() {
+        if (!isScanning) return;
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+        if (code) {
+            handleSuccess(code.data);
+            return;
         }
 
-        function openInChrome() {
-            const url = window.location.href.split('://')[1];
-            window.location.href = `intent://${url}#Intent;scheme=https;package=com.android.chrome;end`;
-        }
+        requestAnimationFrame(startScanning);
+    }
 
-        // بدء التشغيل
-        window.addEventListener('DOMContentLoaded', startApp);
-    </script>
+    function handleSuccess(result) {
+        isScanning = false;
+        
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
+        const isUrl = /^(https?:\/\/|www\.|[a-z0-9-]+\.[a-z]{2,})/i.test(result);
+
+        if (isUrl) {
+            const url = result.startsWith('http') ? result : (result.startsWith('www') ? 'https://' + result : 'https://' + result);
+            window.location.href = url;
+        } else {
+            alert('النتيجة:\n' + result);
+            isScanning = true;
+            startScanning();
+        }
+    }
+
+    function scanImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+                
+                if (code) {
+                    handleSuccess(code.data);
+                } else {
+                    alert('لم يتم العثور على رمز QR');
+                }
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+</script>
+
 </body>
 </html>
