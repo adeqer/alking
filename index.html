@@ -2,333 +2,686 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALHYTHAM QR - ماسح الأكواد الاحترافي</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/html5-qrcode"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALHYTHAM QR - Professional Suite</title>
+    <!-- Modern Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Kufi+Arabic:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Professional Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- QR Libraries -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.5);
+            --secondary: #a855f7;
+            --accent: #ec4899;
+            --bg-dark: #030711;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-card: rgba(15, 23, 42, 0.8);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --font-main: 'Outfit', 'Noto Kufi Arabic', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         body {
-            font-family: 'Tajawal', sans-serif;
-            background: radial-gradient(circle at top left, #1e1b4b, #0f172a);
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-main);
             min-height: 100vh;
-            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(236, 72, 153, 0.15) 0%, transparent 50%);
         }
-        .glass-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, #60a5fa, #a855f7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .scanner-box {
-            position: relative;
-            overflow: hidden;
-            border-radius: 1rem;
-            border: 2px solid rgba(96, 165, 250, 0.3);
-        }
-        .scanner-box::after {
-            content: "";
-            position: absolute;
+
+        /* Ambient Background Elements */
+        .ambient-bg {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 2px;
-            background: #60a5fa;
-            box-shadow: 0 0 15px #60a5fa;
-            animation: scan 2s linear infinite;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
         }
-        @keyframes scan {
-            0% { top: 0; }
-            100% { top: 100%; }
+
+        .blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: var(--primary);
+            filter: blur(150px);
+            opacity: 0.1;
+            border-radius: 50%;
+            animation: move 20s infinite alternate;
         }
+
+        @keyframes move {
+            0% { transform: translate(-10%, -10%); }
+            100% { transform: translate(10%, 10%); }
+        }
+
+        /* Container */
+        .app-shell {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            filter: drop-shadow(0 0 10px var(--primary-glow));
+        }
+
+        .tagline {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            margin-top: -5px;
+            font-weight: 300;
+        }
+
+        /* Scanner Area */
+        .scanner-card {
+            background: var(--glass-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            aspect-ratio: 1;
+        }
+
+        #reader {
+            width: 100% !important;
+            height: 100% !important;
+            border: none !important;
+        }
+
         #reader video {
-            border-radius: 0.75rem;
-            object-fit: cover;
+            object-fit: cover !important;
         }
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+
+        .scan-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scan-frame {
+            width: 70%;
+            height: 70%;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            position: relative;
+            box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5);
+        }
+
+        .corner {
+            position: absolute;
+            width: 25px; height: 25px;
+            border: 4px solid var(--primary);
+        }
+        .tl { top: -2px; left: -2px; border-right: 0; border-bottom: 0; border-top-left-radius: 12px; }
+        .tr { top: -2px; right: -2px; border-left: 0; border-bottom: 0; border-top-right-radius: 12px; }
+        .bl { bottom: -2px; left: -2px; border-right: 0; border-top: 0; border-bottom-left-radius: 12px; }
+        .br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; border-bottom-right-radius: 12px; }
+
+        .scan-laser {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, var(--primary), transparent);
+            box-shadow: 0 0 15px var(--primary);
+            top: 0;
+            animation: scanMove 3s infinite linear;
+        }
+
+        @keyframes scanMove {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* Controls */
+        .main-controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .icon-btn {
+            width: 54px;
+            height: 54px;
+            border-radius: 18px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .icon-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px -5px var(--primary-glow);
+        }
+
+        .icon-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .upload-btn {
+            flex: 1;
+            height: 54px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+
+        .upload-btn:hover {
+            filter: brightness(1.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px var(--primary-glow);
         }
+
+        /* Result Panel */
+        .result-panel {
+            background: var(--glass-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 20px;
+            display: none;
+            animation: panelFade 0.5s ease;
+        }
+
+        @keyframes panelFade {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .type-badge {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .result-content {
+            background: rgba(0,0,0,0.2);
+            padding: 15px;
+            border-radius: 16px;
+            font-size: 1rem;
+            word-break: break-all;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .action-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .action-btn {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .action-btn.primary {
+            background: var(--primary);
+            border: none;
+        }
+
+        /* History */
+        .history-section {
+            margin-top: 10px;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+            padding: 0 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .history-item {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 12px 15px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .history-item:hover {
+            background: rgba(255,255,255,0.05);
+            transform: translateX(-5px);
+        }
+
+        .history-icon {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--primary);
+        }
+
+        .history-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .history-text {
+            font-size: 0.9rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+        }
+
+        .history-time {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+
+        /* Utilities */
+        #upload-input { display: none; }
         .hidden { display: none; }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translate(-50%, 100px);
+            background: var(--primary);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            z-index: 1000;
+            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+        #toast.show { transform: translate(-50%, 0); }
+
+        /* Arabic Support */
+        [dir="rtl"] .history-item:hover { transform: translateX(5px); }
     </style>
 </head>
-<body class="p-4 md:p-8">
-    <div class="max-w-2xl mx-auto">
-        <!-- Header -->
-        <header class="text-center mb-8 animate-fade-in">
-            <h1 class="text-4xl md:text-5xl font-bold mb-2 gradient-text">ALHYTHAM QR</h1>
-            <p class="text-slate-400 text-sm md:text-base">الماسح الضوئي الأسرع والأكثر أماناً</p>
+<body>
+
+    <div class="ambient-bg">
+        <div class="blob"></div>
+    </div>
+
+    <div class="app-shell">
+        <header>
+            <h1 class="logo-text">ALHYTHAM QR</h1>
+            <p class="tagline">PROFESSIONAL SCANNER SUITE</p>
         </header>
 
-        <!-- Main Container -->
-        <main class="glass-card rounded-3xl p-6 md:p-8 space-y-6">
-            
-            <!-- Tabs -->
-            <div class="flex bg-slate-800/50 p-1 rounded-xl">
-                <button id="tab-camera" class="flex-1 py-2 px-4 rounded-lg bg-blue-600 text-white font-medium transition-all flex items-center justify-center gap-2">
-                    <i data-lucide="camera" class="w-5 h-5"></i>
-                    الكاميرا
-                </button>
-                <button id="tab-file" class="flex-1 py-2 px-4 rounded-lg text-slate-400 font-medium transition-all flex items-center justify-center gap-2">
-                    <i data-lucide="image" class="w-5 h-5"></i>
-                    رفع صورة
-                </button>
-            </div>
-
-            <!-- Camera Section -->
-            <div id="camera-section" class="space-y-4">
-                <div class="scanner-box bg-black aspect-square md:aspect-video flex items-center justify-center">
-                    <div id="reader" class="w-full h-full"></div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-3">
-                    <button id="switch-camera" class="flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 py-3 rounded-xl transition-colors">
-                        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
-                        تبديل الكاميرا
-                    </button>
-                    <button id="reload-camera" class="flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-600 py-3 rounded-xl transition-colors">
-                        <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
-                        إعادة تحميل
-                    </button>
+        <main class="scanner-card">
+            <div id="reader"></div>
+            <div class="scan-overlay" id="overlay">
+                <div class="scan-frame">
+                    <div class="corner tl"></div>
+                    <div class="corner tr"></div>
+                    <div class="corner bl"></div>
+                    <div class="corner br"></div>
+                    <div class="scan-laser"></div>
                 </div>
             </div>
-
-            <!-- File Section -->
-            <div id="file-section" class="hidden space-y-4">
-                <div id="drop-zone" class="border-2 border-dashed border-slate-600 rounded-2xl p-10 text-center hover:border-blue-500 transition-colors cursor-pointer bg-slate-800/30">
-                    <input type="file" id="file-input" accept="image/*" class="hidden">
-                    <i data-lucide="upload-cloud" class="w-12 h-12 mx-auto mb-4 text-slate-500"></i>
-                    <p class="text-slate-300 font-medium">اضغط هنا أو اسحب الصورة للمسح</p>
-                    <p class="text-slate-500 text-xs mt-2">يدعم PNG, JPG, JPEG</p>
-                </div>
-                <canvas id="file-canvas" class="hidden"></canvas>
-            </div>
-
-            <!-- Result Section -->
-            <div id="result-container" class="hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div class="bg-slate-800/80 rounded-2xl p-5 border border-blue-500/30">
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="text-blue-400 text-sm font-bold flex items-center gap-1">
-                            <i data-lucide="check-circle" class="w-4 h-4"></i>
-                            تم العثور على نتيجة:
-                        </span>
-                        <button id="copy-btn" class="text-slate-400 hover:text-white transition-colors p-1">
-                            <i data-lucide="copy" class="w-5 h-5"></i>
-                        </button>
-                    </div>
-                    <div id="result-text" class="text-lg break-all font-mono bg-black/20 p-3 rounded-lg mb-4"></div>
-                    
-                    <div class="flex flex-col gap-2">
-                        <a id="open-link" href="#" target="_blank" class="hidden btn-primary text-center py-3 rounded-xl font-bold flex items-center justify-center gap-2">
-                            <i data-lucide="external-link" class="w-5 h-5"></i>
-                            فتح الرابط
-                        </a>
-                        <button id="reset-btn" class="w-full bg-slate-700 hover:bg-slate-600 py-3 rounded-xl transition-colors flex items-center justify-center gap-2">
-                            <i data-lucide="trash-2" class="w-5 h-5"></i>
-                            مسح جديد
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chrome Button -->
-            <button id="open-chrome" class="w-full border border-slate-600 hover:bg-slate-800 py-3 rounded-xl transition-colors flex items-center justify-center gap-2 text-slate-300">
-                <i data-lucide="chrome" class="w-5 h-5"></i>
-                فتح في Chrome
-            </button>
-
         </main>
 
-        <!-- Footer -->
-        <footer class="mt-8 text-center text-slate-500 text-sm">
-            <p>&copy; 2024 ALHYTHAM QR. جميع الحقوق محفوظة.</p>
+        <div class="main-controls">
+            <button class="icon-btn" id="torch-btn" title="Flashlight">
+                <i class="fas fa-bolt"></i>
+            </button>
+            <button class="icon-btn" id="flip-btn" title="Flip Camera">
+                <i class="fas fa-camera-rotate"></i>
+            </button>
+            <label for="upload-input" class="upload-btn">
+                <i class="fas fa-image"></i>
+                مسح من الاستوديو
+            </label>
+            <input type="file" id="upload-input" accept="image/*">
+            <button class="icon-btn" id="chrome-btn" title="Open in Chrome">
+                <i class="fab fa-chrome"></i>
+            </button>
+        </div>
+
+        <section class="result-panel" id="result-panel">
+            <div class="result-header">
+                <span class="type-badge" id="data-type">Text</span>
+                <span style="font-size: 0.8rem; color: var(--text-dim);" id="data-time">Now</span>
+            </div>
+            <div class="result-content" id="data-text">...</div>
+            <div class="action-grid">
+                <button class="action-btn" id="copy-btn">
+                    <i class="fas fa-copy"></i> نسخ
+                </button>
+                <button class="action-btn primary" id="smart-action">
+                    <i class="fas fa-external-link-alt"></i> فتح
+                </button>
+            </div>
+        </section>
+
+        <section class="history-section">
+            <div class="section-title">
+                <span>سجل العمليات</span>
+                <span id="clear-history" style="cursor: pointer; color: var(--danger); font-size: 0.8rem;">مسح الكل</span>
+            </div>
+            <div class="history-list" id="history-list">
+                <!-- History Items -->
+            </div>
+        </section>
+
+        <footer style="text-align: center; color: var(--text-dim); font-size: 0.75rem; margin-top: 20px;">
+            &copy; 2024 <span style="color: var(--primary);">ALHYTHAM</span> - Powered by Haitham Professional
         </footer>
     </div>
 
+    <div id="toast">تم النسخ بنجاح</div>
+    <audio id="beep-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+
     <script>
-        // Initialize Lucide Icons
-        lucide.createIcons();
-
-        // Elements
-        const tabCamera = document.getElementById('tab-camera');
-        const tabFile = document.getElementById('tab-file');
-        const cameraSection = document.getElementById('camera-section');
-        const fileSection = document.getElementById('file-section');
-        const fileInput = document.getElementById('file-input');
-        const dropZone = document.getElementById('drop-zone');
-        const resultContainer = document.getElementById('result-container');
-        const resultText = document.getElementById('result-text');
-        const openLink = document.getElementById('open-link');
-        const copyBtn = document.getElementById('copy-btn');
-        const resetBtn = document.getElementById('reset-btn');
-        const switchCameraBtn = document.getElementById('switch-camera');
-        const reloadCameraBtn = document.getElementById('reload-camera');
-        const openChromeBtn = document.getElementById('open-chrome');
-
         let html5QrCode;
-        let currentFacingMode = "environment";
+        let isTorchOn = false;
+        let facingMode = "environment";
+        const historyKey = "ALHYTHAM_QR_HISTORY";
 
-        // Tab Switching
-        tabCamera.addEventListener('click', () => {
-            tabCamera.classList.add('bg-blue-600', 'text-white');
-            tabCamera.classList.remove('text-slate-400');
-            tabFile.classList.remove('bg-blue-600', 'text-white');
-            tabFile.classList.add('text-slate-400');
-            cameraSection.classList.remove('hidden');
-            fileSection.classList.add('hidden');
-            startCamera();
+        // UI Elements
+        const readerEl = document.getElementById('reader');
+        const overlay = document.getElementById('overlay');
+        const resultPanel = document.getElementById('result-panel');
+        const dataText = document.getElementById('data-text');
+        const dataType = document.getElementById('data-type');
+        const smartAction = document.getElementById('smart-action');
+        const historyList = document.getElementById('history-list');
+        const toast = document.getElementById('toast');
+        const beep = document.getElementById('beep-sound');
+
+        // Initialize App
+        window.addEventListener('load', () => {
+            loadHistory();
+            startScanner();
         });
 
-        tabFile.addEventListener('click', () => {
-            tabFile.classList.add('bg-blue-600', 'text-white');
-            tabFile.classList.remove('text-slate-400');
-            tabCamera.classList.remove('bg-blue-600', 'text-white');
-            tabCamera.classList.add('text-slate-400');
-            fileSection.classList.remove('hidden');
-            cameraSection.classList.add('hidden');
-            stopCamera();
-        });
-
-        // Camera Logic
-        function startCamera() {
+        // Scanner Logic
+        function startScanner() {
             if (html5QrCode) {
-                html5QrCode.stop().then(() => {
-                    initCamera();
-                }).catch(() => {
-                    initCamera();
-                });
+                html5QrCode.stop().then(() => initScanner());
             } else {
-                initCamera();
+                initScanner();
             }
         }
 
-        function initCamera() {
+        function initScanner() {
             html5QrCode = new Html5Qrcode("reader");
-            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-            
-            html5QrCode.start(
-                { facingMode: currentFacingMode },
-                config,
-                (decodedText) => {
-                    handleResult(decodedText);
-                    html5QrCode.pause();
-                },
-                (errorMessage) => {
-                    // Ignore errors
-                }
-            ).catch(err => {
-                console.error("Error starting camera", err);
+            const config = { 
+                fps: 20, 
+                qrbox: (w, h) => { return { width: w * 0.7, height: h * 0.7 } },
+                aspectRatio: 1.0
+            };
+
+            html5QrCode.start({ facingMode }, config, (text) => {
+                onResultFound(text);
+            }).catch(err => {
+                overlay.innerHTML = `<div style="padding: 20px; text-align: center; color: #ffbcbc;">يرجى السماح بالوصول للكاميرا</div>`;
             });
         }
 
-        function stopCamera() {
-            if (html5QrCode && html5QrCode.isScanning) {
-                html5QrCode.stop();
+        function onResultFound(text) {
+            playBeep();
+            vibrate();
+            processResult(text);
+            addToHistory(text);
+        }
+
+        function processResult(text) {
+            resultPanel.style.display = 'block';
+            dataText.innerText = text;
+            
+            // Smart Parsing
+            if (text.startsWith("http")) {
+                dataType.innerText = "Link";
+                setSmartAction("فتح الرابط", "fas fa-globe", () => window.open(text, '_blank'));
+            } else if (text.startsWith("WIFI:")) {
+                dataType.innerText = "WiFi";
+                const ssid = text.match(/S:([^;]+)/)?.[1] || "Network";
+                setSmartAction("اتصال بـ " + ssid, "fas fa-wifi", () => alert("قم بنسخ كلمة المرور والاتصال بالشبكة يدوياً"));
+            } else if (text.startsWith("TEL:")) {
+                dataType.innerText = "Phone";
+                const num = text.replace("TEL:", "");
+                setSmartAction("اتصال", "fas fa-phone", () => window.location.href = text);
+            } else if (text.startsWith("SMSTO:")) {
+                dataType.innerText = "SMS";
+                setSmartAction("إرسال رسالة", "fas fa-comment", () => window.location.href = text.replace("SMSTO:", "sms:"));
+            } else {
+                dataType.innerText = "Text";
+                setSmartAction("بحث في جوجل", "fab fa-google", () => window.open(`https://google.com/search?q=${text}`, '_blank'));
             }
         }
 
-        switchCameraBtn.addEventListener('click', () => {
-            currentFacingMode = currentFacingMode === "environment" ? "user" : "environment";
-            startCamera();
-        });
+        function setSmartAction(label, icon, callback) {
+            smartAction.innerHTML = `<i class="${icon}"></i> ${label}`;
+            smartAction.onclick = callback;
+        }
 
-        reloadCameraBtn.addEventListener('click', () => {
-            startCamera();
-        });
+        // History Management
+        function addToHistory(text) {
+            let history = JSON.parse(localStorage.getItem(historyKey) || "[]");
+            const entry = {
+                text,
+                time: new Date().toLocaleString('ar-EG'),
+                id: Date.now()
+            };
+            history.unshift(entry);
+            history = history.slice(0, 20); // Keep 20
+            localStorage.setItem(historyKey, JSON.stringify(history));
+            renderHistory();
+        }
 
-        // File Logic
-        dropZone.addEventListener('click', () => fileInput.click());
-        
-        fileInput.addEventListener('change', e => {
+        function loadHistory() {
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem(historyKey) || "[]");
+            historyList.innerHTML = history.length ? "" : '<p style="text-align: center; color: var(--text-dim); font-size: 0.8rem; padding: 20px;">لا يوجد سجل متاح</p>';
+            
+            history.forEach(item => {
+                const icon = item.text.startsWith("http") ? "fas fa-link" : "fas fa-font";
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <div class="history-icon"><i class="${icon}"></i></div>
+                    <div class="history-info">
+                        <span class="history-text">${item.text}</span>
+                        <span class="history-time">${item.time}</span>
+                    </div>
+                `;
+                div.onclick = () => processResult(item.text);
+                historyList.appendChild(div);
+            });
+        }
+
+        // Controls
+        document.getElementById('flip-btn').onclick = () => {
+            facingMode = facingMode === "environment" ? "user" : "environment";
+            startScanner();
+        };
+
+        document.getElementById('torch-btn').onclick = function() {
+            if (html5QrCode && html5QrCode.isScanning) {
+                isTorchOn = !isTorchOn;
+                html5QrCode.applyVideoConstraints({
+                    advanced: [{ torch: isTorchOn }]
+                }).then(() => {
+                    this.classList.toggle('active', isTorchOn);
+                }).catch(() => {
+                    showToast("الفلاش غير مدعوم في هذا الوضع");
+                });
+            }
+        };
+
+        document.getElementById('copy-btn').onclick = () => {
+            navigator.clipboard.writeText(dataText.innerText);
+            showToast("تم النسخ!");
+        };
+
+        document.getElementById('chrome-btn').onclick = () => {
+            const url = window.location.href.split('://')[1];
+            window.location.href = `intent://${url}#Intent;scheme=https;package=com.android.chrome;end`;
+        };
+
+        document.getElementById('clear-history').onclick = () => {
+            if (confirm("هل أنت متأكد من مسح جميع العمليات؟")) {
+                localStorage.removeItem(historyKey);
+                renderHistory();
+            }
+        };
+
+        // Image Upload
+        document.getElementById('upload-input').onchange = (e) => {
             const file = e.target.files[0];
-            if (file) scanFile(file);
-        });
-
-        function scanFile(file) {
+            if (!file) return;
+            
             const reader = new FileReader();
-            reader.onload = (e) => {
+            reader.onload = (event) => {
                 const img = new Image();
                 img.onload = () => {
-                    const canvas = document.getElementById('file-canvas');
+                    const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     canvas.width = img.width;
                     canvas.height = img.height;
                     ctx.drawImage(img, 0, 0);
                     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                     const code = jsQR(imageData.data, imageData.width, imageData.height);
-                    if (code) {
-                        handleResult(code.data);
-                    } else {
-                        alert("لم يتم العثور على QR Code في هذه الصورة.");
-                    }
+                    if (code) onResultFound(code.data);
+                    else alert("لم يتم العثور على رمز QR");
                 };
-                img.src = e.target.result;
+                img.src = event.target.result;
             };
             reader.readAsDataURL(file);
+        };
+
+        // Helpers
+        function showToast(msg) {
+            toast.innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
         }
 
-        // Result Handling
-        function handleResult(text) {
-            resultText.innerText = text;
-            resultContainer.classList.remove('hidden');
-            
-            // Check if URL
-            try {
-                const url = new URL(text);
-                openLink.href = text;
-                openLink.classList.remove('hidden');
-            } catch (_) {
-                openLink.classList.add('hidden');
-            }
-
-            // Scroll to result
-            resultContainer.scrollIntoView({ behavior: 'smooth' });
+        function playBeep() {
+            beep.currentTime = 0;
+            beep.play().catch(() => {}); // User interaction might be needed
         }
 
-        resetBtn.addEventListener('click', () => {
-            resultContainer.classList.add('hidden');
-            if (html5QrCode && html5QrCode.isScanning) {
-                html5QrCode.resume();
-            } else if (!cameraSection.classList.contains('hidden')) {
-                startCamera();
-            }
-        });
-
-        copyBtn.addEventListener('click', () => {
-            navigator.clipboard.writeText(resultText.innerText).then(() => {
-                const originalIcon = copyBtn.innerHTML;
-                copyBtn.innerHTML = '<i data-lucide="check" class="w-5 h-5 text-green-500"></i>';
-                lucide.createIcons();
-                setTimeout(() => {
-                    copyBtn.innerHTML = originalIcon;
-                    lucide.createIcons();
-                }, 2000);
-            });
-        });
-
-        // Open in Chrome
-        openChromeBtn.addEventListener('click', () => {
-            const url = window.location.href;
-            if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
-                window.location.href = `googlechrome://${url.replace(/^https?:\/\//, '')}`;
-            } else {
-                window.location.href = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end`;
-            }
-        });
-
-        // Start camera on load
-        window.addEventListener('load', startCamera);
+        function vibrate() {
+            if (navigator.vibrate) navigator.vibrate(200);
+        }
     </script>
 </body>
 </html>
