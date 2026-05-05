@@ -4,629 +4,268 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ALHYTHAM QR - ماسح رمز الاستجابة السريعة</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- HTML5 QR Code Library -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <!-- jsQR Library for image scanning -->
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #a855f7;
-            --bg-dark: #0f172a;
-            --card-bg: #1e293b;
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent: #22d3ee;
-            --success: #10b981;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Tajawal', sans-serif;
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+        
         body {
-            background-color: var(--bg-dark);
-            background-image: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent),
-                              radial-gradient(circle at bottom left, rgba(168, 85, 247, 0.15), transparent);
-            color: var(--text-light);
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4c1d95 100%);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            overflow-x: hidden;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 30px;
-            animation: fadeInDown 0.8s ease-out;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 10px;
-        }
-
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #fff, #cbd5e1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 1rem;
-        }
-
-        main {
-            width: 100%;
-            max-width: 600px;
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            margin-bottom: 20px;
-        }
-
-        .tabs {
-            display: flex;
-            background: rgba(15, 23, 42, 0.5);
-            padding: 6px;
-            border-radius: 14px;
-            margin-bottom: 20px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-radius: 10px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-
-        .scanner-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            background: #000;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 2px solid rgba(99, 102, 241, 0.2);
-        }
-
-        #reader {
-            width: 100% !important;
-            height: 100% !important;
-            border: none !important;
-        }
-
-        #reader video {
-            object-fit: cover !important;
-            /* تحسين جودة الصورة */
-            image-rendering: -webkit-optimize-contrast;
-            image-rendering: crisp-edges;
-        }
-
-        .upload-area {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 300px;
-            border: 2px dashed rgba(99, 102, 241, 0.3);
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .upload-area:hover {
-            border-color: var(--primary);
-            background: rgba(99, 102, 241, 0.05);
-        }
-
-        .upload-area i {
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px 15px;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            min-width: 120px;
-            font-size: 0.9rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
         }
 
-        .btn-secondary {
+        .glass-card {
             background: rgba(255, 255, 255, 0.05);
-            color: var(--text-light);
+            backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
         }
 
-        .btn-accent {
-            background: rgba(34, 211, 238, 0.1);
-            color: var(--accent);
-            border: 1px solid rgba(34, 211, 238, 0.2);
+        .scanner-box {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            border: 2px solid rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.1);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .result-card {
-            display: none;
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 16px;
-            padding: 20px;
-            margin-top: 20px;
-            animation: slideIn 0.5s ease-out;
-        }
-
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .result-label {
-            font-weight: 700;
-            color: var(--success);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        #result-text {
-            word-break: break-all;
-            font-size: 1.1rem;
-            line-height: 1.5;
-            margin-bottom: 15px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .result-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        footer {
-            margin-top: auto;
-            padding: 40px 20px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        /* Animations */
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        /* Scan line animation */
-        .scanner-container::after {
-            content: "";
+        .scanner-line {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 2px;
-            background: var(--accent);
-            box-shadow: 0 0 15px var(--accent);
-            animation: scan 3s infinite linear;
+            background: #8b5cf6;
+            box-shadow: 0 0 15px #8b5cf6;
+            animation: scan 2s linear infinite;
             z-index: 10;
-            display: none;
-        }
-
-        .scanning.scanner-container::after {
-            display: block;
         }
 
         @keyframes scan {
             0% { top: 0; }
-            50% { top: 100%; }
-            100% { top: 0; }
+            100% { top: 100%; }
         }
 
-        canvas#qr-canvas {
-            display: none;
+        .btn-primary {
+            background: linear-gradient(90deg, #6366f1 0%, #a855f7 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+        }
+
+        #reader__dashboard_section_csr button {
+            background: #6366f1 !important;
+            color: white !important;
+            border: none !important;
+            padding: 8px 16px !important;
+            border-radius: 8px !important;
+            cursor: pointer !important;
+        }
+
+        #reader video {
+            object-fit: cover !important;
+            border-radius: 1rem !important;
         }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-8">
+    <div class="max-w-2xl mx-auto">
+        <!-- Header -->
+        <header class="text-center mb-8 animate-fade-in">
+            <h1 class="text-4xl md:text-6xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                ALHYTHAM QR
+            </h1>
+            <p class="text-gray-400 text-lg">الماسح الضوئي الاحترافي للأكواد</p>
+        </header>
 
-    <header>
-        <div class="logo-container">
-            <div class="logo-icon">
-                <i data-lucide="qr-code" color="white"></i>
-            </div>
-            <h1>ALHYTHAM QR</h1>
-        </div>
-        <p class="subtitle">مسح ضوئي فائق الدقة، سريع، واحترافي</p>
-    </header>
-
-    <main>
-        <div class="card">
-            <div class="tabs">
-                <button class="tab-btn active" id="tab-camera" onclick="switchTab('camera')">
-                    <i data-lucide="camera" size="18"></i>
-                    الكاميرا
+        <!-- Main Card -->
+        <div class="glass-card p-6 shadow-2xl">
+            <!-- Controls Top -->
+            <div class="flex flex-wrap gap-3 justify-center mb-6">
+                <button onclick="reloadCamera()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors border border-gray-600">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>إعادة تحميل الكاميرا</span>
                 </button>
-                <button class="tab-btn" id="tab-upload" onclick="switchTab('upload')">
-                    <i data-lucide="image" size="18"></i>
-                    رفع صورة
+                <button onclick="openInChrome()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 transition-colors border border-gray-600">
+                    <i class="fab fa-chrome text-blue-400"></i>
+                    <span>فتح في Chrome</span>
                 </button>
             </div>
 
-            <div id="camera-section">
-                <div id="scanner-wrapper" class="scanner-container scanning">
-                    <div id="reader"></div>
+            <!-- Scanner Area -->
+            <div class="scanner-box bg-black mb-6 aspect-video flex items-center justify-center relative">
+                <div id="reader" class="w-full h-full"></div>
+                <div id="scanLine" class="scanner-line hidden"></div>
+                <div id="placeholder" class="absolute inset-0 flex flex-col items-center justify-center text-gray-500">
+                    <i class="fas fa-camera text-5xl mb-4"></i>
+                    <p>جاري تشغيل الكاميرا...</p>
+                </div>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-400 mb-2 text-center">أو امسح من صورة</label>
+                <div class="flex items-center justify-center w-full">
+                    <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-600 border-dashed rounded-xl cursor-pointer bg-gray-800/50 hover:bg-gray-800 transition-all">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-purple-400 mb-2"></i>
+                            <p class="text-sm text-gray-400">اضغط لرفع صورة QR Code</p>
+                        </div>
+                        <input type="file" id="fileInput" class="hidden" accept="image/*" onchange="scanImage(this)" />
+                    </label>
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div id="resultContainer" class="hidden space-y-4 animate-in fade-in slide-in-from-bottom duration-500">
+                <div class="p-4 bg-gray-900/80 rounded-xl border border-purple-500/30">
+                    <label class="block text-xs font-bold text-purple-400 uppercase mb-2">النتيجة:</label>
+                    <div id="resultText" class="text-lg break-all font-mono"></div>
                 </div>
                 
-                <div class="controls">
-                    <button class="btn btn-secondary" onclick="reloadCamera()">
-                        <i data-lucide="refresh-cw" size="18"></i>
-                        إعادة تحميل
+                <div class="flex gap-3">
+                    <button onclick="copyResult()" class="flex-1 btn-primary py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+                        <i class="fas fa-copy"></i>
+                        نسخ النتيجة
                     </button>
-                    <button class="btn btn-secondary" onclick="switchCamera()">
-                        <i data-lucide="flip-horizontal" size="18"></i>
-                        تبديل
-                    </button>
-                    <button class="btn btn-accent" id="torch-btn" onclick="toggleTorch()" disabled>
-                        <i data-lucide="zap" size="18"></i>
-                        الفلاش
-                    </button>
-                </div>
-            </div>
-
-            <div id="upload-section" style="display: none;">
-                <div class="upload-area" onclick="document.getElementById('file-input').click()">
-                    <i data-lucide="upload-cloud" size="48"></i>
-                    <p>اضغط هنا لاختيار صورة من جهازك</p>
-                    <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">يدعم PNG, JPG, JPEG</span>
-                </div>
-                <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-                <canvas id="qr-canvas"></canvas>
-            </div>
-
-            <div id="result-container" class="result-card">
-                <div class="result-header">
-                    <span class="result-label">
-                        <i data-lucide="check-circle" size="18"></i>
-                        تم استخراج البيانات بنجاح:
-                    </span>
-                </div>
-                <div id="result-text"></div>
-                <div class="result-actions">
-                    <button class="btn btn-primary" onclick="copyResult()">
-                        <i data-lucide="copy" size="18"></i>
-                        نسخ
-                    </button>
-                    <a id="open-link-btn" href="#" target="_blank" class="btn btn-secondary" style="display: none;">
-                        <i data-lucide="external-link" size="18"></i>
+                    <a id="openLinkBtn" target="_blank" class="hidden flex-1 bg-green-600 hover:bg-green-500 py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors">
+                        <i class="fas fa-external-link-alt"></i>
                         فتح الرابط
                     </a>
                 </div>
             </div>
-
-            <div class="controls" style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
-                <button class="btn btn-secondary" onclick="openInChrome()" style="width: 100%; flex: none;">
-                    <i data-lucide="chrome" size="18"></i>
-                    Open in Chrome
-                </button>
-            </div>
         </div>
-    </main>
 
-    <footer>
-        <p>&copy; 2026 ALHYTHAM QR. جميع الحقوق محفوظة.</p>
-    </footer>
+        <!-- Footer Info -->
+        <footer class="mt-8 text-center text-gray-500 text-sm">
+            <p>&copy; 2026 ALHYTHAM QR - جميع الحقوق محفوظة</p>
+        </footer>
+    </div>
+
+    <!-- Hidden Canvas for Image Processing -->
+    <canvas id="hiddenCanvas" class="hidden"></canvas>
 
     <script>
-        // Initialize Icons
-        lucide.createIcons();
-
         let html5QrCode;
-        let currentFacingMode = "environment";
-        let isTorchOn = false;
-        const resultContainer = document.getElementById('result-container');
-        const resultText = document.getElementById('result-text');
-        const openLinkBtn = document.getElementById('open-link-btn');
-        const torchBtn = document.getElementById('torch-btn');
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
-        // Tab Switching
-        function switchTab(tab) {
-            const camBtn = document.getElementById('tab-camera');
-            const uploadBtn = document.getElementById('tab-upload');
-            const camSection = document.getElementById('camera-section');
-            const uploadSection = document.getElementById('upload-section');
-
-            if (tab === 'camera') {
-                camBtn.classList.add('active');
-                uploadBtn.classList.remove('active');
-                camSection.style.display = 'block';
-                uploadSection.style.display = 'none';
-                startCamera();
-            } else {
-                uploadBtn.classList.add('active');
-                camBtn.classList.remove('active');
-                uploadSection.style.display = 'block';
-                camSection.style.display = 'none';
-                stopCamera();
-            }
-        }
-
-        // Camera Logic
-        async function startCamera() {
-            if (html5QrCode) {
-                try {
-                    await html5QrCode.stop();
-                } catch (e) {}
-            }
-            
-            html5QrCode = new Html5Qrcode("reader");
-            
-            // إعدادات الكاميرا الفائقة
-            const config = { 
-                fps: 25, 
-                qrbox: (viewWidth, viewHeight) => {
-                    let size = Math.min(viewWidth, viewHeight) * 0.7;
-                    return { width: size, height: size };
-                },
-                aspectRatio: 1.0,
-                videoConstraints: {
-                    facingMode: currentFacingMode,
-                    width: { ideal: 1920 }, // طلب أعلى دقة ممكنة
-                    height: { ideal: 1080 },
-                    frameRate: { ideal: 30 },
-                    // تحسينات إضافية لبعض المتصفحات
-                    whiteBalanceMode: "continuous",
-                    exposureMode: "continuous",
-                    focusMode: "continuous"
-                }
-            };
-            
+        async function initCamera() {
             try {
-                await html5QrCode.start(
-                    { facingMode: currentFacingMode }, 
-                    config, 
-                    onScanSuccess
-                );
-                document.getElementById('scanner-wrapper').classList.add('scanning');
+                if (html5QrCode) {
+                    await html5QrCode.stop();
+                }
                 
-                // التحقق من دعم الفلاش
-                setTimeout(() => {
-                    checkTorchSupport();
-                }, 1000);
+                html5QrCode = new Html5Qrcode("reader");
+                const cameras = await Html5Qrcode.getCameras();
+                
+                if (cameras && cameras.length > 0) {
+                    document.getElementById('placeholder').classList.add('hidden');
+                    document.getElementById('scanLine').classList.remove('hidden');
+                    
+                    // البحث عن الكاميرا الخلفية
+                    let backCamera = cameras.find(c => c.label.toLowerCase().includes('back') || c.label.toLowerCase().includes('rear'));
+                    const cameraId = backCamera ? backCamera.id : cameras[0].id;
 
-            } catch (err) {
-                console.error("Error starting camera", err);
-                alert("تعذر الوصول إلى الكاميرا. يرجى التأكد من منح الصلاحيات واستخدام HTTPS.");
-            }
-        }
-
-        async function stopCamera() {
-            if (html5QrCode && html5QrCode.isScanning) {
-                await html5QrCode.stop();
-                document.getElementById('scanner-wrapper').classList.remove('scanning');
-                torchBtn.disabled = true;
-            }
-        }
-
-        function checkTorchSupport() {
-            if (html5QrCode && html5QrCode.isScanning) {
-                const capabilities = html5QrCode.getRunningTrackCapabilities();
-                if (capabilities.torch) {
-                    torchBtn.disabled = false;
+                    await html5QrCode.start(
+                        cameraId, 
+                        config,
+                        (decodedText) => {
+                            handleResult(decodedText);
+                        },
+                        (errorMessage) => {
+                            // تجاهل أخطاء المسح المستمرة
+                        }
+                    );
                 } else {
-                    torchBtn.disabled = true;
+                    alert("لم يتم العثور على كاميرا");
                 }
+            } catch (err) {
+                console.error("Camera Error:", err);
+                document.getElementById('placeholder').innerHTML = `
+                    <i class="fas fa-exclamation-triangle text-red-500 text-5xl mb-4"></i>
+                    <p class="text-red-400">خطأ في تشغيل الكاميرا: ${err.message}</p>
+                `;
             }
-        }
-
-        async function toggleTorch() {
-            if (html5QrCode && html5QrCode.isScanning) {
-                isTorchOn = !isTorchOn;
-                try {
-                    await html5QrCode.applyVideoConstraints({
-                        advanced: [{ torch: isTorchOn }]
-                    });
-                    torchBtn.style.background = isTorchOn ? 'var(--accent)' : 'rgba(34, 211, 238, 0.1)';
-                    torchBtn.style.color = isTorchOn ? 'white' : 'var(--accent)';
-                } catch (err) {
-                    console.error("Torch error", err);
-                }
-            }
-        }
-
-        function onScanSuccess(decodedText, decodedResult) {
-            handleResult(decodedText);
-            if (navigator.vibrate) navigator.vibrate(150);
         }
 
         function handleResult(text) {
-            resultContainer.style.display = 'block';
+            const resultContainer = document.getElementById('resultContainer');
+            const resultText = document.getElementById('resultText');
+            const openLinkBtn = document.getElementById('openLinkBtn');
+
+            resultContainer.classList.remove('hidden');
             resultText.innerText = text;
-            
-            if (text.startsWith('http://') || text.startsWith('https://')) {
-                openLinkBtn.style.display = 'flex';
-                openLinkBtn.href = text;
+
+            // التحقق إذا كان رابط
+            const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+            if (urlPattern.test(text)) {
+                openLinkBtn.href = text.startsWith('http') ? text : 'https://' + text;
+                openLinkBtn.classList.remove('hidden');
             } else {
-                openLinkBtn.style.display = 'none';
+                openLinkBtn.classList.add('hidden');
             }
-            
-            resultContainer.scrollIntoView({ behavior: 'smooth' });
+
+            // الاهتزاز إذا كان متاحاً
+            if (navigator.vibrate) {
+                navigator.vibrate(200);
+            }
+        }
+
+        function copyResult() {
+            const text = document.getElementById('resultText').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("تم النسخ بنجاح!");
+            });
         }
 
         function reloadCamera() {
-            startCamera();
-        }
-
-        function switchCamera() {
-            currentFacingMode = (currentFacingMode === "environment") ? "user" : "environment";
-            startCamera();
-        }
-
-        // Fixed Image Scanning Logic
-        async function handleImageUpload(event) {
-            const file = event.target.result || event.target.files[0];
-            if (!file) return;
-
-            // استخدام مكتبة html5-qrcode لمسح الملف مباشرة لضمان أفضل توافق
-            const html5QrCodeScanner = new Html5Qrcode("reader"); // مؤقت للمسح من ملف
-            try {
-                const decodedText = await html5QrCodeScanner.scanFile(file, true);
-                handleResult(decodedText);
-            } catch (err) {
-                // محاولة ثانية باستخدام jsQR إذا فشلت الأولى
-                scanWithJsQR(file);
-            }
-        }
-
-        function scanWithJsQR(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.getElementById('qr-canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0, img.width, img.height);
-                    
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                        inversionAttempts: "dontInvert",
-                    });
-                    
-                    if (code) {
-                        handleResult(code.data);
-                    } else {
-                        alert("لم يتم العثور على رمز QR. جرب صورة أكثر وضوحاً.");
-                    }
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Utilities
-        function copyResult() {
-            const text = resultText.innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                const copyBtn = document.querySelector('.result-actions .btn-primary');
-                const originalContent = copyBtn.innerHTML;
-                copyBtn.innerHTML = '<i data-lucide="check" size="18"></i> تم النسخ';
-                lucide.createIcons();
-                setTimeout(() => {
-                    copyBtn.innerHTML = originalContent;
-                    lucide.createIcons();
-                }, 2000);
-            });
+            initCamera();
         }
 
         function openInChrome() {
             const url = window.location.href;
             if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
-                window.location.href = `googlechrome://${url.split('://')[1]}`;
+                window.location.href = `googlechromes://${url.replace(/^https?:\/\//, '')}`;
             } else {
-                window.location.href = `intent://${url.split('://')[1]}#Intent;scheme=https;package=com.android.chrome;end`;
+                window.location.href = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end`;
             }
         }
 
-        window.addEventListener('load', () => {
-            startCamera();
-        });
+        function scanImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.getElementById('hiddenCanvas');
+                        const ctx = canvas.getContext('2d');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
+                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const code = jsQR(imageData.data, imageData.width, imageData.height);
+                        
+                        if (code) {
+                            handleResult(code.data);
+                        } else {
+                            alert("لم يتم العثور على رمز QR في هذه الصورة");
+                        }
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // بدء التشغيل
+        window.addEventListener('DOMContentLoaded', initCamera);
     </script>
 </body>
 </html>
