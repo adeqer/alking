@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ALHYTHAM QR - ماسح الأكواد الاحترافي</title>
+    <title>ALHYTHAM QR</title>
     <style>
         :root {
             --primary: #00d4ff;
             --secondary: #0099ff;
             --accent: #00ff88;
             --danger: #ff3366;
+            --warning: #ffa500;
             --bg-dark: #0a0e27;
             --bg-card: #1a1f3a;
             --bg-light: #2a2f4a;
@@ -30,8 +31,6 @@
             background: linear-gradient(135deg, var(--bg-dark) 0%, #1a0033 50%, var(--bg-dark) 100%);
             color: var(--text-primary);
             display: flex;
-            align-items: center;
-            justify-content: center;
             min-height: 100vh;
             padding: 15px;
             overflow-x: hidden;
@@ -39,7 +38,11 @@
 
         .main-container {
             width: 100%;
-            max-width: 700px;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
             animation: slideUp 0.6s ease-out;
         }
 
@@ -101,6 +104,7 @@
             justify-content: center;
             position: relative;
             z-index: 1;
+            flex-wrap: wrap;
         }
 
         .mode-btn {
@@ -114,7 +118,7 @@
             transition: all 0.3s ease;
             font-size: 0.9rem;
             flex: 1;
-            max-width: 150px;
+            min-width: 120px;
         }
 
         .mode-btn.active {
@@ -289,6 +293,7 @@
             text-align: center;
             position: relative;
             z-index: 1;
+            word-break: break-all;
         }
 
         .result-box.success { background: rgba(0, 255, 136, 0.1); border-color: var(--accent); }
@@ -299,6 +304,10 @@
             text-decoration: none;
             word-break: break-all;
             font-weight: 600;
+        }
+
+        .result-link:hover {
+            text-decoration: underline;
         }
 
         .footer {
@@ -337,7 +346,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 14, 39, 0.98);
+            background: rgba(10, 14, 39, 0.95);
             z-index: 2000;
             display: none;
             flex-direction: column;
@@ -375,47 +384,265 @@
             line-height: 1.6;
         }
 
+        /* نظام السجل */
+        .history-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .history-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .history-container {
+            max-height: 600px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .history-item {
+            background: rgba(0, 212, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .history-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: var(--primary);
+            transform: translateX(-5px);
+        }
+
+        .history-item-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .history-item-text {
+            color: var(--text-primary);
+            word-break: break-all;
+            margin-bottom: 8px;
+            max-height: 50px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .history-item-type {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .history-item-type.link {
+            background: rgba(0, 212, 255, 0.2);
+            color: var(--primary);
+        }
+
+        .history-item-type.text {
+            background: rgba(255, 165, 0, 0.2);
+            color: var(--warning);
+        }
+
+        .history-item-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .history-btn {
+            flex: 1;
+            padding: 5px 8px;
+            border: 1px solid var(--border-color);
+            background: rgba(0, 212, 255, 0.05);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .history-btn:hover {
+            background: rgba(0, 212, 255, 0.15);
+            color: var(--primary);
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .history-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .history-btn-full {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            background: rgba(0, 212, 255, 0.05);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .history-btn-full:hover {
+            background: rgba(0, 212, 255, 0.15);
+            color: var(--primary);
+        }
+
+        .history-btn-full.danger:hover {
+            background: rgba(255, 51, 102, 0.15);
+            color: var(--danger);
+        }
+
+        /* نمط QR Generator */
+        .qr-generator-section {
+            margin-top: 20px;
+        }
+
+        .generator-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .generator-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 212, 255, 0.05);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .generator-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .generator-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .qr-preview {
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .qr-preview.show {
+            display: block;
+        }
+
+        /* Scrollbar Styling */
+        .history-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .history-container::-webkit-scrollbar-track {
+            background: rgba(0, 212, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .history-container::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .history-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 212, 255, 0.5);
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .history-panel {
+                order: 2;
+            }
+
+            .card:first-child {
+                order: 1;
+            }
+        }
+
         @media (max-width: 600px) {
             .card { padding: 20px; }
             .brand-title { font-size: 2.2rem; }
             .button-group { grid-template-columns: 1fr; }
+            .mode-selector { gap: 8px; }
+            .mode-btn { min-width: 100px; padding: 10px 16px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- نافذة طلب الإذن والحلول البديلة -->
+    <!-- نافذة طلب الإذن -->
     <div id="permissionOverlay" class="permission-overlay">
         <div class="permission-icon">📷</div>
-        <h2 class="permission-title">مشكلة في الوصول للكاميرا</h2>
-        <p class="permission-text" id="permissionText">
-            يبدو أن التطبيق أو المتصفح الحالي يمنع الوصول للكاميرا.
+        <h2 class="permission-title">مطلوب إذن الكاميرا</h2>
+        <p class="permission-text">
+            من فضلك اضغط على "سماح" أو "Allow" عندما يطلب المتصفح الوصول للكاميرا لكي تتمكن من مسح الأكواد.
             <br><br>
-            لحل هذه المشكلة، يرجى الضغط على الزر أدناه لفتح الصفحة في متصفح خارجي (مثل Chrome) لكي تتمكن من المسح.
+            إذا لم تظهر الرسالة، يرجى تحديث الصفحة أو التأكد من إعدادات المتصفح.
         </p>
-        <div style="display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px;">
-            <button class="btn btn-primary" onclick="openBrowserSelector()">
-                فتح في متصفح خارجي 🌐
-            </button>
-            <button class="btn btn-secondary" onclick="requestCameraPermission()">
-                محاولة مرة أخرى 🔄
-            </button>
-            <button class="btn btn-secondary" onclick="switchMode('upload')">
-                استخدام رفع الصور 📁
-            </button>
-        </div>
+        <button class="btn btn-primary" onclick="requestCameraPermission()" style="width: 200px;">
+            تفعيل الكاميرا الآن
+        </button>
     </div>
 
     <div class="main-container">
+        <!-- القسم الرئيسي -->
         <div class="card">
             <div class="header">
-                <h1 class="brand-title">ALHYTHAM QR</h1>
-                <p class="subtitle">ماسح الأكواد الاحترافي</p>
+                <h1 class="brand-title">ALHYTHAM QR PRO</h1>
+                <p class="subtitle">ماسح الأكواس الاحترافي</p>
             </div>
 
             <div class="mode-selector">
                 <button class="mode-btn active" id="btnCameraMode" onclick="switchMode('camera')">📷 الكاميرا</button>
                 <button class="mode-btn" id="btnUploadMode" onclick="switchMode('upload')">📁 رفع صورة</button>
+                <button class="mode-btn" id="btnGeneratorMode" onclick="switchMode('generator')">✨ توليد</button>
             </div>
 
             <!-- وضع الكاميرا -->
@@ -467,8 +694,39 @@
                 </div>
             </div>
 
+            <!-- وضع التوليد -->
+            <div id="generatorMode" class="content-section">
+                <div class="qr-generator-section">
+                    <div class="generator-title">توليد كود QR</div>
+                    <textarea id="generatorInput" class="generator-input" placeholder="أدخل النص أو الرابط الذي تريد تحويله إلى كود QR..."></textarea>
+                    <div class="generator-buttons">
+                        <button class="btn btn-primary" onclick="generateQR()">
+                            <span>✨</span> توليد
+                        </button>
+                        <button class="btn btn-secondary" onclick="downloadQR()">
+                            <span>⬇️</span> تحميل
+                        </button>
+                    </div>
+                    <div id="qrPreview" class="qr-preview">
+                        <img id="qrImage" src="" alt="QR Code" style="width: 100%; height: auto;">
+                    </div>
+                </div>
+            </div>
+
             <div class="footer">
-                ALHYTHAM QR © 2026 | ماسح أكواد احترافي
+                ALHYTHAM QR PRO © 2026 | ماسح أكواد احترافي
+            </div>
+        </div>
+
+        <!-- لوحة السجل -->
+        <div class="card history-panel">
+            <div class="history-title">📋 السجل</div>
+            <div id="historyContainer" class="history-container">
+                <div class="history-empty">لا توجد عمليات بعد</div>
+            </div>
+            <div class="history-controls">
+                <button class="history-btn-full" onclick="exportHistory()">📥 تصدير</button>
+                <button class="history-btn-full danger" onclick="clearHistory()">🗑️ مسح</button>
             </div>
         </div>
     </div>
@@ -476,17 +734,21 @@
     <canvas id="qrCanvas" style="display:none;"></canvas>
 
     <script src="https://unpkg.com/@zxing/library@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         let codeReader = null;
         let currentStream = null;
         let facingMode = 'environment';
         let isScanning = false;
         let lastResult = "";
+        let scanHistory = JSON.parse(localStorage.getItem('qrHistory')) || [];
+        let currentQRCode = null;
 
         function initZXing() {
             if (!codeReader) codeReader = new ZXing.BrowserQRCodeReader();
         }
 
+        // طلب إذن الكاميرا بشكل صريح
         async function requestCameraPermission() {
             document.getElementById('permissionOverlay').classList.remove('show');
             await startCamera();
@@ -501,7 +763,6 @@
                     currentStream.getTracks().forEach(track => track.stop());
                 }
 
-                // محاولة الوصول للكاميرا بأكثر من طريقة لضمان التوافق
                 const constraints = { 
                     video: { 
                         facingMode: facingMode,
@@ -511,33 +772,22 @@
                     audio: false 
                 };
 
-                // التحقق من دعم المتصفح لـ getUserMedia
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    throw new Error("المتصفح لا يدعم الوصول للكاميرا");
-                }
-
                 const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 currentStream = stream;
                 video.srcObject = stream;
                 
                 video.onloadedmetadata = () => {
-                    video.play().catch(e => {
-                        console.error("Play failed:", e);
-                        // محاولة التشغيل مرة أخرى بعد تفاعل المستخدم
-                        video.muted = true;
-                        video.play();
-                    });
+                    video.play().catch(e => console.error("Video play failed:", e));
                 };
 
                 startScanning();
                 showNotification('تم تشغيل الكاميرا بنجاح', 'success');
             } catch (error) {
                 console.error("Camera Error:", error);
-                document.getElementById('permissionOverlay').classList.add('show');
                 if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-                    document.getElementById('permissionText').innerHTML = "تم رفض إذن الكاميرا. يرجى تفعيله من إعدادات المتصفح أو فتح الصفحة في متصفح خارجي.";
+                    document.getElementById('permissionOverlay').classList.add('show');
                 } else {
-                    document.getElementById('permissionText').innerHTML = "حدث خطأ: " + error.message + "<br><br>يرجى فتح الصفحة في متصفح خارجي لضمان عمل الكاميرا.";
+                    showResult('cameraResult', 'خطأ في الكاميرا: ' + error.message, 'error');
                 }
             }
         }
@@ -565,7 +815,9 @@
                             handleQRDetected(result.text);
                             return;
                         }
-                    } catch (e) {}
+                    } catch (e) {
+                        // لم يتم العثور على كود في هذا الإطار
+                    }
                 }
                 requestAnimationFrame(scan);
             }
@@ -584,6 +836,7 @@
             stopScanning();
             facingMode = facingMode === 'environment' ? 'user' : 'environment';
             await startCamera();
+            showNotification(facingMode === 'environment' ? 'الكاميرا الخلفية' : 'الكاميرا الأمامية', 'info');
         }
 
         function reloadCamera() {
@@ -594,15 +847,18 @@
         function switchMode(mode) {
             document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.mode-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById('permissionOverlay').classList.remove('show');
             
             if (mode === 'camera') {
                 document.getElementById('cameraMode').classList.add('active');
                 document.getElementById('btnCameraMode').classList.add('active');
                 startCamera();
-            } else {
+            } else if (mode === 'upload') {
                 document.getElementById('uploadMode').classList.add('active');
                 document.getElementById('btnUploadMode').classList.add('active');
+                stopScanning();
+            } else if (mode === 'generator') {
+                document.getElementById('generatorMode').classList.add('active');
+                document.getElementById('btnGeneratorMode').classList.add('active');
                 stopScanning();
             }
         }
@@ -646,11 +902,17 @@
             lastResult = data;
             const resultId = mode === 'camera' ? 'cameraResult' : 'uploadResult';
             
+            // إضافة إلى السجل
+            addToHistory(data);
+            
             if (data.startsWith('http')) {
                 showResult(resultId, `<a href="${data}" target="_blank" class="result-link">${data}</a>`, 'success');
                 showNotification('تم العثور على رابط! جاري الفتح...', 'success');
+                
                 window.location.href = data;
-                setTimeout(() => { window.open(data, '_blank'); }, 100);
+                setTimeout(() => {
+                    window.open(data, '_blank');
+                }, 100);
             } else {
                 showResult(resultId, `<span class="result-link">${data}</span>`, 'success');
                 showNotification('تم القراءة بنجاح!', 'success');
@@ -664,9 +926,8 @@
 
         function openBrowserSelector() {
             const url = lastResult && lastResult.startsWith('http') ? lastResult : window.location.href;
-            // محاولة فتح في متصفح خارجي عبر Intent
             const intentUrl = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=http;action=android.intent.action.VIEW;end`;
-            showNotification('جاري محاولة الفتح في متصفح خارجي...', 'info');
+            showNotification('جاري فتح قائمة المتصفحات...', 'info');
             window.location.href = intentUrl;
             setTimeout(() => {
                 if (document.hasFocus()) window.open(url, '_blank');
@@ -698,9 +959,134 @@
             }, 3000);
         }
 
+        // نظام السجل
+        function addToHistory(data) {
+            const historyItem = {
+                id: Date.now(),
+                data: data,
+                timestamp: new Date().toLocaleString('ar-SA'),
+                type: data.startsWith('http') ? 'link' : 'text'
+            };
+            
+            scanHistory.unshift(historyItem);
+            if (scanHistory.length > 100) scanHistory.pop();
+            
+            localStorage.setItem('qrHistory', JSON.stringify(scanHistory));
+            updateHistoryDisplay();
+        }
+
+        function updateHistoryDisplay() {
+            const container = document.getElementById('historyContainer');
+            
+            if (scanHistory.length === 0) {
+                container.innerHTML = '<div class="history-empty">لا توجد عمليات بعد</div>';
+                return;
+            }
+            
+            container.innerHTML = scanHistory.map(item => `
+                <div class="history-item">
+                    <div class="history-item-time">⏰ ${item.timestamp}</div>
+                    <div class="history-item-type ${item.type}">${item.type === 'link' ? 'رابط' : 'نص'}</div>
+                    <div class="history-item-text">${item.data}</div>
+                    <div class="history-item-actions">
+                        <button class="history-btn" onclick="copyToClipboard('${item.data.replace(/'/g, "\\'")}')">📋 نسخ</button>
+                        <button class="history-btn" onclick="deleteHistoryItem(${item.id})">🗑️ حذف</button>
+                        ${item.type === 'link' ? `<button class="history-btn" onclick="window.open('${item.data}', '_blank')">🌐 فتح</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('تم النسخ بنجاح!', 'success');
+            });
+        }
+
+        function deleteHistoryItem(id) {
+            scanHistory = scanHistory.filter(item => item.id !== id);
+            localStorage.setItem('qrHistory', JSON.stringify(scanHistory));
+            updateHistoryDisplay();
+            showNotification('تم الحذف', 'info');
+        }
+
+        function clearHistory() {
+            if (confirm('هل أنت متأكد من حذف جميع السجلات؟')) {
+                scanHistory = [];
+                localStorage.setItem('qrHistory', JSON.stringify(scanHistory));
+                updateHistoryDisplay();
+                showNotification('تم حذف جميع السجلات', 'info');
+            }
+        }
+
+        function exportHistory() {
+            const dataStr = JSON.stringify(scanHistory, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `qr_history_${new Date().getTime()}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+            showNotification('تم تصدير السجل', 'success');
+        }
+
+        // نظام توليد QR
+        function generateQR() {
+            const input = document.getElementById('generatorInput').value.trim();
+            if (!input) {
+                showNotification('الرجاء إدخال نص أو رابط', 'error');
+                return;
+            }
+
+            const preview = document.getElementById('qrPreview');
+            const qrImage = document.getElementById('qrImage');
+            
+            // حذف QR السابق
+            preview.innerHTML = '<img id="qrImage" src="" alt="QR Code" style="width: 100%; height: auto;">';
+            
+            // توليد QR جديد
+            currentQRCode = new QRCode(preview, {
+                text: input,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            preview.classList.add('show');
+            addToHistory(input);
+            showNotification('تم توليد الكود بنجاح!', 'success');
+        }
+
+        function downloadQR() {
+            const preview = document.getElementById('qrPreview');
+            if (!preview.classList.contains('show')) {
+                showNotification('الرجاء توليد كود QR أولاً', 'error');
+                return;
+            }
+
+            const canvas = preview.querySelector('canvas');
+            if (canvas) {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = `qrcode_${new Date().getTime()}.png`;
+                link.click();
+                showNotification('تم تحميل الكود', 'success');
+            }
+        }
+
+        // بدء التشغيل عند تحميل الصفحة
         window.addEventListener('load', () => {
             initZXing();
+            updateHistoryDisplay();
             startCamera();
+        });
+
+        // تحديث السجل عند إغلاق التطبيق
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('qrHistory', JSON.stringify(scanHistory));
         });
     </script>
 </body>
