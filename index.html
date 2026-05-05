@@ -3,28 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ALHYTHAM QR - Premium Scanner</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>ALHYTHAM QR - ماسح الأكواد الاحترافي</title>
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-light: #3b82f6;
-            --primary-dark: #1e40af;
-            --secondary: #8b5cf6;
-            --accent: #06b6d4;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-tertiary: #334155;
-            --surface: rgba(30, 41, 59, 0.7);
-            --surface-light: rgba(51, 65, 85, 0.5);
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --text-tertiary: #94a3b8;
-            --border: rgba(148, 163, 184, 0.2);
-            --border-light: rgba(148, 163, 184, 0.1);
+            --primary: #00d4ff;
+            --secondary: #0099ff;
+            --accent: #00ff88;
+            --danger: #ff3366;
+            --bg-dark: #0a0e27;
+            --bg-card: #1a1f3a;
+            --bg-light: #2a2f4a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --border-color: rgba(0, 212, 255, 0.2);
         }
 
         * {
@@ -34,151 +25,137 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-
         body {
-            font-family: 'Inter', 'Cairo', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a2847 50%, var(--bg-secondary) 100%);
+            font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a0033 50%, var(--bg-dark) 100%);
             color: var(--text-primary);
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
-            padding: 16px;
+            padding: 15px;
+            overflow-x: hidden;
         }
 
-        .app-container {
+        .main-container {
             width: 100%;
-            height: 100%;
-            max-width: 600px;
-            max-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: var(--surface);
-            border-radius: 32px;
-            border: 1px solid var(--border);
+            max-width: 700px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: rgba(26, 31, 58, 0.8);
             backdrop-filter: blur(20px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 100px rgba(0, 212, 255, 0.1);
+            position: relative;
             overflow: hidden;
         }
 
-        /* Header */
         .header {
-            padding: 24px 24px 16px;
-            background: linear-gradient(180deg, rgba(37, 99, 235, 0.1) 0%, transparent 100%);
-            border-bottom: 1px solid var(--border-light);
             text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
         }
 
-        .app-title {
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--accent) 100%);
+        .brand-title {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, 
+                #ff0080, #ff8c00, #40e0d0, #ff0080, 
+                #0080ff, #ff0080, #00ff88, #ff0080);
+            background-size: 300% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 4px;
+            animation: rainbowShift 4s linear infinite;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
         }
 
-        .app-subtitle {
-            font-size: 12px;
-            color: var(--text-tertiary);
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+        @keyframes rainbowShift {
+            0% { background-position: 0% center; }
+            100% { background-position: 300% center; }
         }
 
-        /* Tabs */
-        .tabs-container {
-            display: flex;
-            gap: 8px;
-            padding: 12px 16px;
-            background: var(--surface-light);
-            border-bottom: 1px solid var(--border-light);
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .tab-button {
-            flex-shrink: 0;
-            padding: 8px 16px;
-            background: transparent;
-            border: 1px solid var(--border);
+        .subtitle {
+            font-size: 0.9rem;
             color: var(--text-secondary);
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            white-space: nowrap;
-            font-family: 'Inter', sans-serif;
+            letter-spacing: 1px;
         }
 
-        .tab-button:hover {
-            background: var(--surface-light);
-            border-color: var(--primary);
-            color: var(--primary-light);
-        }
-
-        .tab-button.active {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            border-color: var(--primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        /* Content Area */
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+        .mode-selector {
             display: flex;
-            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 25px;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .mode-btn {
+            padding: 12px 24px;
+            border: 2px solid var(--border-color);
+            background: rgba(0, 212, 255, 0.05);
+            color: var(--text-secondary);
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            flex: 1;
+            max-width: 150px;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: var(--primary);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
         }
 
         .content-section {
             display: none;
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
+            position: relative;
+            z-index: 1;
         }
 
         .content-section.active {
-            display: flex;
-            flex-direction: column;
+            display: block;
+            animation: fadeIn 0.4s ease;
         }
 
-        /* Camera View */
-        .camera-container {
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .camera-wrapper {
             position: relative;
             width: 100%;
-            aspect-ratio: 1;
+            aspect-ratio: 4/3;
             background: #000;
-            border-radius: 24px;
+            border-radius: 20px;
             overflow: hidden;
             margin-bottom: 20px;
-            border: 1px solid var(--border);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.2);
         }
 
-        #video {
+        #cameraVideo {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
-        }
-
-        .scan-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
         }
 
         .scan-frame {
@@ -188,827 +165,542 @@
             transform: translate(-50%, -50%);
             width: 70%;
             height: 70%;
-            border: 2px solid rgba(37, 99, 235, 0.6);
-            border-radius: 20px;
-            box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.4);
-        }
-
-        .scan-corner {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            border: 3px solid var(--primary-light);
-        }
-
-        .scan-corner.top-left {
-            top: -2px;
-            left: -2px;
-            border-right: none;
-            border-bottom: none;
-            border-radius: 8px 0 0 0;
-        }
-
-        .scan-corner.top-right {
-            top: -2px;
-            right: -2px;
-            border-left: none;
-            border-bottom: none;
-            border-radius: 0 8px 0 0;
-        }
-
-        .scan-corner.bottom-left {
-            bottom: -2px;
-            left: -2px;
-            border-right: none;
-            border-top: none;
-            border-radius: 0 0 0 8px;
-        }
-
-        .scan-corner.bottom-right {
-            bottom: -2px;
-            right: -2px;
-            border-left: none;
-            border-top: none;
-            border-radius: 0 0 8px 0;
+            border: 2px solid var(--accent);
+            border-radius: 16px;
+            box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
         }
 
         .scan-line {
             position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 2px;
-            background: linear-gradient(90deg, transparent, var(--primary-light), transparent);
-            box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
-            top: 0;
-            animation: scannerMove 2s infinite ease-in-out;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            box-shadow: 0 0 15px var(--accent);
+            animation: scanMove 2s linear infinite;
         }
 
-        @keyframes scannerMove {
-            0%, 100% { top: 0%; opacity: 0.3; }
-            50% { top: 100%; opacity: 1; }
+        @keyframes scanMove {
+            0% { top: 0; }
+            100% { top: 100%; }
         }
 
-        /* Controls */
-        .controls-section {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
+        .upload-zone {
+            border: 3px dashed var(--primary);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            background: rgba(0, 212, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
             margin-bottom: 20px;
         }
 
-        .control-btn {
+        .upload-zone:hover {
+            background: rgba(0, 212, 255, 0.1);
+            border-color: var(--accent);
+        }
+
+        .preview-image {
+            width: 100%;
+            max-height: 350px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            display: none;
+            border: 2px solid var(--primary);
+            object-fit: contain;
+        }
+
+        .preview-image.show {
+            display: block;
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 16px 12px;
-            background: var(--surface-light);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 12px;
-            font-weight: 500;
-            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            text-decoration: none;
         }
 
-        .control-btn:active {
-            transform: scale(0.95);
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--bg-dark);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.2);
         }
 
-        .control-btn:hover {
-            background: var(--surface);
-            border-color: var(--primary);
-            color: var(--primary-light);
+        .btn-primary:active { transform: scale(0.95); }
+
+        .btn-secondary {
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid var(--primary);
+            color: var(--primary);
         }
 
-        .control-btn.active {
-            background: linear-gradient(135deg, rgba(37, 99, 235, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%);
-            border-color: var(--primary);
-            color: var(--primary-light);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        .btn-icon {
+            width: 50px;
+            height: 50px;
+            padding: 0;
+            border-radius: 12px;
+            font-size: 1.3rem;
         }
 
-        .control-icon {
-            font-size: 24px;
-        }
-
-        /* Zoom Control */
-        .zoom-control {
-            background: var(--surface-light);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 20px;
+        .controls-row {
             display: flex;
-            align-items: center;
-            gap: 12px;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
         }
 
-        .zoom-label {
-            font-size: 13px;
-            color: var(--text-secondary);
-            min-width: 30px;
-            font-weight: 500;
-        }
-
-        .zoom-slider {
-            flex: 1;
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
-            outline: none;
-            cursor: pointer;
-        }
-
-        .zoom-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: white;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            border: 2px solid var(--primary);
-        }
-
-        .zoom-slider::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: white;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            border: 2px solid var(--primary);
-        }
-
-        .zoom-value {
-            font-size: 13px;
-            color: var(--primary-light);
-            font-weight: 600;
-            min-width: 35px;
-            text-align: right;
-        }
-
-        /* Result Panel */
-        .result-panel {
-            background: var(--surface-light);
-            border: 1px solid var(--border);
+        .result-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 212, 255, 0.05);
+            border: 2px solid var(--border-color);
             border-radius: 16px;
-            padding: 16px;
-            min-height: 80px;
+            min-height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            font-size: 14px;
-            color: var(--text-secondary);
-            word-break: break-all;
-            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
 
-        .result-panel.success {
-            background: rgba(16, 185, 129, 0.1);
-            border-color: rgba(16, 185, 129, 0.3);
-            color: var(--success);
-        }
-
-        .result-panel.error {
-            background: rgba(239, 68, 68, 0.1);
-            border-color: rgba(239, 68, 68, 0.3);
-            color: var(--danger);
-        }
-
-        .result-content {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            width: 100%;
-        }
-
-        .result-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            background: rgba(37, 99, 235, 0.2);
-            border: 1px solid rgba(37, 99, 235, 0.3);
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--primary-light);
-            width: fit-content;
-            margin: 0 auto;
-        }
-
-        .result-text {
-            font-size: 13px;
-            color: var(--text-primary);
-            font-weight: 500;
-        }
+        .result-box.success { background: rgba(0, 255, 136, 0.1); border-color: var(--accent); }
+        .result-box.error { background: rgba(255, 51, 102, 0.1); border-color: var(--danger); }
 
         .result-link {
-            color: var(--primary-light);
+            color: var(--primary);
             text-decoration: none;
+            word-break: break-all;
             font-weight: 600;
-            transition: color 0.3s ease;
         }
 
-        .result-link:hover {
-            color: var(--accent);
-        }
-
-        .result-actions {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin-top: 8px;
-        }
-
-        .action-btn {
-            padding: 8px 16px;
-            background: var(--primary);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .action-btn:hover {
-            background: var(--primary-light);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        .action-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* History */
-        .history-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .history-item {
-            background: var(--surface-light);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-
-        .history-item:hover {
-            background: var(--surface);
-            border-color: var(--primary);
-        }
-
-        .history-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            min-width: 0;
-        }
-
-        .history-time {
-            font-size: 11px;
-            color: var(--text-tertiary);
-        }
-
-        .history-text {
-            font-size: 13px;
-            color: var(--text-primary);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .history-link {
-            color: var(--primary-light);
-            text-decoration: none;
-        }
-
-        .history-action {
-            background: none;
-            border: none;
-            color: var(--text-tertiary);
-            cursor: pointer;
-            font-size: 16px;
-            padding: 8px;
-            transition: color 0.3s ease;
-        }
-
-        .history-action:hover {
-            color: var(--primary-light);
-        }
-
-        /* Upload Area */
-        .upload-area {
-            border: 2px dashed var(--border);
-            border-radius: 20px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: var(--surface-light);
-        }
-
-        .upload-area:hover {
-            border-color: var(--primary);
-            background: rgba(37, 99, 235, 0.05);
-        }
-
-        .upload-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        .upload-text {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .upload-hint {
-            font-size: 12px;
-            color: var(--text-tertiary);
-        }
-
-        /* Footer */
         .footer {
-            padding: 16px;
-            border-top: 1px solid var(--border-light);
             text-align: center;
-            font-size: 11px;
-            color: var(--text-tertiary);
-            letter-spacing: 0.5px;
+            margin-top: 25px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            position: relative;
+            z-index: 1;
         }
 
-        /* Toast Notification */
-        .toast {
+        .notification {
             position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(150px);
-            background: var(--surface);
-            border: 1px solid var(--border);
+            top: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 2px solid var(--primary);
             border-radius: 12px;
-            padding: 12px 24px;
+            padding: 15px 20px;
             color: var(--text-primary);
-            font-size: 13px;
-            font-weight: 500;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: slideInRight 0.3s ease;
             z-index: 1000;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 300px;
         }
 
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        /* Scrollbar */
-        .content::-webkit-scrollbar {
-            width: 6px;
+        /* نافذة طلب الإذن */
+        .permission-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 39, 0.98);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            text-align: center;
         }
 
-        .content::-webkit-scrollbar-track {
-            background: transparent;
+        .permission-overlay.show { display: flex; }
+
+        .permission-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
         }
 
-        .content::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 3px;
-        }
-
-        .content::-webkit-scrollbar-thumb:hover {
-            background: var(--text-tertiary);
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .app-container {
-                border-radius: 24px;
-            }
-
-            .app-title {
-                font-size: 24px;
-            }
-
-            .camera-container {
-                aspect-ratio: 9/10;
-            }
-
-            .controls-section {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        /* Loading Animation */
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
-        .scanning {
-            animation: pulse 1.5s infinite;
+        .permission-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .permission-text {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .card { padding: 20px; }
+            .brand-title { font-size: 2.2rem; }
+            .button-group { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Header -->
-        <div class="header">
-            <div class="app-title">ALHYTHAM QR</div>
-            <div class="app-subtitle">Premium Scanner</div>
-        </div>
 
-        <!-- Tabs -->
-        <div class="tabs-container">
-            <button class="tab-button active" onclick="switchTab('scan')">📡 مسح</button>
-            <button class="tab-button" onclick="switchTab('history')">📋 السجل</button>
-            <button class="tab-button" onclick="switchTab('upload')">📤 رفع</button>
-        </div>
-
-        <!-- Content -->
-        <div class="content">
-            <!-- Scan Tab -->
-            <div id="scan-tab" class="content-section active">
-                <div class="camera-container">
-                    <video id="video" playsinline autoplay></video>
-                    <div class="scan-overlay">
-                        <div class="scan-frame">
-                            <div class="scan-corner top-left"></div>
-                            <div class="scan-corner top-right"></div>
-                            <div class="scan-corner bottom-left"></div>
-                            <div class="scan-corner bottom-right"></div>
-                            <div class="scan-line"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="zoom-control">
-                    <span class="zoom-label">🔍</span>
-                    <input type="range" id="zoomSlider" class="zoom-slider" min="1" max="5" step="0.1" value="1" oninput="updateZoom(this.value)">
-                    <span class="zoom-value" id="zoomValue">1.0x</span>
-                </div>
-
-                <div class="controls-section">
-                    <button class="control-btn" id="torchBtn" onclick="toggleTorch()" title="تشغيل الفلاش">
-                        <span class="control-icon">💡</span>
-                        <span>فلاش</span>
-                    </button>
-                    <button class="control-btn" onclick="toggleCamera()" title="تبديل الكاميرا">
-                        <span class="control-icon">🔄</span>
-                        <span>تبديل</span>
-                    </button>
-                    <button class="control-btn" onclick="restartScanner()" title="إعادة تحميل">
-                        <span class="control-icon">♻️</span>
-                        <span>تحديث</span>
-                    </button>
-                </div>
-
-                <div id="result" class="result-panel">
-                    جاري البحث عن أكواد QR...
-                </div>
-            </div>
-
-            <!-- History Tab -->
-            <div id="history-tab" class="content-section">
-                <div class="history-container" id="historyList">
-                    <div style="text-align: center; color: var(--text-tertiary); padding: 40px 20px;">
-                        السجل فارغ
-                    </div>
-                </div>
-                <button class="control-btn" style="width: 100%; margin-top: auto;" onclick="clearHistory()">
-                    <span class="control-icon">🗑️</span>
-                    <span>مسح السجل</span>
-                </button>
-            </div>
-
-            <!-- Upload Tab -->
-            <div id="upload-tab" class="content-section">
-                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                    <div class="upload-icon">📸</div>
-                    <div class="upload-text">اختر صورة تحتوي على كود QR</div>
-                    <div class="upload-hint">اسحب أو انقر للاختيار</div>
-                </div>
-                <input type="file" id="fileInput" style="display: none;" accept="image/*" onchange="handleFileUpload(event)">
-                <div id="uploadResult" class="result-panel" style="margin-top: 20px;">
-                    انتظار اختيار ملف...
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            ALHYTHAM QR © 2026 | PROFESSIONAL SCANNER
+    <!-- نافذة طلب الإذن والحلول البديلة -->
+    <div id="permissionOverlay" class="permission-overlay">
+        <div class="permission-icon">📷</div>
+        <h2 class="permission-title">مشكلة في الوصول للكاميرا</h2>
+        <p class="permission-text" id="permissionText">
+            يبدو أن التطبيق أو المتصفح الحالي يمنع الوصول للكاميرا.
+            <br><br>
+            لحل هذه المشكلة، يرجى الضغط على الزر أدناه لفتح الصفحة في متصفح خارجي (مثل Chrome) لكي تتمكن من المسح.
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 300px;">
+            <button class="btn btn-primary" onclick="openBrowserSelector()">
+                فتح في متصفح خارجي 🌐
+            </button>
+            <button class="btn btn-secondary" onclick="requestCameraPermission()">
+                محاولة مرة أخرى 🔄
+            </button>
+            <button class="btn btn-secondary" onclick="switchMode('upload')">
+                استخدام رفع الصور 📁
+            </button>
         </div>
     </div>
 
-    <!-- Toast -->
-    <div id="toast" class="toast"></div>
+    <div class="main-container">
+        <div class="card">
+            <div class="header">
+                <h1 class="brand-title">ALHYTHAM QR</h1>
+                <p class="subtitle">ماسح الأكواد الاحترافي</p>
+            </div>
 
-    <!-- Canvas -->
-    <canvas id="canvas" style="display:none;"></canvas>
+            <div class="mode-selector">
+                <button class="mode-btn active" id="btnCameraMode" onclick="switchMode('camera')">📷 الكاميرا</button>
+                <button class="mode-btn" id="btnUploadMode" onclick="switchMode('upload')">📁 رفع صورة</button>
+            </div>
 
-    <!-- ZXing Library -->
+            <!-- وضع الكاميرا -->
+            <div id="cameraMode" class="content-section active">
+                <div class="camera-wrapper">
+                    <video id="cameraVideo" autoplay playsinline muted></video>
+                    <div class="scan-frame">
+                        <div class="scan-line"></div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="reloadCamera()">
+                        <span>🔄</span> إعادة تحميل
+                    </button>
+                    <div class="controls-row">
+                        <button class="btn btn-secondary btn-icon" onclick="openBrowserSelector()" title="فتح في المتصفح">
+                            🌐
+                        </button>
+                        <button class="btn btn-secondary btn-icon" id="cameraToggle" onclick="toggleCamera()" title="تبديل الكاميرا">
+                            🔀
+                        </button>
+                    </div>
+                </div>
+
+                <div id="cameraResult" class="result-box">
+                    <span class="result-text">جاهز للمسح...</span>
+                </div>
+            </div>
+
+            <!-- وضع رفع الصور -->
+            <div id="uploadMode" class="content-section">
+                <div class="upload-zone" onclick="document.getElementById('imageInput').click()">
+                    <div class="upload-icon">📸</div>
+                    <div class="upload-text">اسحب صورة هنا أو انقر للاختيار</div>
+                </div>
+                <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)" style="display:none;">
+                <img id="previewImage" class="preview-image" alt="معاينة الصورة">
+                <div id="uploadResult" class="result-box">
+                    <span class="result-text">اختر صورة تحتوي على كود QR</span>
+                </div>
+                <div class="button-group" style="margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="document.getElementById('imageInput').click()">
+                        <span>📁</span> اختر صورة
+                    </button>
+                    <button class="btn btn-secondary" onclick="resetUpload()">
+                        <span>🗑️</span> مسح
+                    </button>
+                </div>
+            </div>
+
+            <div class="footer">
+                ALHYTHAM QR © 2026 | ماسح أكواد احترافي
+            </div>
+        </div>
+    </div>
+
+    <canvas id="qrCanvas" style="display:none;"></canvas>
+
     <script src="https://unpkg.com/@zxing/library@latest"></script>
-
     <script>
-        const video = document.getElementById('video');
-        const resultPanel = document.getElementById('result');
-        const zoomSlider = document.getElementById('zoomSlider');
-        const zoomValue = document.getElementById('zoomValue');
-        const torchBtn = document.getElementById('torchBtn');
-        const historyList = document.getElementById('historyList');
-        const toast = document.getElementById('toast');
-
-        let codeReader = new ZXing.BrowserQRCodeReader();
+        let codeReader = null;
         let currentStream = null;
-        let selectedDeviceId = null;
-        let isTorchOn = false;
-        let isScanning = true;
-        let history = JSON.parse(localStorage.getItem('qr_history') || '[]');
+        let facingMode = 'environment';
+        let isScanning = false;
+        let lastResult = "";
 
-        async function initCamera() {
-            try {
-                const devices = await codeReader.listVideoInputDevices();
-                const backCamera = devices.find(d => d.label.toLowerCase().includes('back')) || devices[devices.length - 1];
-                selectedDeviceId = backCamera.deviceId;
-                startScanning();
-            } catch (err) {
-                showResult('خطأ: ' + err.message, 'error');
-            }
+        function initZXing() {
+            if (!codeReader) codeReader = new ZXing.BrowserQRCodeReader();
         }
 
-        async function startScanning() {
-            if (currentStream) {
-                currentStream.getTracks().forEach(track => track.stop());
-            }
+        async function requestCameraPermission() {
+            document.getElementById('permissionOverlay').classList.remove('show');
+            await startCamera();
+        }
 
+        async function startCamera() {
             try {
-                const constraints = {
-                    video: {
-                        deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined,
-                        width: { ideal: 1920 },
-                        height: { ideal: 1080 },
-                        facingMode: 'environment'
-                    }
+                initZXing();
+                const video = document.getElementById('cameraVideo');
+                
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                }
+
+                // محاولة الوصول للكاميرا بأكثر من طريقة لضمان التوافق
+                const constraints = { 
+                    video: { 
+                        facingMode: facingMode,
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }, 
+                    audio: false 
                 };
 
-                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
-                video.srcObject = currentStream;
+                // التحقق من دعم المتصفح لـ getUserMedia
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error("المتصفح لا يدعم الوصول للكاميرا");
+                }
 
-                const hints = new Map();
-                hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
-                hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, [ZXing.BarcodeFormat.QR_CODE]);
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                currentStream = stream;
+                video.srcObject = stream;
+                
+                video.onloadedmetadata = () => {
+                    video.play().catch(e => {
+                        console.error("Play failed:", e);
+                        // محاولة التشغيل مرة أخرى بعد تفاعل المستخدم
+                        video.muted = true;
+                        video.play();
+                    });
+                };
 
-                isScanning = true;
-                codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', (result, err) => {
-                    if (result && isScanning) {
-                        onScanSuccess(result.text);
-                    }
-                }, hints);
-
-                setTimeout(checkCapabilities, 1000);
-            } catch (err) {
-                showResult('خطأ في الوصول للكاميرا', 'error');
+                startScanning();
+                showNotification('تم تشغيل الكاميرا بنجاح', 'success');
+            } catch (error) {
+                console.error("Camera Error:", error);
+                document.getElementById('permissionOverlay').classList.add('show');
+                if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+                    document.getElementById('permissionText').innerHTML = "تم رفض إذن الكاميرا. يرجى تفعيله من إعدادات المتصفح أو فتح الصفحة في متصفح خارجي.";
+                } else {
+                    document.getElementById('permissionText').innerHTML = "حدث خطأ: " + error.message + "<br><br>يرجى فتح الصفحة في متصفح خارجي لضمان عمل الكاميرا.";
+                }
             }
         }
 
-        function checkCapabilities() {
-            const track = currentStream.getVideoTracks()[0];
-            const capabilities = track.getCapabilities ? track.getCapabilities() : {};
+        function startScanning() {
+            if (isScanning) return;
+            isScanning = true;
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.getElementById('qrCanvas');
+            const ctx = canvas.getContext('2d');
 
-            if (!capabilities.torch) {
-                torchBtn.style.opacity = '0.5';
-                torchBtn.disabled = true;
+            function scan() {
+                if (!isScanning || !video.srcObject) return;
+                
+                if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    try {
+                        const luminanceSource = new ZXing.HTMLCanvasElementLuminanceSource(canvas);
+                        const binaryBitmap = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(luminanceSource));
+                        const result = new ZXing.MultiFormatReader().decode(binaryBitmap);
+                        if (result) {
+                            handleQRDetected(result.text);
+                            return;
+                        }
+                    } catch (e) {}
+                }
+                requestAnimationFrame(scan);
             }
+            scan();
         }
 
-        function updateZoom(val) {
-            zoomValue.textContent = parseFloat(val).toFixed(1) + 'x';
-            const track = currentStream.getVideoTracks()[0];
-
-            if (track.getCapabilities().zoom) {
-                track.applyConstraints({ advanced: [{ zoom: val }] });
-            } else {
-                video.style.transform = `scale(${val})`;
-            }
-        }
-
-        async function toggleTorch() {
-            const track = currentStream.getVideoTracks()[0];
-            isTorchOn = !isTorchOn;
-            try {
-                await track.applyConstraints({ advanced: [{ torch: isTorchOn }] });
-                torchBtn.classList.toggle('active');
-                showToast(isTorchOn ? 'الفلاش مُفعّل' : 'الفلاش مُطفأ');
-            } catch (e) {
-                showToast('الفلاش غير متاح');
+        function stopScanning() {
+            isScanning = false;
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
             }
         }
 
         async function toggleCamera() {
-            isScanning = false;
-            const devices = await codeReader.listVideoInputDevices();
-            const currentIndex = devices.findIndex(d => d.deviceId === selectedDeviceId);
-            const nextIndex = (currentIndex + 1) % devices.length;
-            selectedDeviceId = devices[nextIndex].deviceId;
-            startScanning();
-            showToast('تم تبديل الكاميرا');
+            stopScanning();
+            facingMode = facingMode === 'environment' ? 'user' : 'environment';
+            await startCamera();
         }
 
-        function restartScanner() {
-            isScanning = false;
-            startScanning();
-            showToast('تم تحديث الماسح');
+        function reloadCamera() {
+            stopScanning();
+            startCamera();
         }
 
-        function onScanSuccess(text) {
-            if (navigator.vibrate) navigator.vibrate(100);
-            playBeep();
-
-            const type = text.startsWith('http') ? 'رابط' : 'نص';
-            const resultHTML = `
-                <div class="result-content">
-                    <div class="result-badge">${type}</div>
-                    <div class="result-text">${text}</div>
-                    <div class="result-actions">
-                        ${text.startsWith('http') ? `<button class="action-btn" onclick="window.open('${text}', '_blank')">فتح الرابط</button>` : ''}
-                        <button class="action-btn" onclick="copyToClipboard('${text}')">نسخ</button>
-                    </div>
-                </div>
-            `;
-
-            resultPanel.innerHTML = resultHTML;
-            resultPanel.classList.add('success');
-            resultPanel.classList.remove('error');
-
-            addToHistory(text);
-            isScanning = false;
-            setTimeout(() => { isScanning = true; }, 2000);
-        }
-
-        function showResult(message, type = 'default') {
-            resultPanel.innerHTML = message;
-            resultPanel.classList.remove('success', 'error');
-            if (type !== 'default') resultPanel.classList.add(type);
-        }
-
-        function addToHistory(text) {
-            if (history[0]?.text === text) return;
-
-            const item = {
-                text: text,
-                time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }),
-                date: new Date().toLocaleDateString('ar-EG')
-            };
-
-            history.unshift(item);
-            if (history.length > 50) history.pop();
-            localStorage.setItem('qr_history', JSON.stringify(history));
-        }
-
-        function renderHistory() {
-            if (history.length === 0) {
-                historyList.innerHTML = '<div style="text-align: center; color: var(--text-tertiary); padding: 40px 20px;">السجل فارغ</div>';
-                return;
-            }
-
-            historyList.innerHTML = history.map((item, idx) => `
-                <div class="history-item">
-                    <div class="history-info">
-                        <div class="history-time">${item.time} • ${item.date}</div>
-                        <div class="history-text">
-                            ${item.text.startsWith('http') ? `<a href="${item.text}" target="_blank" class="history-link">${item.text}</a>` : item.text}
-                        </div>
-                    </div>
-                    <button class="history-action" onclick="copyFromHistory(${idx})">📋</button>
-                </div>
-            `).join('');
-        }
-
-        function copyFromHistory(idx) {
-            navigator.clipboard.writeText(history[idx].text);
-            showToast('تم النسخ من السجل');
-        }
-
-        function clearHistory() {
-            if (confirm('هل تريد مسح السجل بالكامل؟')) {
-                history = [];
-                localStorage.removeItem('qr_history');
-                renderHistory();
-                showToast('تم مسح السجل');
+        function switchMode(mode) {
+            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.mode-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('permissionOverlay').classList.remove('show');
+            
+            if (mode === 'camera') {
+                document.getElementById('cameraMode').classList.add('active');
+                document.getElementById('btnCameraMode').classList.add('active');
+                startCamera();
+            } else {
+                document.getElementById('uploadMode').classList.add('active');
+                document.getElementById('btnUploadMode').classList.add('active');
+                stopScanning();
             }
         }
 
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(tab + '-tab').classList.add('active');
-
-            if (tab === 'history') renderHistory();
-        }
-
-        async function handleFileUpload(event) {
+        function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-
-            const uploadResult = document.getElementById('uploadResult');
-            uploadResult.innerHTML = 'جاري التحليل...';
-
-            try {
-                const img = await decodeImage(file);
-                const result = await codeReader.decodeFromImageElement(img);
-                if (result) {
-                    const text = result.text;
-                    const type = text.startsWith('http') ? 'رابط' : 'نص';
-                    uploadResult.innerHTML = `
-                        <div class="result-content">
-                            <div class="result-badge">${type}</div>
-                            <div class="result-text">${text}</div>
-                            <div class="result-actions">
-                                ${text.startsWith('http') ? `<button class="action-btn" onclick="window.open('${text}', '_blank')">فتح</button>` : ''}
-                                <button class="action-btn" onclick="copyToClipboard('${text}')">نسخ</button>
-                            </div>
-                        </div>
-                    `;
-                    uploadResult.classList.add('success');
-                    uploadResult.classList.remove('error');
-                    addToHistory(text);
-                } else {
-                    uploadResult.innerHTML = 'لم يتم العثور على كود QR في هذه الصورة';
-                    uploadResult.classList.add('error');
-                    uploadResult.classList.remove('success');
-                }
-            } catch (err) {
-                uploadResult.innerHTML = 'خطأ في تحليل الصورة';
-                uploadResult.classList.add('error');
-                uploadResult.classList.remove('success');
-            }
-        }
-
-        function decodeImage(file) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => resolve(img);
-                    img.src = e.target.result;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = async () => {
+                    const preview = document.getElementById('previewImage');
+                    preview.src = img.src;
+                    preview.classList.add('show');
+                    await decodeImageQR(img);
                 };
-                reader.readAsDataURL(file);
-            });
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text);
-            showToast('تم النسخ بنجاح');
-        }
-
-        function showToast(message) {
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
-        }
-
-        function playBeep() {
+        async function decodeImageQR(img) {
             try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.1);
-            } catch (e) {}
+                initZXing();
+                const canvas = document.getElementById('qrCanvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                const luminanceSource = new ZXing.HTMLCanvasElementLuminanceSource(canvas);
+                const binaryBitmap = new ZXing.BinaryBitmap(new ZXing.HybridBinarizer(luminanceSource));
+                const result = new ZXing.MultiFormatReader().decode(binaryBitmap);
+                if (result) handleQRDetected(result.text, 'upload');
+                else showResult('uploadResult', 'لم يتم العثور على كود QR', 'error');
+            } catch (error) {
+                showResult('uploadResult', 'خطأ في المسح', 'error');
+            }
         }
 
-        window.addEventListener('load', initCamera);
-        window.addEventListener('beforeunload', () => {
-            if (currentStream) {
-                currentStream.getTracks().forEach(track => track.stop());
+        function handleQRDetected(data, mode = 'camera') {
+            lastResult = data;
+            const resultId = mode === 'camera' ? 'cameraResult' : 'uploadResult';
+            
+            if (data.startsWith('http')) {
+                showResult(resultId, `<a href="${data}" target="_blank" class="result-link">${data}</a>`, 'success');
+                showNotification('تم العثور على رابط! جاري الفتح...', 'success');
+                window.location.href = data;
+                setTimeout(() => { window.open(data, '_blank'); }, 100);
+            } else {
+                showResult(resultId, `<span class="result-link">${data}</span>`, 'success');
+                showNotification('تم القراءة بنجاح!', 'success');
             }
+            
+            if (mode === 'camera') {
+                stopScanning();
+                setTimeout(() => startScanning(), 3000);
+            }
+        }
+
+        function openBrowserSelector() {
+            const url = lastResult && lastResult.startsWith('http') ? lastResult : window.location.href;
+            // محاولة فتح في متصفح خارجي عبر Intent
+            const intentUrl = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=http;action=android.intent.action.VIEW;end`;
+            showNotification('جاري محاولة الفتح في متصفح خارجي...', 'info');
+            window.location.href = intentUrl;
+            setTimeout(() => {
+                if (document.hasFocus()) window.open(url, '_blank');
+            }, 500);
+        }
+
+        function resetUpload() {
+            document.getElementById('imageInput').value = '';
+            document.getElementById('previewImage').classList.remove('show');
+            showResult('uploadResult', 'اختر صورة تحتوي على كود QR', 'default');
+        }
+
+        function showResult(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<span class="result-text">${message}</span>`;
+            element.classList.remove('success', 'error');
+            if (type !== 'default') element.classList.add(type);
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.borderColor = type === 'error' ? 'var(--danger)' : 'var(--primary)';
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.animation = 'slideInRight 0.3s ease reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        window.addEventListener('load', () => {
+            initZXing();
+            startCamera();
         });
     </script>
 </body>
