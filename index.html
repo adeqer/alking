@@ -149,7 +149,8 @@
             to { opacity: 1; }
         }
 
-        #outdiv {
+        .camera-container {
+            position: relative;
             width: 100%;
             aspect-ratio: 4/3;
             background: #000;
@@ -158,16 +159,56 @@
             margin-bottom: 20px;
             border: 2px solid var(--primary);
             box-shadow: 0 0 25px rgba(0, 212, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
         }
 
-        #outdiv video {
+        #videoElement {
             width: 100% !important;
             height: 100% !important;
             object-fit: cover;
+            display: block;
+        }
+
+        .scan-frame {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70%;
+            height: 70%;
+            border: 2px solid var(--accent);
+            border-radius: 16px;
+            box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            box-shadow: 0 0 15px var(--accent);
+            animation: scanMove 2s linear infinite;
+        }
+
+        @keyframes scanMove {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        .camera-info {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--accent);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            z-index: 3;
+            font-weight: 600;
         }
 
         .camera-controls {
@@ -267,6 +308,7 @@
             margin-top: 8px;
             width: 100%;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .result-btn {
@@ -489,25 +531,6 @@
             color: var(--danger);
         }
 
-        /* Scrollbar Styling */
-        .history-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .history-container::-webkit-scrollbar-track {
-            background: rgba(0, 212, 255, 0.05);
-            border-radius: 10px;
-        }
-
-        .history-container::-webkit-scrollbar-thumb {
-            background: rgba(0, 212, 255, 0.3);
-            border-radius: 10px;
-        }
-
-        .history-container::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 212, 255, 0.5);
-        }
-
         .upload-zone {
             border: 3px dashed var(--primary);
             border-radius: 20px;
@@ -544,6 +567,48 @@
             to { opacity: 1; transform: scale(1); }
         }
 
+        .quality-indicator {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        .quality-bar {
+            width: 100px;
+            height: 6px;
+            background: rgba(0, 212, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .quality-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--danger), var(--warning), var(--accent));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 212, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(0, 212, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        .scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 212, 255, 0.5);
+        }
+
         @media (max-width: 1024px) {
             .main-container {
                 grid-template-columns: 1fr;
@@ -564,7 +629,7 @@
             .camera-controls { grid-template-columns: 1fr; }
             .mode-selector { gap: 8px; }
             .mode-btn { padding: 10px 16px; font-size: 0.85rem; }
-            #outdiv { aspect-ratio: 1; }
+            .camera-container { aspect-ratio: 1; }
         }
     </style>
 </head>
@@ -588,8 +653,8 @@
         <!-- القسم الرئيسي -->
         <div class="card">
             <div class="header">
-                <h1 class="brand-title">ALHYTHAM QR PRO</h1>
-                <p class="subtitle">ماسح الأكواس الاحترافي</p>
+                <h1 class="brand-title">ALHYTHAM QR PRO HD</h1>
+                <p class="subtitle">ماسح الأكواس الاحترافي - دقة عالية</p>
             </div>
 
             <div class="mode-selector">
@@ -599,7 +664,21 @@
 
             <!-- وضع الكاميرا -->
             <div id="cameraMode" class="content-section active">
-                <div id="outdiv"></div>
+                <div class="camera-container">
+                    <video id="videoElement" autoplay playsinline muted></video>
+                    <div class="scan-frame">
+                        <div class="scan-line"></div>
+                    </div>
+                    <div class="camera-info" id="cameraInfo">جاهز...</div>
+                </div>
+
+                <div class="quality-indicator">
+                    <span>جودة القراءة:</span>
+                    <div class="quality-bar">
+                        <div class="quality-fill" id="qualityFill"></div>
+                    </div>
+                    <span id="qualityText">0%</span>
+                </div>
 
                 <div class="camera-controls">
                     <button class="btn btn-primary" onclick="reloadCamera()">
@@ -642,14 +721,14 @@
             </div>
 
             <div class="footer">
-                ALHYTHAM QR PRO © 2026 | ماسح أكواد احترافي
+                ALHYTHAM QR PRO HD © 2026 | ماسح أكواد احترافي - دقة عالية
             </div>
         </div>
 
         <!-- لوحة السجل -->
         <div class="card history-panel">
             <div class="history-title">📋 السجل</div>
-            <div id="historyContainer" class="history-container">
+            <div id="historyContainer" class="history-container scrollbar">
                 <div class="history-empty">لا توجد عمليات بعد</div>
             </div>
             <div class="history-controls">
@@ -659,23 +738,24 @@
         </div>
     </div>
 
-    <canvas id="qr-canvas" style="display:none;" width="800" height="600"></canvas>
+    <canvas id="qrCanvas" style="display:none;"></canvas>
 
-    <!-- مكتبة llqrcode.js من الموقع المرجعي -->
+    <!-- مكتبات قراءة QR عالية الدقة -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
     <script src="https://laksa19.github.io/myqr/llqrcode.js"></script>
+    
     <script>
+        // متغيرات عامة
         let lastResult = "";
         let scanHistory = JSON.parse(localStorage.getItem('qrHistory')) || [];
         let facingMode = 'environment';
         let currentStream = null;
         let isScanning = false;
-
-        // متغيرات عامة للمسح
-        var gCtx = null;
-        var gCanvas = null;
-        var imageData = null;
-        var stype = 0;
-        var webkit = false;
+        let videoElement = null;
+        let canvasElement = null;
+        let lastScannedTime = 0;
+        let scanCooldown = 500; // ms بين المسحات
+        let qualityScore = 0;
 
         // دالة تحميل البيانات من localStorage
         function loadHistory() {
@@ -780,20 +860,32 @@
             if (type !== 'default') element.classList.add(type);
         }
 
+        // دالة تحديث جودة القراءة
+        function updateQualityIndicator(quality) {
+            qualityScore = Math.min(100, quality);
+            document.getElementById('qualityFill').style.width = qualityScore + '%';
+            document.getElementById('qualityText').textContent = qualityScore + '%';
+        }
+
         // دالة طلب إذن الكاميرا
         async function requestCameraPermission() {
             document.getElementById('permissionOverlay').classList.remove('show');
             await startCamera();
         }
 
-        // دالة بدء الكاميرا
+        // دالة بدء الكاميرا مع معالجة عالية الدقة
         async function startCamera() {
             try {
                 const constraints = { 
                     video: { 
                         facingMode: facingMode,
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
+                        width: { ideal: 1920, min: 640 },
+                        height: { ideal: 1080, min: 480 },
+                        focusMode: 'continuous',
+                        advanced: [
+                            { zoom: 1 },
+                            { torch: false }
+                        ]
                     }, 
                     audio: false 
                 };
@@ -804,15 +896,17 @@
 
                 currentStream = await navigator.mediaDevices.getUserMedia(constraints);
                 
-                gCanvas = document.getElementById('qr-canvas');
-                gCtx = gCanvas.getContext('2d');
+                videoElement = document.getElementById('videoElement');
+                canvasElement = document.getElementById('qrCanvas');
                 
-                // استدعاء دالة load من llqrcode.js
-                if (typeof load === 'function') {
-                    load();
-                }
+                videoElement.srcObject = currentStream;
+                videoElement.onloadedmetadata = () => {
+                    videoElement.play().catch(e => console.error("Video play failed:", e));
+                    startHighPrecisionScanning();
+                };
                 
-                showNotification('تم تشغيل الكاميرا بنجاح', 'success');
+                showNotification('تم تشغيل الكاميرا بنجاح - دقة عالية', 'success');
+                document.getElementById('cameraInfo').textContent = `دقة: ${videoElement.videoWidth}x${videoElement.videoHeight}`;
             } catch (error) {
                 console.error("Camera Error:", error);
                 if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
@@ -823,6 +917,62 @@
             }
         }
 
+        // دالة المسح عالي الدقة المتقدم
+        function startHighPrecisionScanning() {
+            if (isScanning) return;
+            isScanning = true;
+
+            function scanFrame() {
+                if (!isScanning || !videoElement.srcObject) return;
+
+                const now = Date.now();
+                if (now - lastScannedTime < scanCooldown) {
+                    requestAnimationFrame(scanFrame);
+                    return;
+                }
+
+                if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
+                    canvasElement.width = videoElement.videoWidth;
+                    canvasElement.height = videoElement.videoHeight;
+                    
+                    const ctx = canvasElement.getContext('2d');
+                    ctx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+
+                    // محاولة المسح باستخدام jsQR (الأسرع والأدق)
+                    try {
+                        const imageData = ctx.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                            inversionAttempts: 'dontInvert'
+                        });
+
+                        if (code) {
+                            lastScannedTime = now;
+                            updateQualityIndicator(95);
+                            handleQRDetected(code.data, 'camera');
+                            return;
+                        }
+                    } catch (e) {
+                        // تجاهل الأخطاء
+                    }
+
+                    // محاولة المسح باستخدام llqrcode كبديل
+                    try {
+                        if (typeof qrcode !== 'undefined') {
+                            qrcode.decode();
+                        }
+                    } catch (e) {
+                        // لم يتم العثور على كود
+                    }
+
+                    updateQualityIndicator(Math.max(0, qualityScore - 5));
+                }
+
+                requestAnimationFrame(scanFrame);
+            }
+
+            scanFrame();
+        }
+
         // دالة إعادة تحميل الكاميرا
         function reloadCamera() {
             location.reload();
@@ -830,6 +980,7 @@
 
         // دالة تبديل الكاميرا
         async function toggleCamera() {
+            isScanning = false;
             facingMode = facingMode === 'environment' ? 'user' : 'environment';
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
@@ -857,10 +1008,12 @@
             if (mode === 'camera') {
                 document.getElementById('cameraMode').classList.add('active');
                 document.getElementById('btnCameraMode').classList.add('active');
+                isScanning = false;
                 startCamera();
             } else if (mode === 'upload') {
                 document.getElementById('uploadMode').classList.add('active');
                 document.getElementById('btnUploadMode').classList.add('active');
+                isScanning = false;
                 if (currentStream) {
                     currentStream.getTracks().forEach(track => track.stop());
                 }
@@ -888,21 +1041,39 @@
         // دالة فك تشفير صورة QR
         async function decodeImageQR(img) {
             try {
-                const canvas = document.getElementById('qr-canvas');
+                const canvas = document.getElementById('qrCanvas');
                 const ctx = canvas.getContext('2d');
                 canvas.width = img.width;
                 canvas.height = img.height;
                 ctx.drawImage(img, 0, 0);
                 
-                // استخدام qrcode.decode من llqrcode.js
-                if (typeof qrcode !== 'undefined' && typeof qrcode.decode === 'function') {
-                    try {
+                // محاولة المسح باستخدام jsQR
+                try {
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                        inversionAttempts: 'dontInvert'
+                    });
+
+                    if (code) {
+                        handleQRDetected(code.data, 'upload');
+                        return;
+                    }
+                } catch (e) {
+                    // تجاهل
+                }
+
+                // محاولة المسح باستخدام llqrcode
+                try {
+                    if (typeof qrcode !== 'undefined' && typeof qrcode.decode === 'function') {
                         const result = qrcode.decode();
                         handleQRDetected(result, 'upload');
-                    } catch (e) {
-                        showResult('uploadResult', 'لم يتم العثور على كود QR', 'error');
+                        return;
                     }
+                } catch (e) {
+                    // تجاهل
                 }
+
+                showResult('uploadResult', 'لم يتم العثور على كود QR', 'error');
             } catch (error) {
                 showResult('uploadResult', 'خطأ في المسح: ' + error.message, 'error');
             }
@@ -947,6 +1118,14 @@
                 resultBox.classList.remove('error');
                 resultBox.classList.add('success');
                 showNotification('تم القراءة بنجاح!', 'success');
+            }
+
+            if (mode === 'camera') {
+                isScanning = false;
+                setTimeout(() => {
+                    isScanning = true;
+                    startHighPrecisionScanning();
+                }, 2000);
             }
         }
 
