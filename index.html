@@ -1,1151 +1,484 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0a0e27">
-    <title>ALHYTHAM QR</title>
-    <style>
-        :root {
-            --primary: #00d4ff;
-            --secondary: #0099ff;
-            --accent: #00ff88;
-            --danger: #ff3366;
-            --warning: #ffa500;
-            --bg-dark: #0a0e27;
-            --bg-card: #1a1f3a;
-            --bg-light: #2a2f4a;
-            --text-primary: #ffffff;
-            --text-secondary: #a0aec0;
-            --border-color: rgba(0, 212, 255, 0.2);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a0033 50%, var(--bg-dark) 100%);
-            color: var(--text-primary);
-            overflow-x: hidden;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 15px;
-        }
-
-        .main-container {
-            width: 100%;
-            max-width: 1400px;
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 20px;
-            animation: slideUp 0.6s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card {
-            background: rgba(26, 31, 58, 0.85);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 28px;
-            padding: 30px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 100px rgba(0, 212, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .brand-title {
-            font-size: 2.8rem;
-            font-weight: 900;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            background: linear-gradient(90deg, 
-                #ff0080, #ff8c00, #40e0d0, #ff0080, 
-                #0080ff, #ff0080, #00ff88, #ff0080);
-            background-size: 300% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: rainbowShift 4s linear infinite;
-        }
-
-        @keyframes rainbowShift {
-            0% { background-position: 0% center; }
-            100% { background-position: 300% center; }
-        }
-
-        .subtitle {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            letter-spacing: 1px;
-        }
-
-        .mode-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            justify-content: center;
-            position: relative;
-            z-index: 1;
-            flex-wrap: wrap;
-        }
-
-        .mode-btn {
-            padding: 12px 24px;
-            border: 2px solid var(--border-color);
-            background: rgba(0, 212, 255, 0.05);
-            color: var(--text-secondary);
-            border-radius: 14px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .mode-btn.active {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-color: var(--primary);
-            color: var(--bg-dark);
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
-        }
-
-        .content-section {
-            display: none;
-            position: relative;
-            z-index: 1;
-        }
-
-        .content-section.active {
-            display: block;
-            animation: fadeIn 0.4s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .camera-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 4/3;
-            background: #000;
-            border-radius: 20px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            border: 2px solid var(--primary);
-            box-shadow: 0 0 25px rgba(0, 212, 255, 0.2);
-        }
-
-        #videoElement {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover;
-            display: block;
-        }
-
-        .scan-frame {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 70%;
-            height: 70%;
-            border: 2px solid var(--accent);
-            border-radius: 16px;
-            box-shadow: inset 0 0 0 2000px rgba(0, 0, 0, 0.5);
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            box-shadow: 0 0 15px var(--accent);
-            animation: scanMove 2s linear infinite;
-        }
-
-        @keyframes scanMove {
-            0% { top: 0; }
-            100% { top: 100%; }
-        }
-
-        .camera-info {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: var(--accent);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            z-index: 3;
-            font-weight: 600;
-        }
-
-        .camera-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
-        .btn {
-            padding: 14px 20px;
-            border: none;
-            border-radius: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 0.95rem;
-            text-decoration: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: var(--bg-dark);
-            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.2);
-        }
-
-        .btn-primary:active { transform: scale(0.95); }
-
-        .btn-secondary {
-            background: rgba(0, 212, 255, 0.1);
-            border: 2px solid var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-icon {
-            width: 50px;
-            height: 50px;
-            padding: 0;
-            border-radius: 12px;
-            font-size: 1.3rem;
-        }
-
-        .controls-row {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 10px;
-        }
-
-        .result-box {
-            margin-top: 15px;
-            padding: 15px;
-            background: rgba(0, 212, 255, 0.05);
-            border: 2px solid var(--border-color);
-            border-radius: 16px;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-            word-break: break-all;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .result-box.success { 
-            background: rgba(0, 255, 136, 0.1); 
-            border-color: var(--accent); 
-        }
-
-        .result-box.error { 
-            background: rgba(255, 51, 102, 0.1); 
-            border-color: var(--danger); 
-        }
-
-        .result-link {
-            color: var(--primary);
-            text-decoration: none;
-            word-break: break-all;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .result-link:hover {
-            text-decoration: underline;
-        }
-
-        .result-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 8px;
-            width: 100%;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .result-btn {
-            padding: 6px 12px;
-            border: 1px solid var(--primary);
-            background: rgba(0, 212, 255, 0.1);
-            color: var(--primary);
-            border-radius: 8px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .result-btn:hover {
-            background: rgba(0, 212, 255, 0.2);
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 25px;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            position: relative;
-            z-index: 1;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--bg-card);
-            border: 2px solid var(--primary);
-            border-radius: 12px;
-            padding: 15px 20px;
-            color: var(--text-primary);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            animation: slideInRight 0.3s ease;
-            z-index: 1000;
-            max-width: 300px;
-        }
-
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(100px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        /* نافذة طلب الإذن */
-        .permission-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 14, 39, 0.95);
-            z-index: 2000;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .permission-overlay.show { display: flex; }
-
-        .permission-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .permission-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: var(--primary);
-        }
-
-        .permission-text {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-
-        /* نظام السجل */
-        .history-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .history-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--primary);
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .history-container {
-            max-height: 600px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .history-item {
-            background: rgba(0, 212, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 12px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .history-item:hover {
-            background: rgba(0, 212, 255, 0.1);
-            border-color: var(--primary);
-            transform: translateX(-5px);
-        }
-
-        .history-item-time {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-bottom: 5px;
-        }
-
-        .history-item-text {
-            color: var(--text-primary);
-            word-break: break-all;
-            margin-bottom: 8px;
-            max-height: 50px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .history-item-type {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            background: rgba(0, 255, 136, 0.2);
-            color: var(--accent);
-            margin-bottom: 8px;
-        }
-
-        .history-item-type.link {
-            background: rgba(0, 212, 255, 0.2);
-            color: var(--primary);
-        }
-
-        .history-item-actions {
-            display: flex;
-            gap: 5px;
-            margin-top: 8px;
-        }
-
-        .history-btn {
-            flex: 1;
-            padding: 5px 8px;
-            border: 1px solid var(--border-color);
-            background: rgba(0, 212, 255, 0.05);
-            color: var(--text-secondary);
-            border-radius: 6px;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .history-btn:hover {
-            background: rgba(0, 212, 255, 0.15);
-            color: var(--primary);
-        }
-
-        .history-empty {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .history-controls {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .history-btn-full {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            background: rgba(0, 212, 255, 0.05);
-            color: var(--text-secondary);
-            border-radius: 8px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 600;
-        }
-
-        .history-btn-full:hover {
-            background: rgba(0, 212, 255, 0.15);
-            color: var(--primary);
-        }
-
-        .history-btn-full.danger:hover {
-            background: rgba(255, 51, 102, 0.15);
-            color: var(--danger);
-        }
-
-        .upload-zone {
-            border: 3px dashed var(--primary);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            background: rgba(0, 212, 255, 0.05);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 20px;
-        }
-
-        .upload-zone:hover {
-            background: rgba(0, 212, 255, 0.1);
-            border-color: var(--accent);
-        }
-
-        .preview-image {
-            width: 100%;
-            max-height: 350px;
-            border-radius: 16px;
-            margin-bottom: 15px;
-            display: none;
-            border: 2px solid var(--primary);
-            object-fit: contain;
-        }
-
-        .preview-image.show {
-            display: block;
-            animation: zoomIn 0.3s ease;
-        }
-
-        @keyframes zoomIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .quality-indicator {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            justify-content: center;
-            margin-top: 10px;
-            font-size: 0.85rem;
-        }
-
-        .quality-bar {
-            width: 100px;
-            height: 6px;
-            background: rgba(0, 212, 255, 0.2);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .quality-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--danger), var(--warning), var(--accent));
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .scrollbar::-webkit-scrollbar-track {
-            background: rgba(0, 212, 255, 0.05);
-            border-radius: 10px;
-        }
-
-        .scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(0, 212, 255, 0.3);
-            border-radius: 10px;
-        }
-
-        .scrollbar::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 212, 255, 0.5);
-        }
-
-        @media (max-width: 1024px) {
-            .main-container {
-                grid-template-columns: 1fr;
-            }
-
-            .history-panel {
-                order: 2;
-            }
-
-            .card:first-child {
-                order: 1;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .card { padding: 20px; }
-            .brand-title { font-size: 2.2rem; }
-            .camera-controls { grid-template-columns: 1fr; }
-            .mode-selector { gap: 8px; }
-            .mode-btn { padding: 10px 16px; font-size: 0.85rem; }
-            .camera-container { aspect-ratio: 1; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="description" content="ماسح QR ذكي، سريع، وآمن. يدعم الصور، الكاميرا، وتحليل الروابط تلقائياً.">
+  <title>ALHYTHAM.NET | ماسح الكود الذكي</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; --text-muted: #64748b;
+      --primary: #4f46e5; --primary-hover: #4338ca; --border: #e2e8f0;
+      --radius: 16px; --shadow: 0 8px 20px -4px rgb(0 0 0 / 0.1);
+      --glass: rgba(255, 255, 255, 0.85); --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      --btn-bg: var(--surface); --btn-text: var(--text); --btn-border: var(--border);
+    }
+    .style-gradient { --primary: linear-gradient(135deg, #6366f1, #8b5cf6); --primary-hover: linear-gradient(135deg, #4f46e5, #7c3aed); }
+    .style-glass { --surface: rgba(255, 255, 255, 0.65); --glass: rgba(255, 255, 255, 0.5); --border: rgba(255, 255, 255, 0.4); backdrop-filter: blur(16px); }
+    .style-neumorphism { --surface: #e0e5ec; --bg: #e0e5ec; --text: #374151; --btn-bg: #e0e5ec; --btn-border: transparent; --shadow: 6px 6px 12px #b8babe, -6px -6px 12px #ffffff; --glass: transparent; }
+    .style-dark { --bg: #0b1120; --surface: #151e32; --text: #f8fafc; --text-muted: #94a3b8; --primary: #818cf8; --primary-hover: #6366f1; --border: #1e293b; --glass: rgba(21, 30, 50, 0.85); --btn-bg: #1e293b; --btn-text: #f1f5f9; }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; flex-direction: column;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    header {
+      padding: 0.8rem 1.2rem; display: flex; justify-content: space-between; align-items: center;
+      background: var(--glass); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+    }
+    .brand { font-weight: 800; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
+    .brand span {
+      background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8a2be2, #ff0000);
+      background-size: 400% 400%;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rainbow-flow 5s ease infinite;
+    }
+    @keyframes rainbow-flow { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+    .header-actions { display: flex; gap: 0.6rem; }
+    .icon-btn {
+      background: var(--btn-bg); color: var(--text); border: 1px solid var(--btn-border);
+      width: 38px; height: 38px; border-radius: 12px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 1rem;
+      transition: var(--transition); box-shadow: var(--shadow);
+    }
+    .icon-btn:hover { transform: scale(1.05); border-color: var(--primary); }
+
+    main { flex: 1; padding: 1.2rem; max-width: 640px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 1.2rem; }
+
+    .scanner-card {
+      background: var(--surface); border-radius: var(--radius); padding: 0.8rem;
+      box-shadow: var(--shadow); border: 1px solid var(--border); position: relative;
+    }
+    #reader {
+      width: 100%; min-height: 260px; border-radius: 12px; overflow: hidden;
+      background: #000; position: relative;
+    }
+    #reader video { width: 100% !important; height: 100% !important; object-fit: cover; border-radius: 12px; }
+    #reader > div:not(video), #reader a, #reader button { display: none !important; }
+    .scan-overlay {
+      position: absolute; inset: 0.8rem; border: 2px solid rgba(99, 102, 241, 0.4);
+      border-radius: 10px; pointer-events: none; z-index: 2;
+    }
+    .scan-overlay::before, .scan-overlay::after {
+      content: ""; position: absolute; width: 20px; height: 20px;
+      border: 3px solid var(--primary); transition: var(--transition);
+    }
+    .scan-overlay::before { top: -1px; right: -1px; border-width: 3px 3px 0 0; border-radius: 0 8px 0 0; }
+    .scan-overlay::after { bottom: -1px; left: -1px; border-width: 0 0 3px 3px; border-radius: 0 0 0 8px; }
+    .scan-line {
+      position: absolute; top: 0; left: 15%; right: 15%; height: 2px;
+      background: var(--primary); box-shadow: 0 0 12px var(--primary);
+      animation: scan 2.2s linear infinite; border-radius: 2px; z-index: 3;
+    }
+    @keyframes scan { 0%,100% { top: 10%; opacity: 0.5; } 50% { top: 90%; opacity: 1; } }
+
+    .upload-btn {
+      background: var(--primary); color: #fff; border: none; padding: 1rem;
+      border-radius: 14px; font-weight: 700; font-size: 1.05rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+      transition: var(--transition); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+      width: 100%;
+    }
+    .upload-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    .upload-btn:active { transform: scale(0.98); }
+    .upload-btn.loading { pointer-events: none; opacity: 0.85; }
+    #file-input { display: none; }
+
+    .control-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem;
+    }
+    .ctrl-btn {
+      background: var(--btn-bg); color: var(--btn-text); border: 1px solid var(--btn-border);
+      padding: 0.9rem 0.5rem; border-radius: 12px; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem;
+      font-size: 0.8rem; font-weight: 600; transition: var(--transition); box-shadow: var(--shadow);
+      white-space: nowrap;
+    }
+    .ctrl-btn i { font-size: 1.2rem; margin-bottom: 2px; }
+    .ctrl-btn:hover { transform: translateY(-3px); border-color: var(--primary); }
+    .ctrl-btn:active { transform: scale(0.96); }
+    .ctrl-btn.active { background: var(--primary); color: #fff; border-color: transparent; }
+
+    /* Zoom Slider Styles */
+    .zoom-container { padding: 0.7rem; cursor: default; }
+    .zoom-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; font-size: 0.85rem; font-weight: 600; }
+    .zoom-header i { color: var(--primary); }
+    #zoom-slider {
+      width: 100%; margin: 0; height: 6px; border-radius: 3px;
+      background: var(--border); outline: none; cursor: pointer;
+      -webkit-appearance: none; appearance: none;
+    }
+    #zoom-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 18px; height: 18px; background: var(--primary);
+      border-radius: 50%; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    #zoom-slider::-moz-range-thumb {
+      width: 18px; height: 18px; background: var(--primary);
+      border-radius: 50%; cursor: pointer; border: none;
+    }
+    #zoom-slider:disabled { opacity: 0.35; cursor: not-allowed; }
+    .zoom-reset { font-size: 0.75rem; color: var(--text-muted); cursor: pointer; margin-top: 0.3rem; text-align: center; display: block; }
+    .zoom-reset:hover { color: var(--primary); text-decoration: underline; }
+
+    .result-panel {
+      background: var(--surface); border-radius: var(--radius); padding: 1.2rem;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+      display: none; animation: slideUp 0.4s ease;
+    }
+    .result-panel.show { display: block; }
+    .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+    .result-type { font-size: 0.8rem; padding: 0.25rem 0.7rem; background: rgba(99, 102, 241, 0.15); color: var(--primary); border-radius: 20px; font-weight: 600; }
+    .result-content {
+      word-break: break-all; background: var(--bg); padding: 0.8rem; border-radius: 10px;
+      font-family: ui-monospace, monospace; font-size: 0.9rem; line-height: 1.5;
+      border: 1px dashed var(--border); max-height: 100px; overflow-y: auto; margin: 0.6rem 0;
+    }
+    .result-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.8rem; }
+    .res-btn {
+      flex: 1; min-width: 90px; background: var(--btn-bg); color: var(--btn-text);
+      border: 1px solid var(--btn-border); padding: 0.6rem; border-radius: 10px;
+      font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+      transition: var(--transition);
+    }
+    .res-btn:hover { border-color: var(--primary); background: rgba(99, 102, 241, 0.05); }
+    .res-btn.primary { background: var(--primary); color: #fff; border: none; }
+    .res-btn.primary:hover { filter: brightness(1.1); }
+
+    .history-panel { margin-top: 0.5rem; }
+    .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; font-weight: 700; }
+    .history-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .hist-item {
+      padding: 0.8rem; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; cursor: pointer; transition: var(--transition);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .hist-item:hover { transform: translateX(-4px); border-color: var(--primary); }
+    .hist-text { font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 85%; }
+    .hist-time { font-size: 0.7rem; color: var(--text-muted); }
+    .clear-hist {
+      width: 100%; margin-top: 0.8rem; background: transparent; border: 1px dashed var(--border);
+      color: var(--text-muted); padding: 0.6rem; border-radius: 10px; cursor: pointer;
+      font-weight: 600; transition: var(--transition);
+    }
+    .clear-hist:hover { border-color: #ef4444; color: #ef4444; }
+
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: var(--transition); z-index: 200; backdrop-filter: blur(4px);
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface); width: 90%; max-width: 360px; border-radius: 18px; padding: 1.5rem;
+      box-shadow: var(--shadow); transform: scale(0.9); transition: var(--transition);
+    }
+    .modal-overlay.active .modal { transform: scale(1); }
+    .modal h3 { margin-bottom: 1rem; text-align: center; }
+    .style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1rem; }
+    .style-opt {
+      padding: 0.8rem; border: 2px solid var(--border); border-radius: 12px; cursor: pointer;
+      text-align: center; font-weight: 600; transition: var(--transition);
+    }
+    .style-opt:hover { border-color: var(--primary); }
+    .style-opt.selected { border-color: var(--primary); background: rgba(99, 102, 241, 0.1); }
+    .close-modal { width: 100%; padding: 0.7rem; border: none; background: var(--primary); color: #fff; border-radius: 10px; cursor: pointer; font-weight: 600; }
+
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--text); color: var(--bg); padding: 0.7rem 1.3rem; border-radius: 50px;
+      opacity: 0; transition: var(--transition); pointer-events: none; z-index: 999;
+      font-weight: 500; box-shadow: 0 8px 16px rgba(0,0,0,0.2); white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 420px) { .control-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
 </head>
 <body>
+  <header>
+    <div class="brand">🌟 <span>ALHYTHAM.NET</span></div>
+    <div class="header-actions">
+      <button class="icon-btn" id="style-btn" title="تغيير الستايل"><i class="fa-solid fa-palette"></i></button>
+      <button class="icon-btn" id="theme-btn" title="الوضع الليلي"><i class="fa-solid fa-moon"></i></button>
+    </div>
+  </header>
 
-    <!-- نافذة طلب الإذن -->
-    <div id="permissionOverlay" class="permission-overlay">
-        <div class="permission-icon">📷</div>
-        <h2 class="permission-title">مطلوب إذن الكاميرا</h2>
-        <p class="permission-text">
-            من فضلك اضغط على "سماح" أو "Allow" عندما يطلب المتصفح الوصول للكاميرا لكي تتمكن من مسح الأكواس.
-            <br><br>
-            إذا لم تظهر الرسالة، يرجى تحديث الصفحة أو التأكد من إعدادات المتصفح.
-        </p>
-        <button class="btn btn-primary" onclick="requestCameraPermission()" style="width: 200px;">
-            تفعيل الكاميرا الآن
-        </button>
+  <main>
+    <div class="scanner-card">
+      <div id="reader">
+        <div class="scan-overlay"><div class="scan-line"></div></div>
+      </div>
     </div>
 
-    <div class="main-container">
-        <!-- القسم الرئيسي -->
-        <div class="card">
-            <div class="header">
-                <h1 class="brand-title">ALHYTHAM QR PRO HD</h1>
-                <p class="subtitle">ماسح الأكواس الاحترافي - دقة عالية</p>
-            </div>
+    <button class="upload-btn" id="upload-btn">
+      <i class="fa-solid fa-image"></i> رفع صورة QR من المعرض
+    </button>
+    <input type="file" id="file-input" accept="image/*">
 
-            <div class="mode-selector">
-                <button class="mode-btn active" id="btnCameraMode" onclick="switchMode('camera')">📷 الكاميرا</button>
-                <button class="mode-btn" id="btnUploadMode" onclick="switchMode('upload')">📁 رفع صورة</button>
-            </div>
-
-            <!-- وضع الكاميرا -->
-            <div id="cameraMode" class="content-section active">
-                <div class="camera-container">
-                    <video id="videoElement" autoplay playsinline muted></video>
-                    <div class="scan-frame">
-                        <div class="scan-line"></div>
-                    </div>
-                    <div class="camera-info" id="cameraInfo">جاهز...</div>
-                </div>
-
-                <div class="quality-indicator">
-                    <span>جودة القراءة:</span>
-                    <div class="quality-bar">
-                        <div class="quality-fill" id="qualityFill"></div>
-                    </div>
-                    <span id="qualityText">0%</span>
-                </div>
-
-                <div class="camera-controls">
-                    <button class="btn btn-primary" onclick="reloadCamera()">
-                        <span>🔄</span> إعادة تحميل
-                    </button>
-                    <div class="controls-row">
-                        <button class="btn btn-secondary btn-icon" onclick="openBrowserSelector()" title="فتح في المتصفح">
-                            🌐
-                        </button>
-                        <button class="btn btn-secondary btn-icon" id="cameraToggle" onclick="toggleCamera()" title="تبديل الكاميرا">
-                            🔀
-                        </button>
-                    </div>
-                </div>
-
-                <div id="cameraResult" class="result-box">
-                    <span class="result-text">جاهز للمسح...</span>
-                </div>
-            </div>
-
-            <!-- وضع رفع الصور -->
-            <div id="uploadMode" class="content-section">
-                <div class="upload-zone" onclick="document.getElementById('imageInput').click()">
-                    <div class="upload-icon">📸</div>
-                    <div class="upload-text">اسحب صورة هنا أو انقر للاختيار</div>
-                </div>
-                <input type="file" id="imageInput" accept="image/*" onchange="handleImageUpload(event)" style="display:none;">
-                <img id="previewImage" class="preview-image" alt="معاينة الصورة">
-                <div id="uploadResult" class="result-box">
-                    <span class="result-text">اختر صورة تحتوي على كود QR</span>
-                </div>
-                <div class="camera-controls" style="margin-top: 20px;">
-                    <button class="btn btn-primary" onclick="document.getElementById('imageInput').click()">
-                        <span>📁</span> اختر صورة
-                    </button>
-                    <button class="btn btn-secondary" onclick="resetUpload()">
-                        <span>🗑️</span> مسح
-                    </button>
-                </div>
-            </div>
-
-            <div class="footer">
-                ALHYTHAM QR PRO HD © 2026 | ماسح أكواد احترافي - دقة عالية
-            </div>
+    <div class="control-grid">
+      <button class="ctrl-btn" id="switch-cam-btn"><i class="fa-solid fa-camera-rotate"></i> تبديل</button>
+      <button class="ctrl-btn" id="torch-btn"><i class="fa-solid fa-bolt"></i> إضاءة</button>
+      <div class="ctrl-btn zoom-container" id="zoom-box">
+        <div class="zoom-header">
+          <i class="fa-solid fa-magnifying-glass-plus"></i>
+          <span id="zoom-val">1.0x</span>
         </div>
-
-        <!-- لوحة السجل -->
-        <div class="card history-panel">
-            <div class="history-title">📋 السجل</div>
-            <div id="historyContainer" class="history-container scrollbar">
-                <div class="history-empty">لا توجد عمليات بعد</div>
-            </div>
-            <div class="history-controls">
-                <button class="history-btn-full" onclick="exportHistory()">📥 تصدير</button>
-                <button class="history-btn-full danger" onclick="clearHistory()">🗑️ مسح</button>
-            </div>
-        </div>
+        <input type="range" id="zoom-slider" min="1" max="3" step="0.1" value="1" disabled>
+        <span class="zoom-reset" id="zoom-reset" style="display:none">إعادة تعيين</span>
+      </div>
+      <button class="ctrl-btn" id="sound-btn"><i class="fa-solid fa-volume-high"></i> صوت</button>
+      <button class="ctrl-btn" id="copy-all-btn"><i class="fa-solid fa-clipboard"></i> نسخ الكل</button>
+      <button class="ctrl-btn" id="export-hist-btn"><i class="fa-solid fa-file-export"></i> تصدير</button>
     </div>
 
-    <canvas id="qrCanvas" style="display:none;"></canvas>
+    <div class="result-panel" id="result-panel">
+      <div class="result-header">
+        <h3>📦 نتيجة المسح</h3>
+        <span class="result-type" id="res-type">نص</span>
+      </div>
+      <div class="result-content" id="res-text"></div>
+      <div class="result-actions">
+        <button class="res-btn primary" id="open-res"><i class="fa-solid fa-up-right-from-square"></i> فتح</button>
+        <button class="res-btn" id="share-res"><i class="fa-solid fa-share-nodes"></i> مشاركة</button>
+      </div>
+    </div>
 
-    <!-- مكتبات قراءة QR عالية الدقة -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
-    <script src="https://laksa19.github.io/myqr/llqrcode.js"></script>
-    
-    <script>
-        // متغيرات عامة
-        let lastResult = "";
-        let scanHistory = JSON.parse(localStorage.getItem('qrHistory')) || [];
-        let facingMode = 'environment';
-        let currentStream = null;
-        let isScanning = false;
-        let videoElement = null;
-        let canvasElement = null;
-        let lastScannedTime = 0;
-        let scanCooldown = 500; // ms بين المسحات
-        let qualityScore = 0;
+    <div class="history-panel">
+      <div class="history-header">
+        <span>🕒 سجل المسح</span>
+        <button class="ctrl-btn" style="padding:0.4rem 0.8rem; font-size:0.75rem" id="search-hist"><i class="fa-solid fa-search"></i></button>
+      </div>
+      <input type="text" id="hist-search" placeholder="بحث في السجل..." style="width:100%;padding:0.6rem 1rem;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);margin-bottom:0.6rem;display:none;">
+      <div class="history-list" id="hist-list"></div>
+      <button class="clear-hist" id="clear-hist">🗑️ مسح السجل</button>
+    </div>
+  </main>
 
-        // دالة تحميل البيانات من localStorage
-        function loadHistory() {
-            updateHistoryDisplay();
-        }
+  <footer style="text-align:center;padding:1.5rem 1rem;color:var(--text-muted);font-size:0.8rem;border-top:1px solid var(--border);margin-top:auto;">
+    © 2026 ALHYTHAM.NET | ماسح الكود الذكي | سريع، آمن، واحترافي
+  </footer>
 
-        // دالة إضافة إلى السجل
-        function addToHistory(data) {
-            const historyItem = {
-                id: Date.now(),
-                data: data,
-                timestamp: new Date().toLocaleString('ar-SA'),
-                type: data.startsWith('http') ? 'link' : 'text'
-            };
-            
-            scanHistory.unshift(historyItem);
-            if (scanHistory.length > 100) scanHistory.pop();
-            
-            localStorage.setItem('qrHistory', JSON.stringify(scanHistory));
-            updateHistoryDisplay();
-        }
+  <div class="toast" id="toast"></div>
 
-        // دالة تحديث عرض السجل
-        function updateHistoryDisplay() {
-            const container = document.getElementById('historyContainer');
-            
-            if (scanHistory.length === 0) {
-                container.innerHTML = '<div class="history-empty">لا توجد عمليات بعد</div>';
-                return;
-            }
-            
-            container.innerHTML = scanHistory.map(item => `
-                <div class="history-item">
-                    <div class="history-item-time">⏰ ${item.timestamp}</div>
-                    <div class="history-item-type ${item.type === 'link' ? 'link' : ''}">${item.type === 'link' ? 'رابط' : 'نص'}</div>
-                    <div class="history-item-text">${item.data}</div>
-                    <div class="history-item-actions">
-                        <button class="history-btn" onclick="copyToClipboard('${item.data.replace(/'/g, "\\'")}')">📋 نسخ</button>
-                        <button class="history-btn" onclick="deleteHistoryItem(${item.id})">🗑️ حذف</button>
-                        ${item.type === 'link' ? `<button class="history-btn" onclick="window.open('${item.data}', '_blank')">🌐 فتح</button>` : ''}
-                    </div>
-                </div>
-            `).join('');
-        }
+  <div class="modal-overlay" id="style-modal">
+    <div class="modal">
+      <h3>🎨 اختر ستايل الواجهة</h3>
+      <div class="style-grid">
+        <div class="style-opt selected" data-style="">📱 كلاسيكي</div>
+        <div class="style-opt" data-style="style-gradient">🌈 تدرج لوني</div>
+        <div class="style-opt" data-style="style-glass">💎 زجاجي</div>
+        <div class="style-opt" data-style="style-neumorphism">🕳️ نيومورفيزم</div>
+      </div>
+      <button class="close-modal" id="close-style">تطبيق وإغلاق</button>
+    </div>
+  </div>
 
-        // دالة نسخ إلى الحافظة
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showNotification('تم النسخ بنجاح!', 'success');
-            });
-        }
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const qr = new Html5Qrcode("reader");
+      let camMode = 'environment';
+      let lastRes = '';
+      let isPaused = false;
+      let soundOn = true;
+      let track = null;
 
-        // دالة حذف عنصر من السجل
-        function deleteHistoryItem(id) {
-            scanHistory = scanHistory.filter(item => item.id !== id);
-            localStorage.setItem('qrHistory', JSON.stringify(scanHistory));
-            updateHistoryDisplay();
-            showNotification('تم الحذف', 'info');
-        }
+      const $ = id => document.getElementById(id);
+      const uploadBtn = $('upload-btn'), fileIn = $('file-input');
+      const switchBtn = $('switch-cam-btn'), torchBtn = $('torch-btn');
+      const zoomSlider = $('zoom-slider'), zoomVal = $('zoom-val'), zoomReset = $('zoom-reset');
+      const soundBtn = $('sound-btn'), resPanel = $('result-panel');
+      const resText = $('res-text'), resType = $('res-type');
+      const openBtn = $('open-res'), shareBtn = $('share-res');
+      const histList = $('hist-list'), searchIn = $('hist-search');
+      const themeBtn = $('theme-btn'), styleBtn = $('style-btn');
+      const modal = $('style-modal'), closeStyle = $('close-style');
+      const toast = $('toast'), scanLine = document.querySelector('.scan-line');
 
-        // دالة مسح السجل
-        function clearHistory() {
-            if (confirm('هل أنت متأكد من حذف جميع السجلات؟')) {
-                scanHistory = [];
-                localStorage.setItem('qrHistory', JSON.stringify(scanHistory));
-                updateHistoryDisplay();
-                showNotification('تم حذف جميع السجلات', 'info');
-            }
-        }
+      const toastFn = msg => { toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2200); };
+      const vibrate = () => navigator.vibrate?.(80);
+      const playSound = () => {
+        if (!soundOn) return;
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = ctx.createOscillator(), gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.frequency.value = 1200; gain.gain.value = 0.15;
+          osc.start(); osc.stop(ctx.currentTime + 0.1);
+        } catch(e) {}
+      };
 
-        // دالة تصدير السجل
-        function exportHistory() {
-            const dataStr = JSON.stringify(scanHistory, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `qr_history_${new Date().getTime()}.json`;
-            link.click();
-            URL.revokeObjectURL(url);
-            showNotification('تم تصدير السجل', 'success');
-        }
+      const isUrl = s => { try { new URL(s); return true; } catch { return /^(https?:\/\/|mailto:|tel:|ftp:)/i.test(s); } };
+      const getType = s => {
+        if (isUrl(s)) return '🌐 رابط';
+        if (/^[\+]?[0-9\s\-]+$/.test(s)) return '📞 هاتف';
+        if (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(s)) return '📧 بريد';
+        if (s.startsWith('WIFI:')) return '📶 واي فاي';
+        if (s.startsWith('BEGIN:VCARD')) return '👤 جهة اتصال';
+        if (/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(s)) return '📍 موقع';
+        return '📝 نص';
+      };
 
-        // دالة عرض الإشعارات
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.textContent = message;
-            notification.style.borderColor = type === 'error' ? 'var(--danger)' : 'var(--primary)';
-            document.body.appendChild(notification);
-            setTimeout(() => {
-                notification.style.animation = 'slideInRight 0.3s ease reverse';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
+      const showRes = text => {
+        lastRes = text;
+        resText.textContent = text;
+        resType.textContent = getType(text);
+        openBtn.style.display = isUrl(text) ? 'flex' : 'none';
+        resPanel.classList.add('show');
+        addHist(text);
+        playSound(); vibrate();
+        setTimeout(() => window.scrollTo({ top: resPanel.offsetTop - 20, behavior: 'smooth' }), 100);
+      };
 
-        // دالة عرض النتيجة
-        function showResult(elementId, message, type) {
-            const element = document.getElementById(elementId);
-            element.innerHTML = `<span class="result-text">${message}</span>`;
-            element.classList.remove('success', 'error');
-            if (type !== 'default') element.classList.add(type);
-        }
+      const loadHist = () => {
+        const h = JSON.parse(localStorage.getItem('qr_hist') || '[]');
+        const term = searchIn.value.toLowerCase();
+        const filtered = term ? h.filter(i => i.t.toLowerCase().includes(term)) : h;
+        histList.innerHTML = filtered.length ? '' : '<div style="text-align:center;color:var(--text-muted);padding:1rem">فارغ</div>';
+        filtered.slice(0, 8).forEach(i => {
+          const d = document.createElement('div'); d.className = 'hist-item';
+          d.innerHTML = `<span class="hist-text">${i.t}</span><span class="hist-time">${new Date(i.time).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</span>`;
+          d.onclick = () => showRes(i.t);
+          histList.appendChild(d);
+        });
+      };
+      const addHist = text => {
+        let h = JSON.parse(localStorage.getItem('qr_hist') || '[]');
+        h.unshift({ t: text, time: Date.now() });
+        h = h.filter((v,i,a) => a.findIndex(t => t.t === v.t) === i).slice(0, 50);
+        localStorage.setItem('qr_hist', JSON.stringify(h));
+        loadHist();
+      };
+      $('clear-hist').onclick = () => { localStorage.removeItem('qr_hist'); loadHist(); toastFn('تم المسح'); };
+      $('search-hist').onclick = () => { searchIn.style.display = searchIn.style.display === 'none' ? 'block' : 'none'; };
+      searchIn.oninput = loadHist;
 
-        // دالة تحديث جودة القراءة
-        function updateQualityIndicator(quality) {
-            qualityScore = Math.min(100, quality);
-            document.getElementById('qualityFill').style.width = qualityScore + '%';
-            document.getElementById('qualityText').textContent = qualityScore + '%';
-        }
+      // Zoom Slider Logic
+      zoomSlider.addEventListener('input', async (e) => {
+        if (!track || track.readyState !== 'live') return;
+        const val = parseFloat(e.target.value);
+        zoomVal.textContent = `${val.toFixed(1)}x`;
+        zoomReset.style.display = val > 1.05 ? 'block' : 'none';
+        try { await track.applyConstraints({ advanced: [{ zoom: val }] }); } 
+        catch { toastFn('⚠️ تعذر ضبط التكبير'); }
+      });
+      zoomReset.onclick = async () => {
+        zoomSlider.value = 1.0;
+        zoomSlider.dispatchEvent(new Event('input'));
+      };
 
-        // دالة طلب إذن الكاميرا
-        async function requestCameraPermission() {
-            document.getElementById('permissionOverlay').classList.remove('show');
-            await startCamera();
-        }
-
-        // دالة بدء الكاميرا مع معالجة عالية الدقة
-        async function startCamera() {
-            try {
-                const constraints = { 
-                    video: { 
-                        facingMode: facingMode,
-                        width: { ideal: 1920, min: 640 },
-                        height: { ideal: 1080, min: 480 },
-                        focusMode: 'continuous',
-                        advanced: [
-                            { zoom: 1 },
-                            { torch: false }
-                        ]
-                    }, 
-                    audio: false 
-                };
-
-                if (currentStream) {
-                    currentStream.getTracks().forEach(track => track.stop());
-                }
-
-                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
-                
-                videoElement = document.getElementById('videoElement');
-                canvasElement = document.getElementById('qrCanvas');
-                
-                videoElement.srcObject = currentStream;
-                videoElement.onloadedmetadata = () => {
-                    videoElement.play().catch(e => console.error("Video play failed:", e));
-                    startHighPrecisionScanning();
-                };
-                
-                showNotification('تم تشغيل الكاميرا بنجاح - دقة عالية', 'success');
-                document.getElementById('cameraInfo').textContent = `دقة: ${videoElement.videoWidth}x${videoElement.videoHeight}`;
-            } catch (error) {
-                console.error("Camera Error:", error);
-                if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-                    document.getElementById('permissionOverlay').classList.add('show');
-                } else {
-                    showResult('cameraResult', 'خطأ في الكاميرا: ' + error.message, 'error');
-                }
-            }
-        }
-
-        // دالة المسح عالي الدقة المتقدم
-        function startHighPrecisionScanning() {
-            if (isScanning) return;
-            isScanning = true;
-
-            function scanFrame() {
-                if (!isScanning || !videoElement.srcObject) return;
-
-                const now = Date.now();
-                if (now - lastScannedTime < scanCooldown) {
-                    requestAnimationFrame(scanFrame);
-                    return;
-                }
-
-                if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
-                    canvasElement.width = videoElement.videoWidth;
-                    canvasElement.height = videoElement.videoHeight;
-                    
-                    const ctx = canvasElement.getContext('2d');
-                    ctx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
-
-                    // محاولة المسح باستخدام jsQR (الأسرع والأدق)
-                    try {
-                        const imageData = ctx.getImageData(0, 0, canvasElement.width, canvasElement.height);
-                        const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                            inversionAttempts: 'dontInvert'
-                        });
-
-                        if (code) {
-                            lastScannedTime = now;
-                            updateQualityIndicator(95);
-                            handleQRDetected(code.data, 'camera');
-                            return;
-                        }
-                    } catch (e) {
-                        // تجاهل الأخطاء
-                    }
-
-                    // محاولة المسح باستخدام llqrcode كبديل
-                    try {
-                        if (typeof qrcode !== 'undefined') {
-                            qrcode.decode();
-                        }
-                    } catch (e) {
-                        // لم يتم العثور على كود
-                    }
-
-                    updateQualityIndicator(Math.max(0, qualityScore - 5));
-                }
-
-                requestAnimationFrame(scanFrame);
-            }
-
-            scanFrame();
-        }
-
-        // دالة إعادة تحميل الكاميرا
-        function reloadCamera() {
-            location.reload();
-        }
-
-        // دالة تبديل الكاميرا
-        async function toggleCamera() {
-            isScanning = false;
-            facingMode = facingMode === 'environment' ? 'user' : 'environment';
-            if (currentStream) {
-                currentStream.getTracks().forEach(track => track.stop());
-            }
-            await startCamera();
-            showNotification(facingMode === 'environment' ? 'الكاميرا الخلفية' : 'الكاميرا الأمامية', 'info');
-        }
-
-        // دالة فتح في متصفح آخر
-        function openBrowserSelector() {
-            const url = lastResult && lastResult.startsWith('http') ? lastResult : window.location.href;
-            const intentUrl = `intent://${url.replace(/^https?:\/\//, '')}#Intent;scheme=http;action=android.intent.action.VIEW;end`;
-            showNotification('جاري فتح قائمة المتصفحات...', 'info');
-            window.location.href = intentUrl;
-            setTimeout(() => {
-                if (document.hasFocus()) window.open(url, '_blank');
-            }, 500);
-        }
-
-        // دالة تبديل الأوضاع
-        function switchMode(mode) {
-            document.querySelectorAll('.content-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.mode-btn').forEach(el => el.classList.remove('active'));
-            
-            if (mode === 'camera') {
-                document.getElementById('cameraMode').classList.add('active');
-                document.getElementById('btnCameraMode').classList.add('active');
-                isScanning = false;
-                startCamera();
-            } else if (mode === 'upload') {
-                document.getElementById('uploadMode').classList.add('active');
-                document.getElementById('btnUploadMode').classList.add('active');
-                isScanning = false;
-                if (currentStream) {
-                    currentStream.getTracks().forEach(track => track.stop());
-                }
-            }
-        }
-
-        // دالة معالجة رفع الصور
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = new Image();
-                img.onload = async () => {
-                    const preview = document.getElementById('previewImage');
-                    preview.src = img.src;
-                    preview.classList.add('show');
-                    await decodeImageQR(img);
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // دالة فك تشفير صورة QR
-        async function decodeImageQR(img) {
-            try {
-                const canvas = document.getElementById('qrCanvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0);
-                
-                // محاولة المسح باستخدام jsQR
-                try {
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                        inversionAttempts: 'dontInvert'
-                    });
-
-                    if (code) {
-                        handleQRDetected(code.data, 'upload');
-                        return;
-                    }
-                } catch (e) {
-                    // تجاهل
-                }
-
-                // محاولة المسح باستخدام llqrcode
-                try {
-                    if (typeof qrcode !== 'undefined' && typeof qrcode.decode === 'function') {
-                        const result = qrcode.decode();
-                        handleQRDetected(result, 'upload');
-                        return;
-                    }
-                } catch (e) {
-                    // تجاهل
-                }
-
-                showResult('uploadResult', 'لم يتم العثور على كود QR', 'error');
-            } catch (error) {
-                showResult('uploadResult', 'خطأ في المسح: ' + error.message, 'error');
-            }
-        }
-
-        // دالة معالجة الكود المكتشف
-        function handleQRDetected(data, mode = 'camera') {
-            lastResult = data;
-            const resultId = mode === 'camera' ? 'cameraResult' : 'uploadResult';
-            
-            // إضافة إلى السجل
-            addToHistory(data);
-            
-            if (data.startsWith('http')) {
-                const resultBox = document.getElementById(resultId);
-                resultBox.innerHTML = `
-                    <div>
-                        <a href="${data}" target="_blank" class="result-link">${data}</a>
-                        <div class="result-actions">
-                            <button class="result-btn" onclick="copyToClipboard('${data.replace(/'/g, "\\'")}')">📋 نسخ</button>
-                            <button class="result-btn" onclick="window.open('${data}', '_blank')">🌐 فتح</button>
-                        </div>
-                    </div>
-                `;
-                resultBox.classList.remove('error');
-                resultBox.classList.add('success');
-                showNotification('تم العثور على رابط!', 'success');
-                
-                setTimeout(() => {
-                    window.location.href = data;
-                }, 500);
+      const startCam = async facing => {
+        try { await qr.stop(); } catch(e) {}
+        isPaused = false; scanLine.style.animationPlayState = 'running';
+        try {
+          await qr.start({ facingMode: facing }, { fps: 14, qrbox: { width: 230, height: 230 } }, onScan, () => {});
+          const vid = document.querySelector('#reader video');
+          track = vid?.srcObject?.getVideoTracks()[0] || null;
+          
+          if (track) {
+            const caps = track.getCapabilities();
+            torchBtn.style.opacity = caps.torch ? 1 : 0.3;
+            if (caps.zoom) {
+              zoomSlider.min = caps.zoom.min;
+              zoomSlider.max = caps.zoom.max;
+              zoomSlider.step = caps.zoom.step || 0.1;
+              zoomSlider.value = track.getSettings().zoom || 1.0;
+              zoomSlider.disabled = false;
+              zoomVal.textContent = `${parseFloat(zoomSlider.value).toFixed(1)}x`;
+              zoomReset.style.display = parseFloat(zoomSlider.value) > 1.05 ? 'block' : 'none';
             } else {
-                const resultBox = document.getElementById(resultId);
-                resultBox.innerHTML = `
-                    <div>
-                        <span class="result-link">${data}</span>
-                        <div class="result-actions">
-                            <button class="result-btn" onclick="copyToClipboard('${data.replace(/'/g, "\\'")}')">📋 نسخ</button>
-                        </div>
-                    </div>
-                `;
-                resultBox.classList.remove('error');
-                resultBox.classList.add('success');
-                showNotification('تم القراءة بنجاح!', 'success');
+              zoomSlider.disabled = true;
+              zoomVal.textContent = 'غير مدعوم';
+              zoomReset.style.display = 'none';
             }
-
-            if (mode === 'camera') {
-                isScanning = false;
-                setTimeout(() => {
-                    isScanning = true;
-                    startHighPrecisionScanning();
-                }, 2000);
-            }
+          }
+          switchBtn.innerHTML = facing === 'environment' ? '<i class="fa-solid fa-camera-rotate"></i> أمامية' : '<i class="fa-solid fa-camera-rotate"></i> خلفية';
+        } catch(e) {
+          document.getElementById('reader').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);padding:1rem;text-align:center">📷 يرجى السماح بالكاميرا أو استخدم رفع الصور</div>';
         }
+      };
 
-        // دالة إعادة تعيين رفع الصور
-        function resetUpload() {
-            document.getElementById('imageInput').value = '';
-            document.getElementById('previewImage').classList.remove('show');
-            showResult('uploadResult', 'اختر صورة تحتوي على كود QR', 'default');
-        }
+      switchBtn.onclick = () => { camMode = camMode === 'environment' ? 'user' : 'environment'; startCam(camMode); };
+      torchBtn.onclick = async () => {
+        if (!track) return toastFn('الكاميرا غير نشطة');
+        const state = track.getSettings().torch;
+        try {
+          await track.applyConstraints({ advanced: [{ torch: !state }] });
+          torchBtn.classList.toggle('active', !state);
+          toastFn(!state ? '🔦 تم تشغيل الإضاءة' : '💡 تم إيقاف الإضاءة');
+        } catch { toastFn('⚠️ الجهاز لا يدعم التحكم بالإضاءة'); }
+      };
 
-        // بدء التشغيل عند تحميل الصفحة
-        window.addEventListener('load', () => {
-            loadHistory();
-            startCamera();
-        });
+      const onScan = decoded => {
+        if (isPaused || decoded === lastRes) return;
+        isPaused = true; qr.pause(); scanLine.style.animationPlayState = 'paused';
+        showRes(decoded);
+        toastFn('✅ تم التعرف بنجاح');
+        setTimeout(() => { qr.resume(); isPaused = false; lastRes = ''; scanLine.style.animationPlayState = 'running'; }, 2500);
+      };
 
-        // تحديث السجل عند إغلاق التطبيق
-        window.addEventListener('beforeunload', () => {
-            localStorage.setItem('qrHistory', JSON.stringify(scanHistory));
-        });
-    </script>
+      uploadBtn.onclick = () => fileIn.click();
+      fileIn.onchange = async e => {
+        const f = e.target.files[0]; if (!f) return;
+        uploadBtn.classList.add('loading'); uploadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التحليل...';
+        try {
+          const res = await qr.scanFile(f, false);
+          showRes(res); toastFn('📷 تم استخراج البيانات');
+        } catch { toastFn('❌ لم يتم العثور على رمز واضح'); }
+        uploadBtn.classList.remove('loading'); uploadBtn.innerHTML = '<i class="fa-solid fa-image"></i> رفع صورة QR من المعرض';
+        fileIn.value = '';
+      };
+
+      $('copy-all-btn').onclick = () => { if(lastRes) navigator.clipboard.writeText(lastRes).then(()=>toastFn('📋 تم النسخ')); };
+      openBtn.onclick = () => isUrl(lastRes) && window.open(lastRes, '_blank');
+      shareBtn.onclick = () => {
+        if (navigator.share) navigator.share({ title: 'ALHYTHAM QR', text: lastRes, url: isUrl(lastRes) ? lastRes : undefined });
+        else $('copy-all-btn').click();
+      };
+      soundBtn.onclick = () => { soundOn = !soundOn; soundBtn.classList.toggle('active', soundOn); toastFn(soundOn ? '🔊 الصوت مفعل' : '🔇 الصوت صامت'); };
+      $('export-hist-btn').onclick = () => {
+        const h = JSON.parse(localStorage.getItem('qr_hist') || '[]');
+        const txt = h.map(i => `[${new Date(i.time).toLocaleString()}] ${i.t}`).join('\n') || 'السجل فارغ';
+        const blob = new Blob([txt], { type: 'text/plain' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `ALHYTHAM_QR_History_${new Date().toISOString().slice(0,10)}.txt`;
+        a.click(); toastFn('📥 تم تصدير السجل');
+      };
+
+      themeBtn.onclick = () => {
+        document.body.classList.toggle('style-dark');
+        const dark = document.body.classList.contains('style-dark');
+        themeBtn.innerHTML = dark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+        localStorage.setItem('theme', dark ? 'dark' : 'light');
+        document.querySelector('meta[name="theme-color"]').content = dark ? '#0b1120' : '#4f46e5';
+      };
+      styleBtn.onclick = () => modal.classList.add('active');
+      closeStyle.onclick = () => modal.classList.remove('active');
+      document.querySelectorAll('.style-opt').forEach(opt => {
+        opt.onclick = () => {
+          document.querySelectorAll('.style-opt').forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+          document.body.className = document.body.className.replace(/style-\w+/g, '');
+          if (opt.dataset.style) document.body.classList.add(opt.dataset.style);
+          localStorage.setItem('style', opt.dataset.style);
+        };
+      });
+
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') { document.body.classList.add('style-dark'); themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>'; }
+      const savedStyle = localStorage.getItem('style');
+      if (savedStyle) { document.body.classList.add(savedStyle); document.querySelectorAll('.style-opt').forEach(o => o.classList.toggle('selected', o.dataset.style === savedStyle)); }
+      loadHist();
+      startCam(camMode);
+    });
+  </script>
 </body>
 </html>
