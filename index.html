@@ -2,9 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALHYTHAM QR - الاحترافي</title>
-    <!-- استخدام نفس المكتبات التي يعتمد عليها الموقع المرجعي لضمان الاستقرار -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALHYTHAM QR - الإصدار النهائي</title>
     <script src="https://webqr.com/llqrcode.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,151 +11,206 @@
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         
         body {
-            background-color: #000000;
-            color: #ffffff;
+            background-color: #000;
+            color: #fff;
             font-family: 'Cairo', sans-serif;
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        #outdiv {
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-            border: 2px solid #8b5cf6;
-            border-radius: 15px;
-            overflow: hidden;
-            background: #111;
+        /* حاوية الكاميرا - تم إصلاح الأبعاد لمنع التكرار */
+        .camera-container {
             position: relative;
-            aspect-ratio: 4/3;
+            width: 100%;
+            max-width: 450px;
+            aspect-ratio: 1/1;
+            margin: 0 auto;
+            border: 3px solid #8b5cf6;
+            border-radius: 24px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
         }
 
         video {
             width: 100% !important;
             height: 100% !important;
             object-fit: cover !important;
+            /* منع تكرار الصورة في بعض المتصفحات */
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
-        .scanner-line {
+        /* خط المسح - تم تحسينه ليكون أكثر وضوحاً ولا يتداخل مع الفيديو */
+        .scan-line {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 2px;
-            background: #8b5cf6;
-            box-shadow: 0 0 15px #8b5cf6;
-            animation: scan 2s linear infinite;
-            z-index: 10;
+            height: 4px;
+            background: linear-gradient(to right, transparent, #8b5cf6, #d8b4fe, #8b5cf6, transparent);
+            box-shadow: 0 0 20px #8b5cf6;
+            animation: moveScan 3s ease-in-out infinite;
+            z-index: 20;
+            pointer-events: none;
         }
 
-        @keyframes scan {
-            0% { top: 0; }
-            100% { top: 100%; }
+        @keyframes moveScan {
+            0%, 100% { top: 10%; opacity: 0.3; }
+            50% { top: 90%; opacity: 1; }
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
+        .glass-ui {
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px 30px 0 0;
+            padding: 25px;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            z-index: 100;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            transition: all 0.3s;
+        .btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-weight: bold;
+            border-radius: 16px;
         }
 
-        .btn-primary:active {
+        .btn:active {
             transform: scale(0.95);
         }
 
-        #result {
+        .loading-screen {
+            position: absolute;
+            inset: 0;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        /* إخفاء الكانفاس تماماً */
+        #qr-canvas {
             display: none;
         }
     </style>
 </head>
-<body class="p-4 flex flex-col items-center justify-center min-h-screen">
+<body>
 
-    <div class="w-full max-w-md text-center">
-        <h1 class="text-4xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-            ALHYTHAM QR
-        </h1>
-        <p class="text-gray-400 mb-8 text-sm">التوجيه التلقائي المباشر للروابط</p>
+    <!-- واجهة التحميل -->
+    <div id="loading" class="loading-screen">
+        <div class="relative w-20 h-20">
+            <div class="absolute inset-0 border-4 border-purple-500/20 rounded-full"></div>
+            <div class="absolute inset-0 border-4 border-t-purple-500 rounded-full animate-spin"></div>
+        </div>
+        <p class="mt-4 text-purple-400 font-bold">جاري تشغيل الكاميرا...</p>
+    </div>
 
-        <div class="glass-card p-6 shadow-2xl relative">
-            <div id="outdiv">
-                <video id="v" autoplay playsinline></video>
-                <div class="scanner-line"></div>
-            </div>
+    <div class="w-full h-full flex flex-col items-center p-4">
+        <!-- العنوان -->
+        <div class="text-center mb-6 pt-4">
+            <h1 class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                ALHYTHAM QR
+            </h1>
+            <p class="text-gray-500 text-xs mt-1">الاحترافي للتوجيه المباشر</p>
+        </div>
 
-            <div class="flex gap-3 mt-6">
-                <button onclick="location.reload()" class="flex-1 bg-gray-800 hover:bg-gray-700 py-3 rounded-xl font-bold flex items-center justify-center gap-2 border border-gray-600">
-                    <i class="fas fa-sync-alt"></i>
+        <!-- منطقة الكاميرا -->
+        <div class="camera-container">
+            <video id="v" autoplay playsinline muted></video>
+            <div class="scan-line"></div>
+            
+            <!-- إطار التركيز -->
+            <div class="absolute inset-0 border-[40px] border-black/40 pointer-events-none"></div>
+            <div class="absolute top-10 left-10 w-10 h-10 border-t-4 border-l-4 border-purple-500 rounded-tl-lg"></div>
+            <div class="absolute top-10 right-10 w-10 h-10 border-t-4 border-r-4 border-purple-500 rounded-tr-lg"></div>
+            <div class="absolute bottom-10 left-10 w-10 h-10 border-b-4 border-l-4 border-purple-500 rounded-bl-lg"></div>
+            <div class="absolute bottom-10 right-10 w-10 h-10 border-b-4 border-r-4 border-purple-500 rounded-br-lg"></div>
+        </div>
+
+        <!-- القائمة السفلية -->
+        <div class="glass-ui max-w-md mx-auto">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <button onclick="location.reload()" class="btn bg-gray-800 hover:bg-gray-700 py-4 border border-gray-700">
+                    <i class="fas fa-sync-alt text-purple-400"></i>
                     تحديث
                 </button>
-                <a href="intent://#Intent;scheme=https;package=com.android.chrome;end" id="chromeLink" class="flex-1 bg-gray-800 hover:bg-gray-700 py-3 rounded-xl font-bold flex items-center justify-center gap-2 border border-gray-600">
+                <a href="#" id="chromeLink" class="btn bg-gray-800 hover:bg-gray-700 py-4 border border-gray-700">
                     <i class="fab fa-chrome text-blue-400"></i>
                     Chrome
                 </a>
             </div>
             
-            <div class="mt-4">
-                <label class="cursor-pointer bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 py-2 px-4 rounded-lg border border-purple-500/30 text-sm block">
-                    <i class="fas fa-image mr-2"></i> مسح من صورة
-                    <input type="file" class="hidden" onchange="handleFile(this)">
-                </label>
-            </div>
+            <label class="btn w-full bg-purple-600 hover:bg-purple-700 py-4 cursor-pointer shadow-lg shadow-purple-600/20">
+                <i class="fas fa-image"></i>
+                مسح من الاستوديو
+                <input type="file" class="hidden" accept="image/*" onchange="handleFile(this)">
+            </label>
+            
+            <p class="text-center text-[10px] text-gray-600 mt-6 tracking-widest uppercase">Powered by ALHYTHAM Tech</p>
         </div>
-
-        <p class="mt-8 text-gray-600 text-xs tracking-widest uppercase">Powered by ALHYTHAM Tech</p>
     </div>
 
-    <canvas id="qr-canvas" class="hidden"></canvas>
-    <div id="result"></div>
+    <canvas id="qr-canvas"></canvas>
 
     <script>
+        const v = document.getElementById("v");
+        const gCanvas = document.getElementById("qr-canvas");
+        const loading = document.getElementById("loading");
         let gCtx = null;
-        let v = document.getElementById("v");
-        let gCanvas = document.getElementById("qr-canvas");
-        let gStream = null;
+        let scanning = false;
 
-        function initCanvas(w, h) {
-            gCanvas.width = w;
-            gCanvas.height = h;
-            gCtx = gCanvas.getContext("2d");
-            gCtx.clearRect(0, 0, w, h);
+        // تهيئة الكانفاس بأبعاد ثابتة لضمان دقة المسح
+        function initCanvas() {
+            gCanvas.width = 480;
+            gCanvas.height = 480;
+            gCtx = gCanvas.getContext("2d", { alpha: false });
         }
 
-        function captureToCanvas() {
-            if (v.paused || v.ended) return;
-            try {
-                gCtx.drawImage(v, 0, 0);
+        function scanFrame() {
+            if (!scanning) return;
+            if (v.readyState === v.HAVE_ENOUGH_DATA) {
                 try {
-                    qrcode.decode();
+                    // قص الجزء المربع من وسط الفيديو لمنع التشوه
+                    const size = Math.min(v.videoWidth, v.videoHeight);
+                    const startX = (v.videoWidth - size) / 2;
+                    const startY = (v.videoHeight - size) / 2;
+                    
+                    gCtx.drawImage(v, startX, startY, size, size, 0, 0, gCanvas.width, gCanvas.height);
+                    
+                    try {
+                        qrcode.decode();
+                    } catch (e) {
+                        // استمرار المسح إذا لم يجد كود
+                        setTimeout(scanFrame, 150);
+                    }
                 } catch (e) {
-                    setTimeout(captureToCanvas, 500);
+                    setTimeout(scanFrame, 150);
                 }
-            } catch (e) {
-                setTimeout(captureToCanvas, 500);
-            }
-        }
-
-        function handleFile(input) {
-            if (input.files && input.files[0]) {
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    qrcode.decode(e.target.result);
-                };
-                reader.readAsDataURL(input.files[0]);
+            } else {
+                setTimeout(scanFrame, 150);
             }
         }
 
         qrcode.callback = function(data) {
             if (data && data !== "error decoding QR Code") {
+                scanning = false;
                 if (navigator.vibrate) navigator.vibrate(200);
                 
-                // التوجيه التلقائي المباشر
                 let url = data;
                 if (!url.startsWith("http") && (url.includes(".") || url.includes("localhost"))) {
                     url = "https://" + url;
@@ -164,37 +218,74 @@
                 
                 try {
                     new URL(url);
-                    window.location.href = url;
+                    window.location.replace(url);
                 } catch (e) {
                     alert("النتيجة: " + data);
-                    location.reload();
+                    scanning = true;
+                    scanFrame();
                 }
             } else {
-                setTimeout(captureToCanvas, 500);
+                if (scanning) setTimeout(scanFrame, 150);
             }
         };
 
-        async function setupCamera() {
-            try {
-                const constraints = {
-                    video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } }
+        function handleFile(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    qrcode.decode(e.target.result);
                 };
-                gStream = await navigator.mediaDevices.getUserMedia(constraints);
-                v.srcObject = gStream;
-                v.onloadedmetadata = function() {
-                    initCanvas(v.videoWidth, v.videoHeight);
-                    captureToCanvas();
-                };
-            } catch (err) {
-                console.error("Camera Error:", err);
-                document.getElementById("outdiv").innerHTML = `<div class="p-8 text-center text-red-500 text-sm">خطأ: يرجى منح إذن الكاميرا وتحديث الصفحة</div>`;
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
-        window.onload = function() {
-            document.getElementById("chromeLink").href = `intent://${window.location.href.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end`;
-            setupCamera();
+        async function startCamera() {
+            try {
+                // استخدام إعدادات دقيقة لمنع تكرار الصورة
+                const constraints = {
+                    video: { 
+                        facingMode: "environment",
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false
+                };
+
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                v.srcObject = stream;
+                
+                v.onloadedmetadata = () => {
+                    loading.style.opacity = '0';
+                    setTimeout(() => loading.style.display = 'none', 500);
+                    v.play();
+                    scanning = true;
+                    initCanvas();
+                    scanFrame();
+                };
+            } catch (err) {
+                console.error(err);
+                loading.innerHTML = `<div class="p-6 text-center"><i class="fas fa-camera-slash text-4xl mb-4"></i><p>فشل الوصول للكاميرا. يرجى تفعيل الإذن.</p></div>`;
+            }
+        }
+
+        window.onload = () => {
+            // تحديث رابط Chrome ليعمل بشكل صحيح
+            const cleanUrl = window.location.href.replace(/^https?:\/\//, '');
+            document.getElementById("chromeLink").href = `intent://${cleanUrl}#Intent;scheme=https;package=com.android.chrome;end`;
+            startCamera();
         };
+
+        // التعامل مع خروج الصفحة من التركيز
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                scanning = false;
+            } else {
+                if (!scanning && v.srcObject) {
+                    scanning = true;
+                    scanFrame();
+                }
+            }
+        });
     </script>
 </body>
 </html>
