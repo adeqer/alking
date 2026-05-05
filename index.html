@@ -441,7 +441,18 @@
             }
             
             html5QrCode = new Html5Qrcode("reader");
-            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+            // إعدادات الدقة العالية
+            const config = { 
+                fps: 20, 
+                qrbox: { width: 280, height: 280 },
+                aspectRatio: 1.0,
+                videoConstraints: {
+                    facingMode: currentFacingMode,
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    frameRate: { ideal: 30 }
+                }
+            };
             
             try {
                 await html5QrCode.start(
