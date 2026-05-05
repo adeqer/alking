@@ -3,369 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0b0f19">
-    <title>ALHYTHAM QR | Professional</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#05070a">
+    <title>ALHYTHAM QR | Direct Redirect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <style>
         :root {
             --bg: #05070a;
-            --surface: rgba(20, 25, 40, 0.65);
-            --surface-border: rgba(255, 255, 255, 0.08);
+            --surface: rgba(20, 25, 40, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
             --primary: #3b82f6;
-            --primary-glow: rgba(59, 130, 246, 0.4);
-            --accent: #10b981;
+            --primary-glow: rgba(59, 130, 246, 0.35);
+            --success: #10b981;
             --text: #f8fafc;
             --text-muted: #94a3b8;
             --radius: 20px;
-            --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body {
             font-family: 'Cairo', sans-serif;
-            background: radial-gradient(1200px 800px at 50% -20%, #1a2345 0%, var(--bg) 60%);
+            background: radial-gradient(1000px 700px at 50% -10%, #111827 0%, var(--bg) 65%);
             color: var(--text);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
         }
-        header {
-            text-align: center;
-            padding: 2rem 1rem 1.5rem;
-        }
+        header { text-align: center; padding: 2rem 1rem 1rem; }
         header h1 {
-            font-size: 2.2rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.4rem;
-            letter-spacing: -0.5px;
+            font-size: 2.1rem; font-weight: 800;
+            background: linear-gradient(135deg, #fff, #60a5fa);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 0.3rem;
         }
-        header p { color: var(--text-muted); font-size: 0.95rem; font-weight: 500; }
-        main {
-            flex: 1;
-            padding: 1rem;
-            max-width: 680px;
-            margin: 0 auto;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-        .glass-card {
-            background: var(--surface);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--surface-border);
-            border-radius: var(--radius);
-            padding: 1.25rem;
-            box-shadow: var(--shadow);
-        }
-        /* Scanner Container */
-        .scanner-wrapper {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            min-height: 320px;
-            border-radius: 16px;
-            overflow: hidden;
-            background: #0a0d14;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #reader {
-            width: 100% !important;
-            height: 100% !important;
-            position: relative;
-            z-index: 2;
-        }
-        #reader video, #reader img {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover;
-            border-radius: 16px;
-        }
-        /* Hide default library UI */
-        #reader__dashboard, #reader__scan_region > button, .html5-qrcode-anchor-scan-type-change { display: none !important; }
+        header p { color: var(--text-muted); font-size: 0.9rem; }
         
-        /* Custom Scanning Frame */
-        .scanner-frame {
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 75%; aspect-ratio: 1/1;
-            transform: translate(-50%, -50%);
-            z-index: 3;
-            pointer-events: none;
+        main {
+            flex: 1; padding: 1rem; max-width: 650px; margin: 0 auto; width: 100%;
+            display: flex; flex-direction: column; gap: 1.2rem;
         }
-        .corner {
-            position: absolute;
-            width: 32px; height: 32px;
-            border: 4px solid var(--primary);
-            box-shadow: 0 0 12px var(--primary-glow);
+        .card {
+            background: var(--surface);
+            backdrop-filter: blur(18px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
-        .corner.tl { top: 0; left: 0; border-right: 0; border-bottom: 0; border-radius: 8px 0 0 0; }
-        .corner.tr { top: 0; right: 0; border-left: 0; border-bottom: 0; border-radius: 0 8px 0 0; }
-        .corner.bl { bottom: 0; left: 0; border-right: 0; border-top: 0; border-radius: 0 0 0 8px; }
-        .corner.br { bottom: 0; right: 0; border-left: 0; border-top: 0; border-radius: 0 0 8px 0; }
-        .scan-line {
-            position: absolute;
-            top: 0; left: 10%;
-            width: 80%; height: 3px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-            box-shadow: 0 0 10px var(--primary);
-            animation: scan 2.5s ease-in-out infinite;
+        .scanner-box {
+            position: relative; width: 100%; aspect-ratio: 1/1; min-height: 300px;
+            border-radius: 16px; overflow: hidden; background: #0a0d14;
         }
-        @keyframes scan {
-            0%, 100% { top: 10%; opacity: 0; }
-            50% { top: 90%; opacity: 1; }
-        }
-        .scanner-overlay-text {
-            position: absolute;
-            bottom: 16px; left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            padding: 0.4rem 0.9rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: #e2e8f0;
-            z-index: 4;
-            white-space: nowrap;
-        }
+        #reader { width: 100% !important; height: 100% !important; position: relative; z-index: 2; }
+        #reader video, #reader img { width: 100% !important; height: 100% !important; object-fit: cover; }
+        #reader__dashboard, #reader__scan_region > button, .html5-qrcode-anchor-scan-type-change { display: none !important; }
 
-        /* Controls */
-        .controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.8rem;
-            margin-top: 1rem;
-        }
+        /* Custom Frame */
+        .frame { position: absolute; top: 50%; left: 50%; width: 72%; aspect-ratio: 1/1; transform: translate(-50%, -50%); z-index: 3; pointer-events: none; }
+        .corner { position: absolute; width: 30px; height: 30px; border: 3px solid var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
+        .tl { top:0; left:0; border-right:0; border-bottom:0; border-radius: 8px 0 0 0; }
+        .tr { top:0; right:0; border-left:0; border-bottom:0; border-radius: 0 8px 0 0; }
+        .bl { bottom:0; left:0; border-right:0; border-top:0; border-radius: 0 0 0 8px; }
+        .br { bottom:0; right:0; border-left:0; border-top:0; border-radius: 0 0 8px 0; }
+        .laser { position: absolute; top: 0; left: 10%; width: 80%; height: 2px; background: var(--primary); box-shadow: 0 0 8px var(--primary); animation: move 2s linear infinite; }
+        @keyframes move { 0%,100% { top: 10%; opacity:0; } 50% { top: 90%; opacity:1; } }
+        .status { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; color: #e2e8f0; z-index: 4; white-space: nowrap; }
+
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-top: 0.8rem; }
         button, .file-label {
-            padding: 0.9rem;
-            border: none;
-            border-radius: 12px;
-            font-family: inherit;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            background: rgba(255,255,255,0.05);
-            color: var(--text);
-            border: 1px solid var(--surface-border);
+            padding: 0.85rem; border: none; border-radius: 12px; font-family: inherit; font-weight: 600; font-size: 0.9rem;
+            cursor: pointer; transition: 0.25s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border);
         }
         button:hover, .file-label:hover { background: rgba(255,255,255,0.12); transform: translateY(-2px); }
-        .btn-primary { background: var(--primary); color: #fff; border: none; box-shadow: 0 4px 12px var(--primary-glow); }
-        .btn-primary:hover { background: #2563eb; }
-        .btn-active { background: #ef4444; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
+        .btn-on { background: var(--primary); color: #fff; border: none; box-shadow: 0 4px 12px var(--primary-glow); }
+        .btn-off { background: #ef4444; box-shadow: 0 4px 12px rgba(239,68,68,0.3); }
         #file-input { display: none; }
 
-        /* Toast Notification */
-        #toast {
-            position: fixed;
-            top: 20px; left: 50%;
-            transform: translateX(-50%) translateY(-20px);
-            background: var(--accent);
-            color: #050a15;
-            padding: 0.8rem 1.2rem;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
-            z-index: 1000;
-            opacity: 0;
-            transition: all 0.3s ease;
-            pointer-events: none;
-        }
-        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-        #toast a { color: #050a15; text-decoration: underline; margin-right: 5px; }
+        .history { display: none; }
+        .history.active { display: block; animation: up 0.3s ease; }
+        @keyframes up { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+        .log { list-style: none; margin-top: 0.6rem; max-height: 150px; overflow-y: auto; }
+        .log li { padding: 0.5rem 0.7rem; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 0.4rem; font-size: 0.8rem; display: flex; justify-content: space-between; }
+        .log li a { color: var(--primary); text-decoration: none; word-break: break-all; flex: 1; }
+        .log li span { color: var(--text-muted); font-size: 0.7rem; margin-right: 0.5rem; white-space: nowrap; }
 
-        /* History Log */
-        .history-card { display: none; }
-        .history-card.active { display: block; animation: fadeUp 0.4s ease; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .history-list { list-style: none; margin-top: 0.8rem; max-height: 180px; overflow-y: auto; }
-        .history-list li {
-            padding: 0.6rem 0.8rem;
-            background: rgba(255,255,255,0.03);
-            border-radius: 8px;
-            margin-bottom: 0.5rem;
-            font-size: 0.85rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .history-list li a { color: var(--primary); text-decoration: none; word-break: break-all; flex: 1; }
-        .history-list li span { color: var(--text-muted); font-size: 0.75rem; margin-right: 0.5rem; white-space: nowrap; }
-
-        footer {
-            text-align: center;
-            padding: 1.5rem 1rem;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            border-top: 1px solid var(--surface-border);
-            margin-top: auto;
-        }
+        footer { text-align: center; padding: 1.2rem; color: var(--text-muted); font-size: 0.75rem; border-top: 1px solid var(--border); margin-top: auto; }
     </style>
 </head>
 <body>
     <header>
         <h1>ALHYTHAM QR</h1>
-        <p>المسح الذكي • التوجيه الفوري • الحفظ التلقائي</p>
+        <p>المسح الذكي • التوجيه الفوري التلقائي</p>
     </header>
 
     <main>
-        <div class="glass-card">
-            <div class="scanner-wrapper">
+        <div class="card">
+            <div class="scanner-box">
                 <div id="reader"></div>
-                <div class="scanner-frame">
+                <div class="frame">
                     <div class="corner tl"></div><div class="corner tr"></div>
                     <div class="corner bl"></div><div class="corner br"></div>
-                    <div class="scan-line"></div>
+                    <div class="laser"></div>
                 </div>
-                <div class="scanner-overlay-text" id="status-text">اضغط على تشغيل الكاميرا أو ارفع صورة</div>
+                <div class="status" id="status">جاهز للمسح</div>
             </div>
             <div class="controls">
-                <button id="start-btn" class="btn-primary">📷 تشغيل الكاميرا</button>
-                <label for="file-input" class="file-label">🖼️ مسح من صورة</label>
+                <button id="cam-btn" class="btn-on">📷 تشغيل الكاميرا</button>
+                <label for="file-input" class="file-label">🖼️ رفع صورة</label>
                 <input type="file" id="file-input" accept="image/*">
-                <button id="reset-btn" class="btn-secondary" style="grid-column: span 2;">🔄 إعادة تعيين</button>
+                <button id="reset-btn" style="grid-column: span 2;">🔄 إعادة تعيين</button>
             </div>
         </div>
 
-        <div id="history" class="glass-card history-card">
-            <h3 style="font-size: 1.1rem; margin-bottom: 0.5rem;">📜 سجل المسح التلقائي</h3>
-            <ul class="history-list" id="history-list"></ul>
+        <div id="hist" class="card history">
+            <h3 style="font-size: 1rem; margin-bottom: 0.4rem;">📜 سجل التوجيه التلقائي</h3>
+            <ul class="log" id="log"></ul>
         </div>
     </main>
 
     <footer>Powered by ALHYTHAM Tech • © 2026</footer>
 
-    <div id="toast"></div>
-
     <script>
-        const startBtn = document.getElementById('start-btn');
+        const camBtn = document.getElementById('cam-btn');
         const fileInput = document.getElementById('file-input');
         const resetBtn = document.getElementById('reset-btn');
-        const statusText = document.getElementById('status-text');
-        const toast = document.getElementById('toast');
-        const historyCard = document.getElementById('history');
-        const historyList = document.getElementById('history-list');
+        const status = document.getElementById('status');
+        const hist = document.getElementById('hist');
+        const log = document.getElementById('log');
 
-        let html5QrCode = null;
-        let isScanning = false;
+        let scanner = null;
+        let active = false;
 
-        // تهيئة الماسح بدون واجهة افتراضية للتحكم الكامل
-        function initScanner() {
-            if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
+        function init() {
+            if (!scanner) scanner = new Html5Qrcode("reader");
         }
 
-        function showToast(msg, isLink = false, url = '') {
-            toast.innerHTML = msg + (isLink ? ` <a href="${url}" target="_blank">فتح</a>` : '');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3500);
+        function redirect(url) {
+            status.textContent = '✅ جاري التوجيه التلقائي...';
+            // نسخ احتياطي وسجل
+            try { navigator.clipboard.writeText(url); } catch(e){}
+            const time = new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+            log.innerHTML = `<li><a href="${url}" target="_blank" rel="noopener">${url}</a><span>${time}</span></li>` + log.innerHTML;
+            hist.classList.add('active');
+
+            // التوجيه المباشر التلقائي (أهم خطوة)
+            window.location.href = url;
         }
 
-        function saveToHistory(url) {
-            const time = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-            const li = document.createElement('li');
-            li.innerHTML = `<a href="${url}" target="_blank" rel="noopener">${url}</a><span>${time}</span>`;
-            historyList.prepend(li);
-            historyCard.classList.add('active');
-        }
-
-        async function handleSuccess(decodedText) {
-            stopScanner();
-            statusText.textContent = '✅ تم التعرف على الرمز بنجاح';
-            
-            // حفظ تلقائي في السجل
-            saveToHistory(decodedText);
-            
-            // نسخ تلقائي للحافظة
-            try { await navigator.clipboard.writeText(decodedText); } catch(e) {}
-            
-            // فتح تلقائي في نافذة جديدة
-            window.open(decodedText, '_blank', 'noopener,noreferrer');
-            
-            showToast(`📋 تم النسخ والفتح تلقائياً`, true, decodedText);
-        }
-
-        function startCamera() {
-            initScanner();
-            const config = {
-                fps: 15,
-                qrbox: undefined, // استخدام المربع المخصص في CSS
-                aspectRatio: 1.0,
-                videoConstraints: {
-                    facingMode: "environment",
-                    width: { ideal: 3840 }, // طلب 4K لأفضل وضوح
-                    height: { ideal: 2160 },
-                    advanced: [{ focusMode: "continuous" }]
-                }
-            };
-
-            html5QrCode.start(
+        function startCam() {
+            init();
+            scanner.start(
                 { facingMode: "environment" },
-                config,
-                (decodedText) => handleSuccess(decodedText),
+                { fps: 15, qrbox: undefined, aspectRatio: 1.0, videoConstraints: { facingMode: "environment", width: { ideal: 1920 }, height: { ideal: 1080 } } },
+                (txt) => {
+                    let url = txt.trim();
+                    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+                    redirect(url);
+                },
                 () => {}
             ).then(() => {
-                isScanning = true;
-                startBtn.textContent = '⏹ إيقاف الكاميرا';
-                startBtn.classList.add('btn-active');
-                startBtn.classList.remove('btn-primary');
-                statusText.textContent = 'جاري المسح... وجّه الرمز داخل الإطار';
-            }).catch(err => {
-                statusText.textContent = '⚠️ تعذر فتح الكاميرا. تأكد من الصلاحيات';
-                console.error(err);
-            });
+                active = true;
+                camBtn.textContent = '⏹ إيقاف';
+                camBtn.classList.replace('btn-on', 'btn-off');
+                status.textContent = 'وجّه الرمز داخل الإطار';
+            }).catch(e => { status.textContent = '⚠️ صلاحية الكاميرا مطلوبة'; });
         }
 
-        function stopScanner() {
-            if (html5QrCode && html5QrCode.isScanning) {
-                html5QrCode.stop().then(() => {
-                    html5QrCode.clear();
-                    isScanning = false;
-                    startBtn.textContent = '📷 تشغيل الكاميرا';
-                    startBtn.classList.remove('btn-active');
-                    startBtn.classList.add('btn-primary');
-                }).catch(() => {});
+        function stop() {
+            if (scanner && scanner.isScanning) {
+                scanner.stop().then(() => {
+                    scanner.clear();
+                    active = false;
+                    camBtn.textContent = '📷 تشغيل الكاميرا';
+                    camBtn.classList.replace('btn-off', 'btn-on');
+                    status.textContent = 'جاهز للمسح';
+                });
             }
         }
 
-        startBtn.addEventListener('click', () => isScanning ? stopScanner() : startCamera());
+        camBtn.addEventListener('click', () => active ? stop() : startCam());
 
         fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            stopScanner();
-            statusText.textContent = '🔍 جاري تحليل الصورة...';
-            initScanner();
-            
-            html5QrCode.scanFile(file, true)
-                .then(decodedText => handleSuccess(decodedText))
-                .catch(() => {
-                    statusText.textContent = '❌ فشل القراءة. تأكد من وضوح الصورة';
-                });
+            const f = e.target.files[0];
+            if (!f) return;
+            stop();
+            status.textContent = '🔍 تحليل الصورة...';
+            init();
+            scanner.scanFile(f, true)
+                .then(txt => {
+                    let url = txt.trim();
+                    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+                    redirect(url);
+                })
+                .catch(() => status.textContent = '❌ فشل القراءة');
         });
 
         resetBtn.addEventListener('click', () => {
-            stopScanner();
-            statusText.textContent = 'اضغط على تشغيل الكاميرا أو ارفع صورة';
-            historyList.innerHTML = '';
-            historyCard.classList.remove('active');
-            fileInput.value = '';
+            stop(); log.innerHTML = ''; hist.classList.remove('active'); fileInput.value = ''; status.textContent = 'جاهز للمسح';
         });
 
-        // تنظيف عند مغادرة الصفحة
-        window.addEventListener('beforeunload', stopScanner);
+        window.addEventListener('beforeunload', stop);
     </script>
 </body>
 </html>
