@@ -149,10 +149,13 @@
 
         #reader video {
             object-fit: cover !important;
+            /* تحسين جودة الصورة */
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
         }
 
         .upload-area {
-            display: none;
+            display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
@@ -161,6 +164,7 @@
             border-radius: 16px;
             cursor: pointer;
             transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .upload-area:hover {
@@ -169,9 +173,8 @@
         }
 
         .upload-area i {
-            font-size: 48px;
-            color: var(--primary);
             margin-bottom: 15px;
+            color: var(--primary);
         }
 
         .controls {
@@ -183,7 +186,7 @@
 
         .btn {
             flex: 1;
-            padding: 12px 20px;
+            padding: 12px 15px;
             border-radius: 12px;
             border: none;
             cursor: pointer;
@@ -193,7 +196,8 @@
             justify-content: center;
             gap: 8px;
             transition: all 0.3s ease;
-            min-width: 140px;
+            min-width: 120px;
+            font-size: 0.9rem;
         }
 
         .btn-primary {
@@ -207,13 +211,21 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
+        .btn-accent {
+            background: rgba(34, 211, 238, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+        }
+
         .btn:hover {
             transform: translateY(-2px);
             filter: brightness(1.1);
         }
 
-        .btn:active {
-            transform: translateY(0);
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .result-card {
@@ -249,6 +261,7 @@
             padding: 10px;
             background: rgba(0, 0, 0, 0.2);
             border-radius: 8px;
+            text-align: center;
         }
 
         .result-actions {
@@ -278,13 +291,6 @@
         @keyframes slideIn {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            h1 { font-size: 1.8rem; }
-            .card { padding: 16px; }
-            .btn { font-size: 0.9rem; padding: 10px 15px; }
         }
 
         /* Scan line animation */
@@ -326,17 +332,17 @@
             </div>
             <h1>ALHYTHAM QR</h1>
         </div>
-        <p class="subtitle">مسح ضوئي سريع، آمن، واحترافي</p>
+        <p class="subtitle">مسح ضوئي فائق الدقة، سريع، واحترافي</p>
     </header>
 
     <main>
         <div class="card">
             <div class="tabs">
-                <button class="tab-btn active" onclick="switchTab('camera')">
+                <button class="tab-btn active" id="tab-camera" onclick="switchTab('camera')">
                     <i data-lucide="camera" size="18"></i>
                     الكاميرا
                 </button>
-                <button class="tab-btn" onclick="switchTab('upload')">
+                <button class="tab-btn" id="tab-upload" onclick="switchTab('upload')">
                     <i data-lucide="image" size="18"></i>
                     رفع صورة
                 </button>
@@ -352,20 +358,24 @@
                         <i data-lucide="refresh-cw" size="18"></i>
                         إعادة تحميل
                     </button>
-                    <button class="btn btn-secondary" id="switch-camera-btn" onclick="switchCamera()">
+                    <button class="btn btn-secondary" onclick="switchCamera()">
                         <i data-lucide="flip-horizontal" size="18"></i>
-                        تبديل الكاميرا
+                        تبديل
+                    </button>
+                    <button class="btn btn-accent" id="torch-btn" onclick="toggleTorch()" disabled>
+                        <i data-lucide="zap" size="18"></i>
+                        الفلاش
                     </button>
                 </div>
             </div>
 
             <div id="upload-section" style="display: none;">
                 <div class="upload-area" onclick="document.getElementById('file-input').click()">
-                    <i data-lucide="upload-cloud"></i>
-                    <p>اضغط هنا أو اسحب الصورة للمسح</p>
+                    <i data-lucide="upload-cloud" size="48"></i>
+                    <p>اضغط هنا لاختيار صورة من جهازك</p>
                     <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">يدعم PNG, JPG, JPEG</span>
                 </div>
-                <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="scanImage(this)">
+                <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
                 <canvas id="qr-canvas"></canvas>
             </div>
 
@@ -373,7 +383,7 @@
                 <div class="result-header">
                     <span class="result-label">
                         <i data-lucide="check-circle" size="18"></i>
-                        تم العثور على نتيجة:
+                        تم استخراج البيانات بنجاح:
                     </span>
                 </div>
                 <div id="result-text"></div>
@@ -408,14 +418,16 @@
 
         let html5QrCode;
         let currentFacingMode = "environment";
+        let isTorchOn = false;
         const resultContainer = document.getElementById('result-container');
         const resultText = document.getElementById('result-text');
         const openLinkBtn = document.getElementById('open-link-btn');
+        const torchBtn = document.getElementById('torch-btn');
 
         // Tab Switching
         function switchTab(tab) {
-            const camBtn = document.querySelector('.tab-btn:nth-child(1)');
-            const uploadBtn = document.querySelector('.tab-btn:nth-child(2)');
+            const camBtn = document.getElementById('tab-camera');
+            const uploadBtn = document.getElementById('tab-upload');
             const camSection = document.getElementById('camera-section');
             const uploadSection = document.getElementById('upload-section');
 
@@ -437,20 +449,30 @@
         // Camera Logic
         async function startCamera() {
             if (html5QrCode) {
-                await html5QrCode.stop().catch(() => {});
+                try {
+                    await html5QrCode.stop();
+                } catch (e) {}
             }
             
             html5QrCode = new Html5Qrcode("reader");
-            // إعدادات الدقة العالية
+            
+            // إعدادات الكاميرا الفائقة
             const config = { 
-                fps: 20, 
-                qrbox: { width: 280, height: 280 },
+                fps: 25, 
+                qrbox: (viewWidth, viewHeight) => {
+                    let size = Math.min(viewWidth, viewHeight) * 0.7;
+                    return { width: size, height: size };
+                },
                 aspectRatio: 1.0,
                 videoConstraints: {
                     facingMode: currentFacingMode,
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 },
-                    frameRate: { ideal: 30 }
+                    width: { ideal: 1920 }, // طلب أعلى دقة ممكنة
+                    height: { ideal: 1080 },
+                    frameRate: { ideal: 30 },
+                    // تحسينات إضافية لبعض المتصفحات
+                    whiteBalanceMode: "continuous",
+                    exposureMode: "continuous",
+                    focusMode: "continuous"
                 }
             };
             
@@ -461,9 +483,15 @@
                     onScanSuccess
                 );
                 document.getElementById('scanner-wrapper').classList.add('scanning');
+                
+                // التحقق من دعم الفلاش
+                setTimeout(() => {
+                    checkTorchSupport();
+                }, 1000);
+
             } catch (err) {
                 console.error("Error starting camera", err);
-                alert("تعذر الوصول إلى الكاميرا. يرجى التأكد من منح الصلاحيات.");
+                alert("تعذر الوصول إلى الكاميرا. يرجى التأكد من منح الصلاحيات واستخدام HTTPS.");
             }
         }
 
@@ -471,20 +499,45 @@
             if (html5QrCode && html5QrCode.isScanning) {
                 await html5QrCode.stop();
                 document.getElementById('scanner-wrapper').classList.remove('scanning');
+                torchBtn.disabled = true;
+            }
+        }
+
+        function checkTorchSupport() {
+            if (html5QrCode && html5QrCode.isScanning) {
+                const capabilities = html5QrCode.getRunningTrackCapabilities();
+                if (capabilities.torch) {
+                    torchBtn.disabled = false;
+                } else {
+                    torchBtn.disabled = true;
+                }
+            }
+        }
+
+        async function toggleTorch() {
+            if (html5QrCode && html5QrCode.isScanning) {
+                isTorchOn = !isTorchOn;
+                try {
+                    await html5QrCode.applyVideoConstraints({
+                        advanced: [{ torch: isTorchOn }]
+                    });
+                    torchBtn.style.background = isTorchOn ? 'var(--accent)' : 'rgba(34, 211, 238, 0.1)';
+                    torchBtn.style.color = isTorchOn ? 'white' : 'var(--accent)';
+                } catch (err) {
+                    console.error("Torch error", err);
+                }
             }
         }
 
         function onScanSuccess(decodedText, decodedResult) {
             handleResult(decodedText);
-            // Vibrate if supported
-            if (navigator.vibrate) navigator.vibrate(100);
+            if (navigator.vibrate) navigator.vibrate(150);
         }
 
         function handleResult(text) {
             resultContainer.style.display = 'block';
             resultText.innerText = text;
             
-            // Check if URL
             if (text.startsWith('http://') || text.startsWith('https://')) {
                 openLinkBtn.style.display = 'flex';
                 openLinkBtn.href = text;
@@ -492,7 +545,6 @@
                 openLinkBtn.style.display = 'none';
             }
             
-            // Scroll to result
             resultContainer.scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -505,34 +557,47 @@
             startCamera();
         }
 
-        // Image Scanning Logic (using jsQR)
-        function scanImage(input) {
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.getElementById('qr-canvas');
-                        const ctx = canvas.getContext('2d');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        ctx.drawImage(img, 0, 0, img.width, img.height);
-                        
-                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                        const code = jsQR(imageData.data, imageData.width, imageData.height);
-                        
-                        if (code) {
-                            handleResult(code.data);
-                        } else {
-                            alert("لم يتم العثور على رمز QR في هذه الصورة.");
-                        }
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+        // Fixed Image Scanning Logic
+        async function handleImageUpload(event) {
+            const file = event.target.result || event.target.files[0];
+            if (!file) return;
+
+            // استخدام مكتبة html5-qrcode لمسح الملف مباشرة لضمان أفضل توافق
+            const html5QrCodeScanner = new Html5Qrcode("reader"); // مؤقت للمسح من ملف
+            try {
+                const decodedText = await html5QrCodeScanner.scanFile(file, true);
+                handleResult(decodedText);
+            } catch (err) {
+                // محاولة ثانية باستخدام jsQR إذا فشلت الأولى
+                scanWithJsQR(file);
             }
+        }
+
+        function scanWithJsQR(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.getElementById('qr-canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+                    
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                        inversionAttempts: "dontInvert",
+                    });
+                    
+                    if (code) {
+                        handleResult(code.data);
+                    } else {
+                        alert("لم يتم العثور على رمز QR. جرب صورة أكثر وضوحاً.");
+                    }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
 
         // Utilities
@@ -559,7 +624,6 @@
             }
         }
 
-        // Start camera on load
         window.addEventListener('load', () => {
             startCamera();
         });
