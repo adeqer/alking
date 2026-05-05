@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#4f46e5">
-  <meta name="description" content="ماسح QR ذكي، سريع، وآمن. يدعم الصور، الكاميرا، وتحليل الروابط تلقائياً.">
-  <title>ALHYTHAM.NET | ماسح الكود الذكي</title>
+  <meta name="description" content="ماسح QR ذكي، سريع، وآمن. يدعم الصور، الكاميرا، وتحليل الروابط تلقائياً بجودة عالية.">
+  <title>ALHYTHAM.NET | ماسح الكود الذكي HD</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
@@ -57,13 +57,22 @@
     .scanner-card {
       background: var(--surface); border-radius: var(--radius); padding: 0.8rem;
       box-shadow: var(--shadow); border: 1px solid var(--border); position: relative;
+      overflow: hidden;
     }
     #reader {
       width: 100%; min-height: 260px; border-radius: 12px; overflow: hidden;
       background: #000; position: relative;
     }
-    #reader video { width: 100% !important; height: 100% !important; object-fit: cover; border-radius: 12px; }
+    /* تحسين عرض الفيديو ليكون عالي الجودة */
+    #reader video { 
+      width: 100% !important; 
+      height: 100% !important; 
+      object-fit: cover; 
+      border-radius: 12px;
+      image-rendering: -webkit-optimize-contrast;
+    }
     #reader > div:not(video), #reader a, #reader button { display: none !important; }
+    
     .scan-overlay {
       position: absolute; inset: 0.8rem; border: 2px solid rgba(99, 102, 241, 0.4);
       border-radius: 10px; pointer-events: none; z-index: 2;
@@ -74,6 +83,7 @@
     }
     .scan-overlay::before { top: -1px; right: -1px; border-width: 3px 3px 0 0; border-radius: 0 8px 0 0; }
     .scan-overlay::after { bottom: -1px; left: -1px; border-width: 0 0 3px 3px; border-radius: 0 0 0 8px; }
+    
     .scan-line {
       position: absolute; top: 0; left: 15%; right: 15%; height: 2px;
       background: var(--primary); box-shadow: 0 0 12px var(--primary);
@@ -89,8 +99,6 @@
       width: 100%;
     }
     .upload-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
-    .upload-btn:active { transform: scale(0.98); }
-    .upload-btn.loading { pointer-events: none; opacity: 0.85; }
     #file-input { display: none; }
 
     .control-grid {
@@ -101,33 +109,14 @@
       padding: 0.9rem 0.5rem; border-radius: 12px; cursor: pointer;
       display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem;
       font-size: 0.8rem; font-weight: 600; transition: var(--transition); box-shadow: var(--shadow);
-      white-space: nowrap;
     }
-    .ctrl-btn i { font-size: 1.2rem; margin-bottom: 2px; }
+    .ctrl-btn i { font-size: 1.2rem; }
     .ctrl-btn:hover { transform: translateY(-3px); border-color: var(--primary); }
-    .ctrl-btn:active { transform: scale(0.96); }
     .ctrl-btn.active { background: var(--primary); color: #fff; border-color: transparent; }
 
-    /* Zoom Slider Styles */
-    .zoom-container { padding: 0.7rem; cursor: default; }
-    .zoom-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; font-size: 0.85rem; font-weight: 600; }
-    .zoom-header i { color: var(--primary); }
-    #zoom-slider {
-      width: 100%; margin: 0; height: 6px; border-radius: 3px;
-      background: var(--border); outline: none; cursor: pointer;
-      -webkit-appearance: none; appearance: none;
-    }
-    #zoom-slider::-webkit-slider-thumb {
-      -webkit-appearance: none; width: 18px; height: 18px; background: var(--primary);
-      border-radius: 50%; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    #zoom-slider::-moz-range-thumb {
-      width: 18px; height: 18px; background: var(--primary);
-      border-radius: 50%; cursor: pointer; border: none;
-    }
-    #zoom-slider:disabled { opacity: 0.35; cursor: not-allowed; }
-    .zoom-reset { font-size: 0.75rem; color: var(--text-muted); cursor: pointer; margin-top: 0.3rem; text-align: center; display: block; }
-    .zoom-reset:hover { color: var(--primary); text-decoration: underline; }
+    .zoom-container { padding: 0.7rem; }
+    .zoom-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; font-size: 0.85rem; }
+    #zoom-slider { width: 100%; cursor: pointer; accent-color: var(--primary); }
 
     .result-panel {
       background: var(--surface); border-radius: var(--radius); padding: 1.2rem;
@@ -139,63 +128,40 @@
     .result-type { font-size: 0.8rem; padding: 0.25rem 0.7rem; background: rgba(99, 102, 241, 0.15); color: var(--primary); border-radius: 20px; font-weight: 600; }
     .result-content {
       word-break: break-all; background: var(--bg); padding: 0.8rem; border-radius: 10px;
-      font-family: ui-monospace, monospace; font-size: 0.9rem; line-height: 1.5;
-      border: 1px dashed var(--border); max-height: 100px; overflow-y: auto; margin: 0.6rem 0;
+      font-family: monospace; font-size: 0.9rem; border: 1px dashed var(--border);
+      max-height: 150px; overflow-y: auto;
     }
-    .result-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.8rem; }
+    .result-actions { display: flex; gap: 0.6rem; margin-top: 0.8rem; }
     .res-btn {
-      flex: 1; min-width: 90px; background: var(--btn-bg); color: var(--btn-text);
+      flex: 1; background: var(--btn-bg); color: var(--btn-text);
       border: 1px solid var(--btn-border); padding: 0.6rem; border-radius: 10px;
       font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem;
-      transition: var(--transition);
     }
-    .res-btn:hover { border-color: var(--primary); background: rgba(99, 102, 241, 0.05); }
     .res-btn.primary { background: var(--primary); color: #fff; border: none; }
-    .res-btn.primary:hover { filter: brightness(1.1); }
 
     .history-panel { margin-top: 0.5rem; }
     .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; font-weight: 700; }
     .history-list { display: flex; flex-direction: column; gap: 0.6rem; }
     .hist-item {
       padding: 0.8rem; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px; cursor: pointer; transition: var(--transition);
-      display: flex; justify-content: space-between; align-items: center;
+      border-radius: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
     }
-    .hist-item:hover { transform: translateX(-4px); border-color: var(--primary); }
-    .hist-text { font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 85%; }
-    .hist-time { font-size: 0.7rem; color: var(--text-muted); }
-    .clear-hist {
-      width: 100%; margin-top: 0.8rem; background: transparent; border: 1px dashed var(--border);
-      color: var(--text-muted); padding: 0.6rem; border-radius: 10px; cursor: pointer;
-      font-weight: 600; transition: var(--transition);
-    }
-    .clear-hist:hover { border-color: #ef4444; color: #ef4444; }
+    .hist-item:hover { border-color: var(--primary); }
 
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
       opacity: 0; pointer-events: none; transition: var(--transition); z-index: 200; backdrop-filter: blur(4px);
     }
     .modal-overlay.active { opacity: 1; pointer-events: all; }
-    .modal {
-      background: var(--surface); width: 90%; max-width: 360px; border-radius: 18px; padding: 1.5rem;
-      box-shadow: var(--shadow); transform: scale(0.9); transition: var(--transition);
-    }
-    .modal-overlay.active .modal { transform: scale(1); }
-    .modal h3 { margin-bottom: 1rem; text-align: center; }
+    .modal { background: var(--surface); width: 90%; max-width: 360px; border-radius: 18px; padding: 1.5rem; }
     .style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1rem; }
-    .style-opt {
-      padding: 0.8rem; border: 2px solid var(--border); border-radius: 12px; cursor: pointer;
-      text-align: center; font-weight: 600; transition: var(--transition);
-    }
-    .style-opt:hover { border-color: var(--primary); }
-    .style-opt.selected { border-color: var(--primary); background: rgba(99, 102, 241, 0.1); }
-    .close-modal { width: 100%; padding: 0.7rem; border: none; background: var(--primary); color: #fff; border-radius: 10px; cursor: pointer; font-weight: 600; }
+    .style-opt { padding: 0.8rem; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; text-align: center; font-weight: 600; }
+    .style-opt.selected { border-color: var(--primary); background: rgba(99, 102, 241, 0.05); }
 
     .toast {
       position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
       background: var(--text); color: var(--bg); padding: 0.7rem 1.3rem; border-radius: 50px;
-      opacity: 0; transition: var(--transition); pointer-events: none; z-index: 999;
-      font-weight: 500; box-shadow: 0 8px 16px rgba(0,0,0,0.2); white-space: nowrap;
+      opacity: 0; transition: var(--transition); z-index: 999;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
@@ -207,6 +173,7 @@
   <header>
     <div class="brand">🌟 <span>ALHYTHAM.NET</span></div>
     <div class="header-actions">
+      <button class="icon-btn" id="reload-btn" title="إعادة تحميل الكاميرا"><i class="fa-solid fa-arrows-rotate"></i></button>
       <button class="icon-btn" id="style-btn" title="تغيير الستايل"><i class="fa-solid fa-palette"></i></button>
       <button class="icon-btn" id="theme-btn" title="الوضع الليلي"><i class="fa-solid fa-moon"></i></button>
     </div>
@@ -232,12 +199,11 @@
           <i class="fa-solid fa-magnifying-glass-plus"></i>
           <span id="zoom-val">1.0x</span>
         </div>
-        <input type="range" id="zoom-slider" min="1" max="3" step="0.1" value="1" disabled>
-        <span class="zoom-reset" id="zoom-reset" style="display:none">إعادة تعيين</span>
+        <input type="range" id="zoom-slider" min="1" max="5" step="0.1" value="1" disabled>
       </div>
       <button class="ctrl-btn" id="sound-btn"><i class="fa-solid fa-volume-high"></i> صوت</button>
-      <button class="ctrl-btn" id="copy-all-btn"><i class="fa-solid fa-clipboard"></i> نسخ الكل</button>
-      <button class="ctrl-btn" id="export-hist-btn"><i class="fa-solid fa-file-export"></i> تصدير</button>
+      <button class="ctrl-btn" id="copy-all-btn"><i class="fa-solid fa-clipboard"></i> نسخ</button>
+      <button class="ctrl-btn" id="open-chrome-btn"><i class="fa-brands fa-chrome"></i> كروم</button>
     </div>
 
     <div class="result-panel" id="result-panel">
@@ -255,16 +221,14 @@
     <div class="history-panel">
       <div class="history-header">
         <span>🕒 سجل المسح</span>
-        <button class="ctrl-btn" style="padding:0.4rem 0.8rem; font-size:0.75rem" id="search-hist"><i class="fa-solid fa-search"></i></button>
+        <button class="ctrl-btn" style="padding:0.4rem 0.8rem; font-size:0.75rem" id="clear-hist">حذف</button>
       </div>
-      <input type="text" id="hist-search" placeholder="بحث في السجل..." style="width:100%;padding:0.6rem 1rem;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);margin-bottom:0.6rem;display:none;">
       <div class="history-list" id="hist-list"></div>
-      <button class="clear-hist" id="clear-hist">🗑️ مسح السجل</button>
     </div>
   </main>
 
   <footer style="text-align:center;padding:1.5rem 1rem;color:var(--text-muted);font-size:0.8rem;border-top:1px solid var(--border);margin-top:auto;">
-    © 2026 ALHYTHAM.NET | ماسح الكود الذكي | سريع، آمن، واحترافي
+    © 2026 ALHYTHAM.NET | ماسح الكود الذكي HD
   </footer>
 
   <div class="toast" id="toast"></div>
@@ -278,7 +242,7 @@
         <div class="style-opt" data-style="style-glass">💎 زجاجي</div>
         <div class="style-opt" data-style="style-neumorphism">🕳️ نيومورفيزم</div>
       </div>
-      <button class="close-modal" id="close-style">تطبيق وإغلاق</button>
+      <button class="upload-btn" id="close-style">إغلاق</button>
     </div>
   </div>
 
@@ -293,190 +257,164 @@
       let track = null;
 
       const $ = id => document.getElementById(id);
-      const uploadBtn = $('upload-btn'), fileIn = $('file-input');
-      const switchBtn = $('switch-cam-btn'), torchBtn = $('torch-btn');
-      const zoomSlider = $('zoom-slider'), zoomVal = $('zoom-val'), zoomReset = $('zoom-reset');
-      const soundBtn = $('sound-btn'), resPanel = $('result-panel');
-      const resText = $('res-text'), resType = $('res-type');
-      const openBtn = $('open-res'), shareBtn = $('share-res');
-      const histList = $('hist-list'), searchIn = $('hist-search');
-      const themeBtn = $('theme-btn'), styleBtn = $('style-btn');
-      const modal = $('style-modal'), closeStyle = $('close-style');
-      const toast = $('toast'), scanLine = document.querySelector('.scan-line');
-
+      const toast = $('toast');
       const toastFn = msg => { toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2200); };
-      const vibrate = () => navigator.vibrate?.(80);
-      const playSound = () => {
-        if (!soundOn) return;
-        try {
-          const ctx = new (window.AudioContext || window.webkitAudioContext)();
-          const osc = ctx.createOscillator(), gain = ctx.createGain();
-          osc.connect(gain); gain.connect(ctx.destination);
-          osc.frequency.value = 1200; gain.gain.value = 0.15;
-          osc.start(); osc.stop(ctx.currentTime + 0.1);
-        } catch(e) {}
+
+      // وظيفة جلب أعلى دقة متاحة للكاميرا
+      const getBestConstraints = (facing) => {
+        return {
+          facingMode: facing,
+          width: { ideal: 4096 }, // طلب دقة 4K إذا أمكن
+          height: { ideal: 2160 },
+          frameRate: { ideal: 30, max: 60 }
+        };
       };
 
-      const isUrl = s => { try { new URL(s); return true; } catch { return /^(https?:\/\/|mailto:|tel:|ftp:)/i.test(s); } };
-      const getType = s => {
-        if (isUrl(s)) return '🌐 رابط';
-        if (/^[\+]?[0-9\s\-]+$/.test(s)) return '📞 هاتف';
-        if (/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(s)) return '📧 بريد';
-        if (s.startsWith('WIFI:')) return '📶 واي فاي';
-        if (s.startsWith('BEGIN:VCARD')) return '👤 جهة اتصال';
-        if (/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(s)) return '📍 موقع';
-        return '📝 نص';
-      };
-
-      const showRes = text => {
-        lastRes = text;
-        resText.textContent = text;
-        resType.textContent = getType(text);
-        openBtn.style.display = isUrl(text) ? 'flex' : 'none';
-        resPanel.classList.add('show');
-        addHist(text);
-        playSound(); vibrate();
-        setTimeout(() => window.scrollTo({ top: resPanel.offsetTop - 20, behavior: 'smooth' }), 100);
-      };
-
-      const loadHist = () => {
-        const h = JSON.parse(localStorage.getItem('qr_hist') || '[]');
-        const term = searchIn.value.toLowerCase();
-        const filtered = term ? h.filter(i => i.t.toLowerCase().includes(term)) : h;
-        histList.innerHTML = filtered.length ? '' : '<div style="text-align:center;color:var(--text-muted);padding:1rem">فارغ</div>';
-        filtered.slice(0, 8).forEach(i => {
-          const d = document.createElement('div'); d.className = 'hist-item';
-          d.innerHTML = `<span class="hist-text">${i.t}</span><span class="hist-time">${new Date(i.time).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</span>`;
-          d.onclick = () => showRes(i.t);
-          histList.appendChild(d);
-        });
-      };
-      const addHist = text => {
-        let h = JSON.parse(localStorage.getItem('qr_hist') || '[]');
-        h.unshift({ t: text, time: Date.now() });
-        h = h.filter((v,i,a) => a.findIndex(t => t.t === v.t) === i).slice(0, 50);
-        localStorage.setItem('qr_hist', JSON.stringify(h));
-        loadHist();
-      };
-      $('clear-hist').onclick = () => { localStorage.removeItem('qr_hist'); loadHist(); toastFn('تم المسح'); };
-      $('search-hist').onclick = () => { searchIn.style.display = searchIn.style.display === 'none' ? 'block' : 'none'; };
-      searchIn.oninput = loadHist;
-
-      // Zoom Slider Logic
-      zoomSlider.addEventListener('input', async (e) => {
-        if (!track || track.readyState !== 'live') return;
-        const val = parseFloat(e.target.value);
-        zoomVal.textContent = `${val.toFixed(1)}x`;
-        zoomReset.style.display = val > 1.05 ? 'block' : 'none';
-        try { await track.applyConstraints({ advanced: [{ zoom: val }] }); } 
-        catch { toastFn('⚠️ تعذر ضبط التكبير'); }
-      });
-      zoomReset.onclick = async () => {
-        zoomSlider.value = 1.0;
-        zoomSlider.dispatchEvent(new Event('input'));
-      };
-
-      const startCam = async facing => {
+      const startCam = async (facing) => {
         try { await qr.stop(); } catch(e) {}
-        isPaused = false; scanLine.style.animationPlayState = 'running';
+        isPaused = false;
+        
+        const constraints = getBestConstraints(facing);
+        
         try {
-          await qr.start({ facingMode: facing }, { fps: 14, qrbox: { width: 230, height: 230 } }, onScan, () => {});
-          const vid = document.querySelector('#reader video');
-          track = vid?.srcObject?.getVideoTracks()[0] || null;
+          // استخدام qrbox أكبر لتحسين التركيز
+          await qr.start(constraints, { fps: 30, qrbox: { width: 280, height: 280 } }, onScan, () => {});
           
-          if (track) {
+          const vid = document.querySelector('#reader video');
+          if (vid && vid.srcObject) {
+            track = vid.srcObject.getVideoTracks()[0];
+            const settings = track.getSettings();
+            console.log("Camera resolution:", settings.width, "x", settings.height);
+            
+            // تفعيل الزوم إذا كان مدعوماً
             const caps = track.getCapabilities();
-            torchBtn.style.opacity = caps.torch ? 1 : 0.3;
             if (caps.zoom) {
-              zoomSlider.min = caps.zoom.min;
-              zoomSlider.max = caps.zoom.max;
-              zoomSlider.step = caps.zoom.step || 0.1;
-              zoomSlider.value = track.getSettings().zoom || 1.0;
-              zoomSlider.disabled = false;
-              zoomVal.textContent = `${parseFloat(zoomSlider.value).toFixed(1)}x`;
-              zoomReset.style.display = parseFloat(zoomSlider.value) > 1.05 ? 'block' : 'none';
-            } else {
-              zoomSlider.disabled = true;
-              zoomVal.textContent = 'غير مدعوم';
-              zoomReset.style.display = 'none';
+              $('zoom-slider').disabled = false;
+              $('zoom-slider').min = caps.zoom.min;
+              $('zoom-slider').max = caps.zoom.max;
+              $('zoom-slider').step = caps.zoom.step;
+              $('zoom-slider').value = settings.zoom || 1;
+              $('zoom-val').textContent = (settings.zoom || 1).toFixed(1) + 'x';
             }
           }
-          switchBtn.innerHTML = facing === 'environment' ? '<i class="fa-solid fa-camera-rotate"></i> أمامية' : '<i class="fa-solid fa-camera-rotate"></i> خلفية';
         } catch(e) {
-          document.getElementById('reader').innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);padding:1rem;text-align:center">📷 يرجى السماح بالكاميرا أو استخدم رفع الصور</div>';
+          console.error(e);
+          toastFn('⚠️ فشل تشغيل الكاميرا بدقة عالية');
+          // محاولة تشغيل بدقة عادية كحل احتياطي
+          try { await qr.start({ facingMode: facing }, { fps: 20, qrbox: 250 }, onScan); } catch(err) {}
         }
       };
 
-      switchBtn.onclick = () => { camMode = camMode === 'environment' ? 'user' : 'environment'; startCam(camMode); };
-      torchBtn.onclick = async () => {
-        if (!track) return toastFn('الكاميرا غير نشطة');
+      const onScan = (decoded) => {
+        if (isPaused || decoded === lastRes) return;
+        isPaused = true;
+        lastRes = decoded;
+        
+        if (soundOn) {
+          const audio = new AudioContext();
+          const osc = audio.createOscillator();
+          const gain = audio.createGain();
+          osc.connect(gain); gain.connect(audio.destination);
+          osc.frequency.value = 880; gain.gain.value = 0.1;
+          osc.start(); osc.stop(audio.currentTime + 0.1);
+        }
+        
+        $('res-text').textContent = decoded;
+        $('result-panel').classList.add('show');
+        saveHist(decoded);
+        toastFn('✅ تم المسح بنجاح');
+        
+        setTimeout(() => { isPaused = false; lastRes = ''; }, 3000);
+      };
+
+      // الأزرار والوظائف
+      $('reload-btn').onclick = () => location.reload();
+      $('switch-cam-btn').onclick = () => { camMode = camMode === 'environment' ? 'user' : 'environment'; startCam(camMode); };
+      
+      $('torch-btn').onclick = async () => {
+        if (!track) return;
         const state = track.getSettings().torch;
         try {
           await track.applyConstraints({ advanced: [{ torch: !state }] });
-          torchBtn.classList.toggle('active', !state);
-          toastFn(!state ? '🔦 تم تشغيل الإضاءة' : '💡 تم إيقاف الإضاءة');
-        } catch { toastFn('⚠️ الجهاز لا يدعم التحكم بالإضاءة'); }
+          $('torch-btn').classList.toggle('active', !state);
+        } catch(e) { toastFn('🔦 الفلاش غير مدعوم'); }
       };
 
-      const onScan = decoded => {
-        if (isPaused || decoded === lastRes) return;
-        isPaused = true; qr.pause(); scanLine.style.animationPlayState = 'paused';
-        showRes(decoded);
-        toastFn('✅ تم التعرف بنجاح');
-        setTimeout(() => { qr.resume(); isPaused = false; lastRes = ''; scanLine.style.animationPlayState = 'running'; }, 2500);
+      $('zoom-slider').oninput = async (e) => {
+        const val = parseFloat(e.target.value);
+        $('zoom-val').textContent = val.toFixed(1) + 'x';
+        if (track) await track.applyConstraints({ advanced: [{ zoom: val }] });
       };
 
-      uploadBtn.onclick = () => fileIn.click();
-      fileIn.onchange = async e => {
-        const f = e.target.files[0]; if (!f) return;
-        uploadBtn.classList.add('loading'); uploadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التحليل...';
+      $('upload-btn').onclick = () => $('file-input').click();
+      $('file-input').onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
         try {
-          const res = await qr.scanFile(f, false);
-          showRes(res); toastFn('📷 تم استخراج البيانات');
-        } catch { toastFn('❌ لم يتم العثور على رمز واضح'); }
-        uploadBtn.classList.remove('loading'); uploadBtn.innerHTML = '<i class="fa-solid fa-image"></i> رفع صورة QR من المعرض';
-        fileIn.value = '';
+          const res = await qr.scanFile(file, true);
+          onScan(res);
+        } catch(e) { toastFn('❌ لم يتم العثور على كود'); }
       };
 
-      $('copy-all-btn').onclick = () => { if(lastRes) navigator.clipboard.writeText(lastRes).then(()=>toastFn('📋 تم النسخ')); };
-      openBtn.onclick = () => isUrl(lastRes) && window.open(lastRes, '_blank');
-      shareBtn.onclick = () => {
-        if (navigator.share) navigator.share({ title: 'ALHYTHAM QR', text: lastRes, url: isUrl(lastRes) ? lastRes : undefined });
-        else $('copy-all-btn').click();
-      };
-      soundBtn.onclick = () => { soundOn = !soundOn; soundBtn.classList.toggle('active', soundOn); toastFn(soundOn ? '🔊 الصوت مفعل' : '🔇 الصوت صامت'); };
-      $('export-hist-btn').onclick = () => {
-        const h = JSON.parse(localStorage.getItem('qr_hist') || '[]');
-        const txt = h.map(i => `[${new Date(i.time).toLocaleString()}] ${i.t}`).join('\n') || 'السجل فارغ';
-        const blob = new Blob([txt], { type: 'text/plain' });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `ALHYTHAM_QR_History_${new Date().toISOString().slice(0,10)}.txt`;
-        a.click(); toastFn('📥 تم تصدير السجل');
+      $('open-chrome-btn').onclick = () => {
+        const url = "intent://" + location.host + location.pathname + "#Intent;scheme=http;package=com.android.chrome;end";
+        window.location.href = url;
       };
 
-      themeBtn.onclick = () => {
+      $('copy-all-btn').onclick = () => {
+        const text = $('res-text').textContent;
+        if (!text) return;
+        navigator.clipboard.writeText(text);
+        toastFn('📋 تم النسخ');
+      };
+
+      $('open-res').onclick = () => {
+        const text = $('res-text').textContent;
+        if (text.startsWith('http')) window.open(text, '_blank');
+        else window.open('https://www.google.com/search?q=' + encodeURIComponent(text), '_blank');
+      };
+
+      // السجل
+      const saveHist = (t) => {
+        let h = JSON.parse(localStorage.getItem('qr_history') || '[]');
+        h.unshift({ t, d: new Date().toLocaleString('ar-EG') });
+        h = h.slice(0, 10);
+        localStorage.setItem('qr_history', JSON.stringify(h));
+        renderHist();
+      };
+
+      const renderHist = () => {
+        const h = JSON.parse(localStorage.getItem('qr_history') || '[]');
+        $('hist-list').innerHTML = h.map(i => `
+          <div class="hist-item" onclick="document.getElementById('res-text').textContent='${i.t}';document.getElementById('result-panel').classList.add('show');">
+            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%">${i.t}</span>
+            <small style="color:var(--text-muted)">${i.d.split(' ')[1]}</small>
+          </div>
+        `).join('');
+      };
+
+      $('clear-hist').onclick = () => { localStorage.removeItem('qr_history'); renderHist(); };
+
+      // الثيم والستايل
+      $('theme-btn').onclick = () => {
         document.body.classList.toggle('style-dark');
-        const dark = document.body.classList.contains('style-dark');
-        themeBtn.innerHTML = dark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
-        localStorage.setItem('theme', dark ? 'dark' : 'light');
-        document.querySelector('meta[name="theme-color"]').content = dark ? '#0b1120' : '#4f46e5';
+        const isDark = document.body.classList.contains('style-dark');
+        $('theme-btn').innerHTML = isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
       };
-      styleBtn.onclick = () => modal.classList.add('active');
-      closeStyle.onclick = () => modal.classList.remove('active');
+
+      $('style-btn').onclick = () => $('style-modal').classList.add('active');
+      $('close-style').onclick = () => $('style-modal').classList.remove('active');
+      
       document.querySelectorAll('.style-opt').forEach(opt => {
         opt.onclick = () => {
           document.querySelectorAll('.style-opt').forEach(o => o.classList.remove('selected'));
           opt.classList.add('selected');
           document.body.className = document.body.className.replace(/style-\w+/g, '');
           if (opt.dataset.style) document.body.classList.add(opt.dataset.style);
-          localStorage.setItem('style', opt.dataset.style);
         };
       });
 
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark') { document.body.classList.add('style-dark'); themeBtn.innerHTML = '<i class="fa-solid fa-sun"></i>'; }
-      const savedStyle = localStorage.getItem('style');
-      if (savedStyle) { document.body.classList.add(savedStyle); document.querySelectorAll('.style-opt').forEach(o => o.classList.toggle('selected', o.dataset.style === savedStyle)); }
-      loadHist();
+      renderHist();
       startCam(camMode);
     });
   </script>
