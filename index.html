@@ -2,686 +2,189 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ALHYTHAM QR - Professional Suite</title>
-    <!-- Modern Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Noto+Kufi+Arabic:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Professional Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- QR Libraries -->
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2563eb">
+    <title>ALHYTHAM QR - ماسح رمز الاستجابة السريعة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-glow: rgba(99, 102, 241, 0.5);
-            --secondary: #a855f7;
-            --accent: #ec4899;
-            --bg-dark: #030711;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-card: rgba(15, 23, 42, 0.8);
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --success: #10b981;
-            --danger: #ef4444;
-            --font-main: 'Outfit', 'Noto Kufi Arabic', sans-serif;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: var(--font-main);
-            min-height: 100vh;
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 0% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(236, 72, 153, 0.15) 0%, transparent 50%);
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        /* Ambient Background Elements */
-        .ambient-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            overflow: hidden;
-        }
-
-        .blob {
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: var(--primary);
-            filter: blur(150px);
-            opacity: 0.1;
-            border-radius: 50%;
-            animation: move 20s infinite alternate;
-        }
-
-        @keyframes move {
-            0% { transform: translate(-10%, -10%); }
-            100% { transform: translate(10%, 10%); }
-        }
-
-        /* Container */
-        .app-shell {
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 500px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Header */
-        header {
+            padding: 30px;
             text-align: center;
-            margin-top: 10px;
         }
 
-        .logo-text {
-            font-size: 2.5rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            background: linear-gradient(to right, var(--primary), var(--secondary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            filter: drop-shadow(0 0 10px var(--primary-glow));
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 24px;
         }
 
-        .tagline {
-            font-size: 0.85rem;
-            color: var(--text-dim);
-            letter-spacing: 2px;
-            margin-top: -5px;
-            font-weight: 300;
+        p {
+            color: #64748b;
+            margin-bottom: 25px;
         }
 
-        /* Scanner Area */
-        .scanner-card {
-            background: var(--glass-card);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 28px;
-            position: relative;
+        #outdiv {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background-color: #000;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            aspect-ratio: 1;
+            margin-bottom: 20px;
+            position: relative;
+            border: 4px solid var(--primary-color);
         }
 
-        #reader {
+        video {
             width: 100% !important;
             height: 100% !important;
-            border: none !important;
+            object-fit: cover;
         }
 
-        #reader video {
-            object-fit: cover !important;
-        }
-
-        .scan-overlay {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            pointer-events: none;
-            z-index: 5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .scan-frame {
-            width: 70%;
-            height: 70%;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            position: relative;
-            box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.5);
-        }
-
-        .corner {
-            position: absolute;
-            width: 25px; height: 25px;
-            border: 4px solid var(--primary);
-        }
-        .tl { top: -2px; left: -2px; border-right: 0; border-bottom: 0; border-top-left-radius: 12px; }
-        .tr { top: -2px; right: -2px; border-left: 0; border-bottom: 0; border-top-right-radius: 12px; }
-        .bl { bottom: -2px; left: -2px; border-right: 0; border-top: 0; border-bottom-left-radius: 12px; }
-        .br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; border-bottom-right-radius: 12px; }
-
-        .scan-laser {
-            position: absolute;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(to right, transparent, var(--primary), transparent);
-            box-shadow: 0 0 15px var(--primary);
-            top: 0;
-            animation: scanMove 3s infinite linear;
-        }
-
-        @keyframes scanMove {
-            0% { top: 0%; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-        }
-
-        /* Controls */
-        .main-controls {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .icon-btn {
-            width: 54px;
-            height: 54px;
-            border-radius: 18px;
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .icon-btn:hover {
-            background: var(--primary);
-            border-color: var(--primary);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px -5px var(--primary-glow);
-        }
-
-        .icon-btn.active {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .upload-btn {
-            flex: 1;
-            height: 54px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border: none;
-            color: white;
-            font-weight: 600;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .upload-btn:hover {
-            filter: brightness(1.2);
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px -5px var(--primary-glow);
-        }
-
-        /* Result Panel */
-        .result-panel {
-            background: var(--glass-card);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 20px;
-            display: none;
-            animation: panelFade 0.5s ease;
-        }
-
-        @keyframes panelFade {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .type-badge {
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--primary);
-            padding: 4px 12px;
-            border-radius: 100px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .result-content {
-            background: rgba(0,0,0,0.2);
-            padding: 15px;
-            border-radius: 16px;
-            font-size: 1rem;
-            word-break: break-all;
-            margin-bottom: 15px;
-            line-height: 1.5;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-
-        .action-grid {
+        .button-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 15px;
+            margin-top: 20px;
         }
 
-        .action-btn {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            color: var(--text-main);
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .action-btn:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        .action-btn.primary {
-            background: var(--primary);
             border: none;
+            font-size: 14px;
         }
 
-        /* History */
-        .history-section {
-            margin-top: 10px;
-        }
-
-        .section-title {
-            font-size: 0.9rem;
-            color: var(--text-dim);
-            margin-bottom: 10px;
-            padding: 0 5px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .history-item {
-            background: var(--glass);
-            border: 1px solid var(--glass-border);
-            padding: 12px 15px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .history-item:hover {
-            background: rgba(255,255,255,0.05);
-            transform: translateX(-5px);
-        }
-
-        .history-icon {
-            width: 40px; height: 40px;
-            border-radius: 12px;
-            background: rgba(255,255,255,0.05);
-            display: flex; align-items: center; justify-content: center;
-            color: var(--primary);
-        }
-
-        .history-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .history-text {
-            font-size: 0.9rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
-        }
-
-        .history-time {
-            font-size: 0.7rem;
-            color: var(--text-dim);
-        }
-
-        /* Utilities */
-        #upload-input { display: none; }
-        .hidden { display: none; }
-
-        /* Toast */
-        #toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translate(-50%, 100px);
-            background: var(--primary);
+        .btn-primary {
+            background-color: var(--primary-color);
             color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-weight: 600;
-            z-index: 1000;
-            transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
         }
-        #toast.show { transform: translate(-50%, 0); }
 
-        /* Arabic Support */
-        [dir="rtl"] .history-item:hover { transform: translateX(5px); }
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: #eff6ff;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        /* Scan Animation */
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(to right, transparent, #ff0000, transparent);
+            box-shadow: 0 0 8px #ff0000;
+            animation: scan 2s linear infinite;
+            z-index: 10;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        @font-face {
+            font-family: 'fontello';
+            src: url('./font/fontello.eot?14907215');
+            src: url('./font/fontello.eot?14907215#iefix') format('embedded-opentype'),
+                 url('./font/fontello.woff?14907215') format('woff'),
+                 url('./font/fontello.ttf?14907215') format('truetype'),
+                 url('./font/fontello.svg?14907215#fontello') format('svg');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        .icon {
+            font-family: "fontello";
+            font-style: normal;
+            font-weight: normal;
+            display: inline-block;
+            text-decoration: inherit;
+            width: 1em;
+            text-align: center;
+        }
     </style>
+    <script type="text/javascript" src="llqrcode.js"></script>
+    <script type="text/javascript" src="mikhmon_webqr.js?v1"></script>
 </head>
 <body>
-
-    <div class="ambient-bg">
-        <div class="blob"></div>
-    </div>
-
-    <div class="app-shell">
-        <header>
-            <h1 class="logo-text">ALHYTHAM QR</h1>
-            <p class="tagline">PROFESSIONAL SCANNER SUITE</p>
-        </header>
-
-        <main class="scanner-card">
-            <div id="reader"></div>
-            <div class="scan-overlay" id="overlay">
-                <div class="scan-frame">
-                    <div class="corner tl"></div>
-                    <div class="corner tr"></div>
-                    <div class="corner bl"></div>
-                    <div class="corner br"></div>
-                    <div class="scan-laser"></div>
-                </div>
-            </div>
-        </main>
-
-        <div class="main-controls">
-            <button class="icon-btn" id="torch-btn" title="Flashlight">
-                <i class="fas fa-bolt"></i>
-            </button>
-            <button class="icon-btn" id="flip-btn" title="Flip Camera">
-                <i class="fas fa-camera-rotate"></i>
-            </button>
-            <label for="upload-input" class="upload-btn">
-                <i class="fas fa-image"></i>
-                مسح من الاستوديو
-            </label>
-            <input type="file" id="upload-input" accept="image/*">
-            <button class="icon-btn" id="chrome-btn" title="Open in Chrome">
-                <i class="fab fa-chrome"></i>
-            </button>
+    <div class="container">
+        <h1>ALHYTHAM QR</h1>
+        <p>امسح رمز QR لتسجيل الدخول إلى الشبكة</p>
+        
+        <div id="outdiv">
+            <div class="scan-line"></div>
         </div>
 
-        <section class="result-panel" id="result-panel">
-            <div class="result-header">
-                <span class="type-badge" id="data-type">Text</span>
-                <span style="font-size: 0.8rem; color: var(--text-dim);" id="data-time">Now</span>
-            </div>
-            <div class="result-content" id="data-text">...</div>
-            <div class="action-grid">
-                <button class="action-btn" id="copy-btn">
-                    <i class="fas fa-copy"></i> نسخ
-                </button>
-                <button class="action-btn primary" id="smart-action">
-                    <i class="fas fa-external-link-alt"></i> فتح
-                </button>
-            </div>
-        </section>
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="location.reload();">
+                <i class="icon">&#xe800;</i> تحديث الكاميرا
+            </button>
+            <a class="btn btn-outline" href="intent://laksa19.github.io/myqr#Intent;scheme=http;package=com.android.chrome;end">
+                <i class="icon">&#xf268;</i> فتح في كروم
+            </a>
+        </div>
 
-        <section class="history-section">
-            <div class="section-title">
-                <span>سجل العمليات</span>
-                <span id="clear-history" style="cursor: pointer; color: var(--danger); font-size: 0.8rem;">مسح الكل</span>
-            </div>
-            <div class="history-list" id="history-list">
-                <!-- History Items -->
-            </div>
-        </section>
-
-        <footer style="text-align: center; color: var(--text-dim); font-size: 0.75rem; margin-top: 20px;">
-            &copy; 2024 <span style="color: var(--primary);">ALHYTHAM</span> - Powered by Haitham Professional
-        </footer>
+        <div class="footer">
+            ALHYTHAM QR &copy; 2026 <br>
+            مدعوم بواسطة <a href="http://www.webqr.com">webqr.com</a>
+        </div>
     </div>
 
-    <div id="toast">تم النسخ بنجاح</div>
-    <audio id="beep-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
-
-    <script>
-        let html5QrCode;
-        let isTorchOn = false;
-        let facingMode = "environment";
-        const historyKey = "ALHYTHAM_QR_HISTORY";
-
-        // UI Elements
-        const readerEl = document.getElementById('reader');
-        const overlay = document.getElementById('overlay');
-        const resultPanel = document.getElementById('result-panel');
-        const dataText = document.getElementById('data-text');
-        const dataType = document.getElementById('data-type');
-        const smartAction = document.getElementById('smart-action');
-        const historyList = document.getElementById('history-list');
-        const toast = document.getElementById('toast');
-        const beep = document.getElementById('beep-sound');
-
-        // Initialize App
-        window.addEventListener('load', () => {
-            loadHistory();
-            startScanner();
-        });
-
-        // Scanner Logic
-        function startScanner() {
-            if (html5QrCode) {
-                html5QrCode.stop().then(() => initScanner());
-            } else {
-                initScanner();
-            }
-        }
-
-        function initScanner() {
-            html5QrCode = new Html5Qrcode("reader");
-            const config = { 
-                fps: 20, 
-                qrbox: (w, h) => { return { width: w * 0.7, height: h * 0.7 } },
-                aspectRatio: 1.0
-            };
-
-            html5QrCode.start({ facingMode }, config, (text) => {
-                onResultFound(text);
-            }).catch(err => {
-                overlay.innerHTML = `<div style="padding: 20px; text-align: center; color: #ffbcbc;">يرجى السماح بالوصول للكاميرا</div>`;
-            });
-        }
-
-        function onResultFound(text) {
-            playBeep();
-            vibrate();
-            processResult(text);
-            addToHistory(text);
-        }
-
-        function processResult(text) {
-            resultPanel.style.display = 'block';
-            dataText.innerText = text;
-            
-            // Smart Parsing
-            if (text.startsWith("http")) {
-                dataType.innerText = "Link";
-                setSmartAction("فتح الرابط", "fas fa-globe", () => window.open(text, '_blank'));
-            } else if (text.startsWith("WIFI:")) {
-                dataType.innerText = "WiFi";
-                const ssid = text.match(/S:([^;]+)/)?.[1] || "Network";
-                setSmartAction("اتصال بـ " + ssid, "fas fa-wifi", () => alert("قم بنسخ كلمة المرور والاتصال بالشبكة يدوياً"));
-            } else if (text.startsWith("TEL:")) {
-                dataType.innerText = "Phone";
-                const num = text.replace("TEL:", "");
-                setSmartAction("اتصال", "fas fa-phone", () => window.location.href = text);
-            } else if (text.startsWith("SMSTO:")) {
-                dataType.innerText = "SMS";
-                setSmartAction("إرسال رسالة", "fas fa-comment", () => window.location.href = text.replace("SMSTO:", "sms:"));
-            } else {
-                dataType.innerText = "Text";
-                setSmartAction("بحث في جوجل", "fab fa-google", () => window.open(`https://google.com/search?q=${text}`, '_blank'));
-            }
-        }
-
-        function setSmartAction(label, icon, callback) {
-            smartAction.innerHTML = `<i class="${icon}"></i> ${label}`;
-            smartAction.onclick = callback;
-        }
-
-        // History Management
-        function addToHistory(text) {
-            let history = JSON.parse(localStorage.getItem(historyKey) || "[]");
-            const entry = {
-                text,
-                time: new Date().toLocaleString('ar-EG'),
-                id: Date.now()
-            };
-            history.unshift(entry);
-            history = history.slice(0, 20); // Keep 20
-            localStorage.setItem(historyKey, JSON.stringify(history));
-            renderHistory();
-        }
-
-        function loadHistory() {
-            renderHistory();
-        }
-
-        function renderHistory() {
-            const history = JSON.parse(localStorage.getItem(historyKey) || "[]");
-            historyList.innerHTML = history.length ? "" : '<p style="text-align: center; color: var(--text-dim); font-size: 0.8rem; padding: 20px;">لا يوجد سجل متاح</p>';
-            
-            history.forEach(item => {
-                const icon = item.text.startsWith("http") ? "fas fa-link" : "fas fa-font";
-                const div = document.createElement('div');
-                div.className = 'history-item';
-                div.innerHTML = `
-                    <div class="history-icon"><i class="${icon}"></i></div>
-                    <div class="history-info">
-                        <span class="history-text">${item.text}</span>
-                        <span class="history-time">${item.time}</span>
-                    </div>
-                `;
-                div.onclick = () => processResult(item.text);
-                historyList.appendChild(div);
-            });
-        }
-
-        // Controls
-        document.getElementById('flip-btn').onclick = () => {
-            facingMode = facingMode === "environment" ? "user" : "environment";
-            startScanner();
-        };
-
-        document.getElementById('torch-btn').onclick = function() {
-            if (html5QrCode && html5QrCode.isScanning) {
-                isTorchOn = !isTorchOn;
-                html5QrCode.applyVideoConstraints({
-                    advanced: [{ torch: isTorchOn }]
-                }).then(() => {
-                    this.classList.toggle('active', isTorchOn);
-                }).catch(() => {
-                    showToast("الفلاش غير مدعوم في هذا الوضع");
-                });
-            }
-        };
-
-        document.getElementById('copy-btn').onclick = () => {
-            navigator.clipboard.writeText(dataText.innerText);
-            showToast("تم النسخ!");
-        };
-
-        document.getElementById('chrome-btn').onclick = () => {
-            const url = window.location.href.split('://')[1];
-            window.location.href = `intent://${url}#Intent;scheme=https;package=com.android.chrome;end`;
-        };
-
-        document.getElementById('clear-history').onclick = () => {
-            if (confirm("هل أنت متأكد من مسح جميع العمليات؟")) {
-                localStorage.removeItem(historyKey);
-                renderHistory();
-            }
-        };
-
-        // Image Upload
-        document.getElementById('upload-input').onchange = (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const code = jsQR(imageData.data, imageData.width, imageData.height);
-                    if (code) onResultFound(code.data);
-                    else alert("لم يتم العثور على رمز QR");
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
-        };
-
-        // Helpers
-        function showToast(msg) {
-            toast.innerText = msg;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
-        }
-
-        function playBeep() {
-            beep.currentTime = 0;
-            beep.play().catch(() => {}); // User interaction might be needed
-        }
-
-        function vibrate() {
-            if (navigator.vibrate) navigator.vibrate(200);
-        }
-    </script>
+    <canvas style="display:none;" id="qr-canvas" width="800" height="600"></canvas>
+    <script type="text/javascript">load();</script>
 </body>
 </html>
