@@ -1,833 +1,449 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ALHYTHAM QR & BARCODE PRO</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#4f46e5">
+  <title>ALHYTHAM.NET | ماسح الكود الذكي</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #f8fafc; --surface: #ffffff; --text: #0f172a; --text-muted: #64748b;
+      --primary: #4f46e5; --primary-hover: #4338ca; --border: #e2e8f0;
+      --radius: 16px; --shadow: 0 8px 20px -4px rgb(0 0 0 / 0.1);
+      --glass: rgba(255, 255, 255, 0.85); --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      --btn-bg: var(--surface); --btn-text: var(--text); --btn-border: var(--border);
+    }
+    .style-gradient { --primary: linear-gradient(135deg, #6366f1, #8b5cf6); --primary-hover: linear-gradient(135deg, #4f46e5, #7c3aed); }
+    .style-glass { --surface: rgba(255, 255, 255, 0.65); --glass: rgba(255, 255, 255, 0.5); --border: rgba(255, 255, 255, 0.4); backdrop-filter: blur(16px); }
+    .style-neumorphism { --surface: #e0e5ec; --bg: #e0e5ec; --text: #374151; --btn-bg: #e0e5ec; --btn-border: transparent; --shadow: 6px 6px 12px #b8babe, -6px -6px 12px #ffffff; --glass: transparent; }
+    .style-dark { --bg: #0b1120; --surface: #151e32; --text: #f8fafc; --text-muted: #94a3b8; --primary: #818cf8; --primary-hover: #6366f1; --border: #1e293b; --glass: rgba(21, 30, 50, 0.85); --btn-bg: #1e293b; --btn-text: #f1f5f9; }
     
-    <!-- الروابط الخارجية للمكتبات الفاخرة -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;400;700;900&family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://unpkg.com/@zxing/library@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; flex-direction: column;
+      transition: background var(--transition), color var(--transition);
+    }
 
-    <style>
-        /* نظام الألوان الفاخر */
-        :root {
-            --gold: #d4af37;
-            --gold-light: #f9e29c;
-            --gold-dark: #a67c00;
-            --diamond: #b9f2ff;
-            --royal-blue: #002366;
-            --deep-black: #050505;
-            --card-bg: rgba(10, 10, 15, 0.95);
-            --border-gold: linear-gradient(135deg, var(--gold), #fff, var(--gold-dark));
-            --text-gold: linear-gradient(to right, #d4af37, #f9e29c, #d4af37);
-            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        }
+    header {
+      padding: 0.8rem 1.2rem; display: flex; justify-content: space-between; align-items: center;
+      background: var(--glass); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100;
+    }
+    .brand { font-weight: 800; font-size: 1.2rem; display: flex; align-items: center; gap: 0.5rem; }
+    .brand span {
+      background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8a2be2, #ff0000);
+      background-size: 400% 400%; -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; animation: rainbow-flow 5s ease infinite;
+    }
+    @keyframes rainbow-flow { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
 
-        /* تحسين السلاسة */
-        html { scroll-behavior: smooth; }
-        
-        .main-logo-container {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1;
-        }
+    .header-actions { display: flex; gap: 0.6rem; }
+    .icon-btn {
+      background: var(--btn-bg); color: var(--text); border: 1px solid var(--btn-border);
+      width: 38px; height: 38px; border-radius: 12px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 1rem;
+      transition: var(--transition); box-shadow: var(--shadow);
+    }
+    .icon-btn:hover { transform: scale(1.05); border-color: var(--primary); }
 
-        .main-qr-icon {
-            font-size: 4rem;
-            color: var(--gold);
-            filter: drop-shadow(0 0 15px var(--gold));
-            animation: iconFloat 3s ease-in-out infinite;
-        }
+    main { flex: 1; padding: 1.2rem; max-width: 640px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 1.2rem; }
 
-        .logo-glow-effect {
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            background: var(--gold);
-            filter: blur(40px);
-            opacity: 0.3;
-            border-radius: 50%;
-            animation: glowPulse 3s ease-in-out infinite;
-        }
+    .scanner-card {
+      background: var(--surface); border-radius: var(--radius); padding: 0.8rem;
+      box-shadow: var(--shadow); border: 1px solid var(--border); position: relative;
+    }
+    #reader {
+      width: 100%; min-height: 260px; border-radius: 12px; overflow: hidden;
+      background: #000; position: relative;
+    }
+    #reader video { width: 100% !important; height: 100% !important; object-fit: cover; border-radius: 12px; transform-origin: center center; transition: transform 0.2s ease; }
+    #reader > div:not(video), #reader a, #reader button { display: none !important; }
+    .scan-overlay {
+      position: absolute; inset: 0.8rem; border: 2px solid rgba(99, 102, 241, 0.4);
+      border-radius: 10px; pointer-events: none; z-index: 2;
+    }
+    .scan-overlay::before, .scan-overlay::after {
+      content: ""; position: absolute; width: 20px; height: 20px;
+      border: 3px solid var(--primary); transition: var(--transition);
+    }
+    .scan-overlay::before { top: -1px; right: -1px; border-width: 3px 3px 0 0; border-radius: 0 8px 0 0; }
+    .scan-overlay::after { bottom: -1px; left: -1px; border-width: 0 0 3px 3px; border-radius: 0 0 0 8px; }
+    .scan-line {
+      position: absolute; top: 0; left: 15%; right: 15%; height: 2px;
+      background: var(--primary); box-shadow: 0 0 12px var(--primary);
+      animation: scan 2.2s linear infinite; border-radius: 2px; z-index: 3;
+    }
+    @keyframes scan { 0%,100% { top: 10%; opacity: 0.5; } 50% { top: 90%; opacity: 1; } }
 
-        @keyframes iconFloat {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(5deg); }
-        }
+    .upload-btn {
+      background: var(--primary); color: #fff; border: none; padding: 1rem;
+      border-radius: 14px; font-weight: 700; font-size: 1.05rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+      transition: var(--transition); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+      width: 100%;
+    }
+    .upload-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+    .upload-btn:active { transform: scale(0.98); }
+    .upload-btn.loading { pointer-events: none; opacity: 0.85; }
+    #file-input { display: none; }
 
-        @keyframes glowPulse {
-            0%, 100% { transform: scale(1); opacity: 0.3; }
-            50% { transform: scale(1.5); opacity: 0.5; }
-        }
+    .control-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem;
+    }
+    .ctrl-btn {
+      background: var(--btn-bg); color: var(--btn-text); border: 1px solid var(--btn-border);
+      padding: 0.9rem 0.5rem; border-radius: 12px; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem;
+      font-size: 0.8rem; font-weight: 600; transition: var(--transition); box-shadow: var(--shadow);
+      white-space: nowrap;
+    }
+    .ctrl-btn i { font-size: 1.2rem; margin-bottom: 2px; }
+    .ctrl-btn:hover { transform: translateY(-3px); border-color: var(--primary); }
+    .ctrl-btn:active { transform: scale(0.96); }
+    .ctrl-btn.active { background: var(--primary); color: #fff; border-color: transparent; }
 
-        .royal-btn, .tab-item, .history-item {
-            will-change: transform;
-            backface-visibility: hidden;
-        }
+    /* Zoom Styles */
+    .zoom-container { padding: 0.6rem; cursor: default; }
+    .zoom-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; font-size: 0.85rem; font-weight: 600; }
+    .zoom-header i { color: var(--primary); }
+    #zoom-slider {
+      width: 100%; margin: 0; height: 6px; border-radius: 3px;
+      background: var(--border); outline: none; cursor: pointer;
+      -webkit-appearance: none; appearance: none;
+    }
+    #zoom-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--primary); border-radius: 50%; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    #zoom-slider::-moz-range-thumb { width: 18px; height: 18px; background: var(--primary); border-radius: 50%; cursor: pointer; border: none; }
+    #zoom-slider:disabled { opacity: 0.3; cursor: not-allowed; }
+    .zoom-note { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.3rem; text-align: center; display: block; }
 
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            scrollbar-width: thin; scrollbar-color: var(--gold) var(--deep-black);
-        }
+    .result-panel {
+      background: var(--surface); border-radius: var(--radius); padding: 1.2rem;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+      display: none; animation: slideUp 0.4s ease;
+    }
+    .result-panel.show { display: block; }
+    .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+    .result-type { font-size: 0.8rem; padding: 0.25rem 0.7rem; background: rgba(99, 102, 241, 0.15); color: var(--primary); border-radius: 20px; font-weight: 600; }
+    .result-content {
+      word-break: break-all; background: var(--bg); padding: 0.8rem; border-radius: 10px;
+      font-family: ui-monospace, monospace; font-size: 0.9rem; line-height: 1.5;
+      border: 1px dashed var(--border); max-height: 100px; overflow-y: auto; margin: 0.6rem 0;
+    }
+    .result-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.8rem; }
+    .res-btn {
+      flex: 1; min-width: 90px; background: var(--btn-bg); color: var(--btn-text);
+      border: 1px solid var(--btn-border); padding: 0.6rem; border-radius: 10px;
+      font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+      transition: var(--transition);
+    }
+    .res-btn:hover { border-color: var(--primary); background: rgba(99, 102, 241, 0.05); }
+    .res-btn.primary { background: var(--primary); color: #fff; border: none; }
+    .res-btn.primary:hover { filter: brightness(1.1); }
 
-        body {
-            background: var(--deep-black);
-            color: #fff;
-            font-family: 'Cairo', sans-serif;
-            min-height: 100vh;
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    .history-panel { margin-top: 0.5rem; }
+    .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; font-weight: 700; }
+    .history-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .hist-item {
+      padding: 0.8rem; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; cursor: pointer; transition: var(--transition);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .hist-item:hover { transform: translateX(-4px); border-color: var(--primary); }
+    .hist-text { font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 85%; }
+    .hist-time { font-size: 0.7rem; color: var(--text-muted); }
+    .clear-hist {
+      width: 100%; margin-top: 0.8rem; background: transparent; border: 1px dashed var(--border);
+      color: var(--text-muted); padding: 0.6rem; border-radius: 10px; cursor: pointer; font-weight: 600; transition: var(--transition);
+    }
+    .clear-hist:hover { border-color: #ef4444; color: #ef4444; }
 
-        #diamond-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; background: radial-gradient(circle at center, #1a1a2e 0%, #050505 100%);
-        }
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: var(--transition); z-index: 200; backdrop-filter: blur(4px);
+    }
+    .modal-overlay.active { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface); width: 90%; max-width: 360px; border-radius: 18px; padding: 1.5rem;
+      box-shadow: var(--shadow); transform: scale(0.9); transition: var(--transition);
+    }
+    .modal-overlay.active .modal { transform: scale(1); }
+    .modal h3 { margin-bottom: 1rem; text-align: center; }
+    .style-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1rem; }
+    .style-opt { padding: 0.8rem; border: 2px solid var(--border); border-radius: 12px; cursor: pointer; text-align: center; font-weight: 600; transition: var(--transition); }
+    .style-opt:hover { border-color: var(--primary); }
+    .style-opt.selected { border-color: var(--primary); background: rgba(99, 102, 241, 0.1); }
+    .close-modal { width: 100%; padding: 0.7rem; border: none; background: var(--primary); color: #fff; border-radius: 10px; cursor: pointer; font-weight: 600; }
 
-        .diamond-particle {
-            position: absolute; background: white; border-radius: 50%;
-            opacity: 0.3; pointer-events: none;
-            animation: diamondFloat 10s infinite linear;
-        }
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--text); color: var(--bg); padding: 0.7rem 1.3rem; border-radius: 50px;
+      opacity: 0; transition: var(--transition); pointer-events: none; z-index: 999;
+      font-weight: 500; box-shadow: 0 8px 16px rgba(0,0,0,0.2); white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        @keyframes diamondFloat {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            50% { opacity: 0.5; }
-            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
-        }
-
-        .luxury-wrapper {
-            width: 100%;
-            max-width: 800px;
-            padding: 20px;
-            position: relative;
-            z-index: 10;
-        }
-
-        #royal-loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--deep-black); z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 1s ease;
-        }
-
-        .loader-crown {
-            font-size: 5rem; color: var(--gold);
-            filter: drop-shadow(0 0 20px var(--gold));
-            animation: crownPulse 2s infinite ease-in-out;
-        }
-
-        @keyframes crownPulse {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            50% { transform: scale(1.2) rotate(10deg); }
-        }
-
-        .loader-text {
-            font-family: 'Cinzel', serif; font-size: 1.5rem; margin-top: 20px;
-            background: var(--text-gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            letter-spacing: 5px; font-weight: 900;
-        }
-
-        .royal-card {
-            background: var(--card-bg);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 50px;
-            padding: 40px;
-            box-shadow: 0 50px 100px rgba(0,0,0,0.9), 0 0 50px rgba(212, 175, 55, 0.1);
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(20px);
-        }
-
-        .royal-card::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: conic-gradient(transparent, var(--gold), transparent, var(--gold), transparent);
-            animation: borderRotate 10s linear infinite;
-            z-index: -1; opacity: 0.2;
-        }
-
-        @keyframes borderRotate { 100% { transform: rotate(360deg); } }
-
-        .royal-header { text-align: center; margin-bottom: 40px; }
-        
-        .royal-title {
-            font-family: 'Cinzel', serif; font-size: 3rem; font-weight: 900;
-            background: var(--text-gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            text-transform: uppercase; margin-bottom: 10px;
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
-        }
-
-        .royal-subtitle {
-            font-size: 1rem; color: var(--gold-light); letter-spacing: 2px;
-            text-transform: uppercase; opacity: 0.8;
-        }
-
-        .royal-tabs {
-            display: grid; grid-template-columns: repeat(4, 1fr);
-            background: rgba(0,0,0,0.4); padding: 10px; border-radius: 30px;
-            margin-bottom: 40px; border: 1px solid rgba(212, 175, 55, 0.2);
-        }
-
-        .tab-item {
-            padding: 15px; border: none; background: transparent; color: #aaa;
-            cursor: pointer; transition: var(--transition); border-radius: 25px;
-            display: flex; flex-direction: column; align-items: center; gap: 8px;
-            font-weight: 700; font-size: 0.8rem;
-        }
-
-        .tab-item i { font-size: 1.5rem; }
-
-        .tab-item.active {
-            background: var(--gold); color: var(--deep-black);
-            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.4);
-            transform: translateY(-5px);
-        }
-
-        .royal-section { display: none; animation: sectionFade 0.8s ease forwards; }
-        .royal-section.active { display: block; }
-
-        @keyframes sectionFade {
-            from { opacity: 0; transform: scale(0.95) translateY(20px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-
-        .scanner-viewport {
-            position: relative; width: 100%; aspect-ratio: 1;
-            border-radius: 40px; overflow: hidden;
-            border: 5px solid transparent;
-            background: linear-gradient(var(--deep-black), var(--deep-black)) padding-box,
-                        var(--border-gold) border-box;
-            box-shadow: 0 0 50px rgba(212, 175, 55, 0.2);
-        }
-
-        #video-feed { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            /* إزالة الفلاتر التي قد تسبب بكسلة أو تشويش */
-        }
-
-        .scanner-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            pointer-events: none;
-        }
-
-        .target-box {
-            width: 70%; height: 70%; position: relative;
-            border: 2px solid rgba(212, 175, 55, 0.3); border-radius: 40px;
-            box-shadow: 0 0 0 2000px rgba(0,0,0,0.7);
-        }
-
-        .target-corner {
-            position: absolute; width: 40px; height: 40px;
-            border: 5px solid var(--gold); filter: drop-shadow(0 0 10px var(--gold));
-        }
-        .tl { top: -5px; left: -5px; border-right: 0; border-bottom: 0; border-radius: 35px 0 0 0; }
-        .tr { top: -5px; right: -5px; border-left: 0; border-bottom: 0; border-radius: 0 35px 0 0; }
-        .bl { bottom: -5px; left: -5px; border-right: 0; border-top: 0; border-radius: 0 0 0 35px; }
-        .br { bottom: -5px; right: -5px; border-left: 0; border-top: 0; border-radius: 0 0 35px 0; }
-
-        .laser-line {
-            position: absolute; width: 100%; height: 5px;
-            background: linear-gradient(to right, transparent, var(--gold), #fff, var(--gold), transparent);
-            box-shadow: 0 0 30px var(--gold);
-            animation: laserMove 4s infinite ease-in-out;
-        }
-
-        @keyframes laserMove { 0%, 100% { top: 10%; opacity: 0.5; } 50% { top: 90%; opacity: 1; } }
-
-        .royal-controls {
-            display: flex; justify-content: center; gap: 20px; margin-top: 30px;
-        }
-
-        .royal-btn {
-            width: 70px; height: 70px; border-radius: 25px;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            background: rgba(255,255,255,0.05); color: var(--gold);
-            font-size: 1.5rem; cursor: pointer; transition: var(--transition);
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .royal-btn:hover { background: var(--gold); color: var(--deep-black); transform: scale(1.1); }
-
-        .royal-input {
-            width: 100%; background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            padding: 20px; border-radius: 20px; color: #fff;
-            font-family: 'Cairo', sans-serif; font-size: 1rem; margin-bottom: 20px;
-            outline: none; transition: var(--transition);
-        }
-
-        .royal-input:focus { border-color: var(--gold); background: rgba(255,255,255,0.1); }
-
-        .history-item {
-            background: rgba(255,255,255,0.03); padding: 20px; border-radius: 25px;
-            margin-bottom: 15px; display: flex; align-items: center; gap: 20px;
-            border: 1px solid rgba(212, 175, 55, 0.1); cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .history-item:hover { transform: translateX(-10px); background: rgba(212, 175, 55, 0.1); }
-
-        .smart-result-card {
-            position: fixed; bottom: -100%; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 500px; background: var(--card-bg);
-            border-radius: 40px 40px 0 0; padding: 40px; z-index: 1000;
-            border: 1px solid var(--gold); border-bottom: none;
-            transition: bottom 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-            box-shadow: 0 -20px 50px rgba(0,0,0,0.8);
-        }
-
-        .smart-result-card.show { bottom: 0; }
-
-        .result-icon-box {
-            width: 80px; height: 80px; border-radius: 25px;
-            background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; color: var(--gold); margin: 0 auto 20px;
-        }
-
-        .toast-royal {
-            position: fixed; top: 30px; left: 50%; transform: translateX(-50%);
-            background: var(--gold); color: var(--deep-black);
-            padding: 15px 40px; border-radius: 50px; font-weight: 900;
-            z-index: 10000; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            display: none; animation: toastIn 0.5s ease forwards;
-        }
-
-        @keyframes toastIn { from { top: -50px; opacity: 0; } to { top: 30px; opacity: 1; } }
-
-        /* استعلامات الوسائط للجوال */
-        @media (max-width: 600px) {
-            .royal-card { padding: 20px; border-radius: 30px; }
-            .royal-title { font-size: 2rem; }
-            .royal-tabs { grid-template-columns: repeat(4, 1fr); gap: 5px; }
-            .tab-item { padding: 10px; font-size: 0.6rem; }
-            .tab-item i { font-size: 1.2rem; }
-        }
-    </style>
+    @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 420px) { .control-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
 </head>
 <body>
+  <header>
+    <div class="brand">🌟 <span>ALHYTHAM.NET</span></div>
+    <div class="header-actions">
+      <button class="icon-btn" id="style-btn" title="تغيير الستايل"><i class="fa-solid fa-palette"></i></button>
+      <button class="icon-btn" id="theme-btn" title="الوضع الليلي"><i class="fa-solid fa-moon"></i></button>
+    </div>
+  </header>
 
-    <div id="diamond-bg"></div>
-
-    <!-- اللودر الملكي -->
-    <div id="royal-loader">
-        <div class="loader-crown"><i class="fas fa-crown"></i></div>
-        <div class="loader-text">ALHYTHAM LUXURY</div>
-        <div style="width: 200px; height: 4px; background: rgba(212, 175, 55, 0.2); margin-top: 30px; border-radius: 2px; overflow: hidden;">
-            <div id="loader-bar" style="width: 0%; height: 100%; background: var(--gold); transition: width 0.3s;"></div>
-        </div>
+  <main>
+    <div class="scanner-card">
+      <div id="reader">
+        <div class="scan-overlay"><div class="scan-line"></div></div>
+      </div>
     </div>
 
-    <div class="luxury-wrapper">
-        <header class="royal-header">
-            <div class="main-logo-container">
-                <div class="logo-glow-effect"></div>
-                <i class="fas fa-qrcode main-qr-icon"></i>
-            </div>
-            <h1 class="royal-title">ALHYTHAM</h1>
-            <p class="royal-subtitle">Luxury QR & Barcode Suite</p>
-        </header>
+    <button class="upload-btn" id="upload-btn">
+      <i class="fa-solid fa-image"></i> رفع صورة QR من المعرض
+    </button>
+    <input type="file" id="file-input" accept="image/*">
 
-        <nav class="royal-tabs">
-            <button class="tab-item active" onclick="switchTab('scan')">
-                <i class="fas fa-expand"></i>
-                <span>الماسح</span>
-            </button>
-            <button class="tab-item" onclick="switchTab('create')">
-                <i class="fas fa-plus-circle"></i>
-                <span>إنشاء</span>
-            </button>
-            <button class="tab-item" onclick="switchTab('history')">
-                <i class="fas fa-history"></i>
-                <span>السجل</span>
-            </button>
-            <button class="tab-item" onclick="switchTab('stats')">
-                <i class="fas fa-chart-line"></i>
-                <span>إحصائيات</span>
-            </button>
-        </nav>
-
-        <main class="royal-card">
-            <!-- قسم الماسح -->
-            <section id="scan-sec" class="royal-section active">
-                <div class="scanner-viewport">
-                    <video id="video-feed" autoplay playsinline muted></video>
-                    <div class="scanner-overlay">
-                        <div class="target-box">
-                            <div class="target-corner tl"></div>
-                            <div class="target-corner tr"></div>
-                            <div class="target-corner bl"></div>
-                            <div class="target-corner br"></div>
-                            <div class="laser-line"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="royal-controls">
-                    <button class="royal-btn" onclick="toggleTorch()"><i class="fas fa-bolt"></i></button>
-                    <button class="royal-btn" onclick="initLuxuryCamera()"><i class="fas fa-sync-alt"></i></button>
-                </div>
-                <p style="text-align: center; margin-top: 20px; color: var(--gold-light); font-size: 0.9rem;">
-                    <i class="fas fa-info-circle"></i> يدعم الآن الباركود والـ QR بدقة فائقة
-                </p>
-            </section>
-
-            <!-- قسم الإنشاء -->
-            <section id="create-sec" class="royal-section">
-                <input type="text" id="qr-input" class="royal-input" placeholder="أدخل النص أو الرابط هنا...">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
-                    <div>
-                        <label style="display: block; margin-bottom: 10px; font-size: 0.8rem; color: var(--gold);">لون الكود</label>
-                        <input type="color" id="qr-color" value="#d4af37" style="width: 100%; height: 50px; border-radius: 15px; border: none; cursor: pointer;">
-                    </div>
-                    <div>
-                        <label style="display: block; margin-bottom: 10px; font-size: 0.8rem; color: var(--gold);">لون الخلفية</label>
-                        <input type="color" id="qr-bg" value="#050505" style="width: 100%; height: 50px; border-radius: 15px; border: none; cursor: pointer;">
-                    </div>
-                </div>
-                <button class="royal-btn" style="width: 100%; height: 60px; border-radius: 20px; font-weight: 900;" onclick="generateLuxuryQR()">
-                    <i class="fas fa-magic" style="margin-left: 10px;"></i> صياغة الكود الملكي
-                </button>
-
-                <div id="qr-output-container" style="margin-top: 40px; text-align: center; display: none;">
-                    <div id="luxury-qrcode" style="display: inline-block; padding: 20px; background: white; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5);"></div>
-                    <div style="margin-top: 20px; display: flex; justify-content: center; gap: 15px;">
-                        <button class="royal-btn" onclick="downloadLuxuryQR()"><i class="fas fa-download"></i></button>
-                        <button class="royal-btn" onclick="shareLuxuryQR()"><i class="fas fa-share-alt"></i></button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- قسم السجل -->
-            <section id="history-sec" class="royal-section">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                    <h2 style="font-family: 'Cinzel', serif; color: var(--gold);">السجل الملكي</h2>
-                    <button onclick="clearHistory()" style="background: transparent; border: none; color: #ff4d4d; cursor: pointer; font-weight: 700;">
-                        <i class="fas fa-trash-alt"></i> مسح الكل
-                    </button>
-                </div>
-                <div id="royal-history-list">
-                    <!-- سيتم تعبئته برمجياً -->
-                </div>
-            </section>
-
-            <!-- قسم الإحصائيات -->
-            <section id="stats-sec" class="royal-section">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px;">
-                    <div class="history-item" style="flex-direction: column; text-align: center; gap: 10px;">
-                        <div style="font-size: 2rem; color: var(--gold); font-weight: 900;" id="stat-scans">0</div>
-                        <div style="font-size: 0.8rem; color: #888;">إجمالي المسح</div>
-                    </div>
-                    <div class="history-item" style="flex-direction: column; text-align: center; gap: 10px;">
-                        <div style="font-size: 2rem; color: var(--gold); font-weight: 900;" id="stat-created">0</div>
-                        <div style="font-size: 0.8rem; color: #888;">أكواد تم إنشاؤها</div>
-                    </div>
-                </div>
-                <canvas id="luxuryChart" style="width: 100%; height: 250px;"></canvas>
-            </section>
-        </main>
+    <div class="control-grid">
+      <button class="ctrl-btn" id="switch-cam-btn"><i class="fa-solid fa-camera-rotate"></i> تبديل</button>
+      <div class="ctrl-btn zoom-container" id="zoom-box">
+        <div class="zoom-header">
+          <i class="fa-solid fa-magnifying-glass-plus"></i>
+          <span id="zoom-val">1.0x</span>
+        </div>
+        <input type="range" id="zoom-slider" min="1" max="5" step="0.1" value="1" disabled>
+        <span class="zoom-note" id="zoom-note">غير متاح</span>
+      </div>
+      <button class="ctrl-btn" id="sound-btn"><i class="fa-solid fa-volume-high"></i> صوت</button>
+      <button class="ctrl-btn" id="copy-all-btn"><i class="fa-solid fa-clipboard"></i> نسخ الكل</button>
+      <button class="ctrl-btn" id="export-hist-btn"><i class="fa-solid fa-file-export"></i> تصدير</button>
     </div>
 
-    <!-- كارت النتائج الذكي -->
-    <div id="smart-result" class="smart-result-card">
-        <div class="result-icon-box" id="res-icon"></div>
-        <div style="text-align: center; margin-bottom: 30px;">
-            <div id="res-type" style="color: var(--gold); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;"></div>
-            <div id="res-content" style="font-size: 1.2rem; font-weight: 700; word-break: break-all; color: #fff;"></div>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-            <button class="royal-btn" style="width: 100%; border-radius: 20px;" onclick="executeRoyalAction()">
-                <i class="fas fa-external-link-alt" style="margin-left: 10px;"></i> تنفيذ
-            </button>
-            <button class="royal-btn" style="width: 100%; border-radius: 20px; background: rgba(255,255,255,0.1);" onclick="closeSmartResult()">
-                إغلاق
-            </button>
-        </div>
+    <div class="result-panel" id="result-panel">
+      <div class="result-header">
+        <h3>📦 نتيجة المسح</h3>
+        <span class="result-type" id="res-type">نص</span>
+      </div>
+      <div class="result-content" id="res-text"></div>
+      <div class="result-actions">
+        <button class="res-btn primary" id="open-res"><i class="fa-solid fa-up-right-from-square"></i> فتح</button>
+        <button class="res-btn" id="share-res"><i class="fa-solid fa-share-nodes"></i> مشاركة</button>
+      </div>
     </div>
 
-    <div id="royal-toast" class="toast-royal"></div>
+    <div class="history-panel">
+      <div class="history-header">
+        <span>🕒 سجل المسح</span>
+        <button class="ctrl-btn" style="padding:0.4rem 0.8rem; font-size:0.75rem" id="search-hist"><i class="fa-solid fa-search"></i></button>
+      </div>
+      <input type="text" id="hist-search" placeholder="بحث في السجل..." style="width:100%;padding:0.6rem 1rem;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);margin-bottom:0.6rem;display:none;">
+      <div class="history-list" id="hist-list"></div>
+      <button class="clear-hist" id="clear-hist">🗑️ مسح السجل</button>
+    </div>
+  </main>
 
-    <script>
-        // المتغيرات العالمية
-        let stream = null;
-        let track = null;
-        let currentScanResult = '';
-        let historyData = JSON.parse(localStorage.getItem('luxury_history') || '[]');
-        let statsData = JSON.parse(localStorage.getItem('luxury_stats') || '{"scans":0, "created":0}');
-        let chart = null;
-        let isTorchOn = false;
-        
-        // استخدام القارئ الشامل (QR + Barcode)
-        const codeReader = new ZXing.BrowserMultiFormatReader();
+  <footer style="text-align:center;padding:1.5rem 1rem;color:var(--text-muted);font-size:0.8rem;border-top:1px solid var(--border);margin-top:auto;">
+    © 2026 ALHYTHAM.NET | ماسح الكود الذكي | سريع، آمن، واحترافي
+  </footer>
 
-        // التهيئة عند التحميل
-        window.addEventListener('load', () => {
-            createDiamondParticles();
-            simulateLoading();
-            updateHistoryUI();
-            updateStats();
-            initChart();
+  <div class="toast" id="toast"></div>
+
+  <div class="modal-overlay" id="style-modal">
+    <div class="modal">
+      <h3>🎨 اختر ستايل الواجهة</h3>
+      <div class="style-grid">
+        <div class="style-opt selected" data-style="">📱 كلاسيكي</div>
+        <div class="style-opt" data-style="style-gradient">🌈 تدرج لوني</div>
+        <div class="style-opt" data-style="style-glass">💎 زجاجي</div>
+        <div class="style-opt" data-style="style-neumorphism">🕳️ نيومورفيزم</div>
+      </div>
+      <button class="close-modal" id="close-style">تطبيق وإغلاق</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const qr = new Html5Qrcode("reader");
+      let camMode = 'environment';
+      let lastRes = '';
+      let isPaused = false;
+      let soundOn = true;
+      let track = null;
+      let isNativeZoom = false;
+
+      const $ = id => document.getElementById(id);
+      const uploadBtn = $('upload-btn'), fileIn = $('file-input');
+      const switchBtn = $('switch-cam-btn');
+      const zoomSlider = $('zoom-slider'), zoomVal = $('zoom-val'), zoomNote = $('zoom-note');
+      const soundBtn = $('sound-btn'), resPanel = $('result-panel');
+      const resText = $('res-text'), resType = $('res-type');
+      const openBtn = $('open-res'), shareBtn = $('share-res');
+      const histList = $('hist-list'), searchIn = $('hist-search');
+      const themeBtn = $('theme-btn'), styleBtn = $('style-btn');
+      const modal = $('style-modal'), closeStyle = $('close-style');
+      const toast = $('toast');
+
+      const toastFn = msg => { toast.textContent = msg; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2500); };
+      const vibrate = () => navigator.vibrate?.(80);
+      const playSound = () => {
+        if (!soundOn) return;
+        try { const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=1200;g.gain.value=0.15;o.start();o.stop(c.currentTime+0.1);}catch(e){}
+      };
+
+      const isUrl = s => { try{new URL(s);return true}catch{return/^(https?:\/\/|mailto:|tel:|ftp:)/i.test(s)} };
+      const getType = s => {
+        if(isUrl(s)) return '🌐 رابط';
+        if(/^[\+]?[0-9\s\-]+$/.test(s)) return '📞 هاتف';
+        if(/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(s)) return '📧 بريد';
+        if(s.startsWith('WIFI:')) return '📶 واي فاي';
+        if(s.startsWith('BEGIN:VCARD')) return '👤 جهة اتصال';
+        if(/^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(s)) return '📍 موقع';
+        return '📝 نص';
+      };
+
+      const showRes = text => {
+        lastRes = text; resText.textContent = text; resType.textContent = getType(text);
+        openBtn.style.display = isUrl(text) ? 'flex' : 'none';
+        resPanel.classList.add('show'); addHist(text); playSound(); vibrate();
+        setTimeout(()=>window.scrollTo({top:resPanel.offsetTop-20,behavior:'smooth'}),100);
+      };
+
+      const loadHist = () => {
+        const h = JSON.parse(localStorage.getItem('qr_hist')||'[]');
+        const term = searchIn.value.toLowerCase();
+        const filtered = term ? h.filter(i=>i.t.toLowerCase().includes(term)) : h;
+        histList.innerHTML = filtered.length ? '' : '<div style="text-align:center;color:var(--text-muted);padding:1rem">فارغ</div>';
+        filtered.slice(0,8).forEach(i=>{
+          const d=document.createElement('div'); d.className='hist-item';
+          d.innerHTML=`<span class="hist-text">${i.t}</span><span class="hist-time">${new Date(i.time).toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'})}</span>`;
+          d.onclick=()=>showRes(i.t); histList.appendChild(d);
         });
+      };
+      const addHist = text => {
+        let h = JSON.parse(localStorage.getItem('qr_hist')||'[]');
+        h.unshift({t:text,time:Date.now()});
+        h=h.filter((v,i,a)=>a.findIndex(t=>t.t===v.t)===i).slice(0,50);
+        localStorage.setItem('qr_hist',JSON.stringify(h)); loadHist();
+      };
+      $('clear-hist').onclick=()=>{localStorage.removeItem('qr_hist');loadHist();toastFn('تم المسح');};
+      $('search-hist').onclick=()=>{searchIn.style.display=searchIn.style.display==='none'?'block':'none';};
+      searchIn.oninput=loadHist;
 
-        function createDiamondParticles() {
-            const bg = document.getElementById('diamond-bg');
-            for(let i=0; i<50; i++) {
-                const p = document.createElement('div');
-                p.className = 'diamond-particle';
-                const size = Math.random() * 4 + 2;
-                p.style.width = size + 'px';
-                p.style.height = size + 'px';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.animationDelay = Math.random() * 10 + 's';
-                p.style.animationDuration = Math.random() * 10 + 5 + 's';
-                bg.appendChild(p);
-            }
+      // Hybrid Zoom
+      const applyCssZoom = val => { const vid = document.querySelector('#reader video'); if(vid) vid.style.transform = `scale(${val})`; };
+      zoomSlider.addEventListener('input', e => {
+        const val = parseFloat(e.target.value);
+        zoomVal.textContent = `${val.toFixed(1)}x${isNativeZoom?'':' (بصري)'}`;
+        zoomNote.textContent = isNativeZoom ? '' : 'تكبير بصري للعرض';
+        zoomNote.style.opacity = val>1 ? '1' : '0.3';
+        
+        if(isNativeZoom && track) {
+          track.applyConstraints({advanced:[{zoom:val}]}).catch(()=>applyCssZoom(val));
+        } else {
+          applyCssZoom(val);
         }
+      });
 
-        function simulateLoading() {
-            let progress = 0;
-            const bar = document.getElementById('loader-bar');
-            const interval = setInterval(() => {
-                progress += Math.random() * 15;
-                if(progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        document.getElementById('royal-loader').style.opacity = '0';
-                        setTimeout(() => {
-                            document.getElementById('royal-loader').style.display = 'none';
-                            // بدء الكاميرا تلقائياً بعد التحميل
-                            initLuxuryCamera();
-                        }, 1000);
-                    }, 500);
-                }
-                bar.style.width = progress + '%';
-            }, 100);
-        }
-
-        // محرك الكاميرا المطور
-        async function initLuxuryCamera() {
-            try {
-                // إيقاف أي بث حالي
-                if(stream) {
-                    stream.getTracks().forEach(t => t.stop());
-                }
-                
-                // إعدادات الكاميرا المحسنة للجودة العالية
-                const constraints = {
-                    video: {
-                        facingMode: 'environment',
-                        // استخدام ideal بدلاً من min لتجنب الفشل على بعض الأجهزة
-                        width: { ideal: 1920 },
-                        height: { ideal: 1080 },
-                        // طلب التركيز التلقائي
-                        focusMode: 'continuous'
-                    }
-                };
-
-                stream = await navigator.mediaDevices.getUserMedia(constraints);
-                const video = document.getElementById('video-feed');
-                video.srcObject = stream;
-                
-                // تفعيل وضع التركيز المتقدم إذا كان مدعوماً
-                track = stream.getVideoTracks()[0];
-                const capabilities = track.getCapabilities ? track.getCapabilities() : {};
-                
-                const advancedConstraints = {};
-                if (capabilities.focusMode && capabilities.focusMode.includes('continuous')) {
-                    advancedConstraints.focusMode = 'continuous';
-                }
-                
-                // محاولة تفعيل الزووم إذا كان الباركود بعيداً (اختياري)
-                if (capabilities.zoom) {
-                    // نترك الزووم افتراضي حالياً
-                }
-
-                if (Object.keys(advancedConstraints).length > 0) {
-                    try {
-                        await track.applyConstraints({ advanced: [advancedConstraints] });
-                    } catch(e) { console.log("Focus constraints not applied"); }
-                }
-
-                // بدء المسح باستخدام المكتبة المطورة
-                startLuxuryScan(video);
-                
-                showRoyalToast("تم تفعيل وضع الدقة العالية HD");
-            } catch (err) {
-                console.error("Camera Init Error:", err);
-                // محاولة بديلة بدقة قياسية إذا فشلت الدقة العالية
-                try {
-                    stream = await navigator.mediaDevices.getUserMedia({ 
-                        video: { 
-                            facingMode: 'environment',
-                            width: { ideal: 1280 },
-                            height: { ideal: 720 }
-                        } 
-                    });
-                    const video = document.getElementById('video-feed');
-                    video.srcObject = stream;
-                    startLuxuryScan(video);
-                    showRoyalToast("تم التفعيل بوضع التوافق");
-                } catch (e) {
-                    showRoyalToast("يرجى منح إذن الوصول للكاميرا");
-                }
-            }
-        }
-
-        function startLuxuryScan(video) {
-            // استخدام decodeFromVideoDevice لمزيد من الاستقرار بدلاً من decodeFromVideoElement اليدوي
-            codeReader.decodeFromVideoElement(video, (result, err) => {
-                if (result) {
-                    if (result.text !== currentScanResult) {
-                        handleLuxuryResult(result.text);
-                    }
-                }
-                // نتجاهل الأخطاء (err) لأنها تحدث باستمرار أثناء البحث عن كود
-            });
-        }
-
-        async function toggleTorch() {
-            if (!track) return;
-            const capabilities = track.getCapabilities ? track.getCapabilities() : {};
-            if (capabilities.torch) {
-                try {
-                    isTorchOn = !isTorchOn;
-                    await track.applyConstraints({ advanced: [{ torch: isTorchOn }] });
-                    showRoyalToast(isTorchOn ? "تم تشغيل الكشاف" : "تم إطفاء الكشاف");
-                } catch (e) {
-                    showRoyalToast("الكشاف غير مدعوم حالياً");
-                }
+      // Scanner Init
+      const startCam = async facing => {
+        try{await qr.stop();}catch(e){}
+        isPaused=false; document.querySelector('.scan-line')?.start();
+        try {
+          // Config optimized for stability
+          const config = { fps: 12, qrbox: { width: 230, height: 230 } };
+          await qr.start({facingMode:facing}, config, onScan, ()=>{});
+          
+          const vid = document.querySelector('#reader video');
+          track = vid?.srcObject?.getVideoTracks()[0] || null;
+          
+          if(track) {
+            const caps = track.getCapabilities() || {};
+            isNativeZoom = !!caps.zoom && caps.zoom.max > 1;
+            
+            zoomSlider.disabled = false;
+            if(isNativeZoom) {
+              zoomSlider.min=caps.zoom.min; zoomSlider.max=caps.zoom.max; zoomSlider.step=caps.zoom.step||0.1;
+              zoomSlider.value=track.getSettings().zoom||1.0;
+              zoomVal.textContent=`${parseFloat(zoomSlider.value).toFixed(1)}x`;
+              zoomNote.textContent='تكبير أصلي (دقيق)';
             } else {
-                showRoyalToast("جهازك لا يدعم التحكم بالكشاف من المتصفح");
+              zoomSlider.min=1; zoomSlider.max=5; zoomSlider.step=0.1; zoomSlider.value=1;
+              zoomVal.textContent='1.0x (بصري)';
+              zoomNote.textContent='تكبير بصري للعرض';
             }
+          }
+          switchBtn.innerHTML = facing==='environment'?'<i class="fa-solid fa-camera-rotate"></i> أمامية':'<i class="fa-solid fa-camera-rotate"></i> خلفية';
+        } catch(e) {
+          document.getElementById('reader').innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);padding:1rem;text-align:center">📷 يرجى السماح بالكاميرا أو استخدم رفع الصور</div>';
         }
+      };
 
-        function handleLuxuryResult(text) {
-            currentScanResult = text;
-            if(navigator.vibrate) navigator.vibrate([100, 50, 100]);
-            
-            // تسجيل الإحصائيات
-            statsData.scans++;
-            updateStats();
-            
-            // حفظ السجل
-            const item = {
-                id: Date.now(),
-                text: text,
-                type: text.startsWith('http') ? 'link' : 'text',
-                date: new Date().toLocaleString('ar-EG')
-            };
-            historyData.unshift(item);
-            if(historyData.length > 100) historyData.pop();
-            localStorage.setItem('luxury_history', JSON.stringify(historyData));
-            
-            showSmartResult(text);
-            updateHistoryUI();
-            
-            // تأثير الكونفيتي عند النجاح
-            confetti({ 
-                particleCount: 150, 
-                spread: 70, 
-                origin: { y: 0.6 }, 
-                colors: ['#d4af37', '#ffffff', '#002366'] 
-            });
+      switchBtn.onclick = () => { camMode=camMode==='environment'?'user':'environment'; startCam(camMode); };
+      
+      // Optimized Image Scanner
+      uploadBtn.onclick = () => fileIn.click();
+      fileIn.onchange = async e => {
+        const f = e.target.files[0]; if(!f) return;
+        
+        uploadBtn.classList.add('loading');
+        uploadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري تحليل الصورة...';
+        
+        try {
+          // Stop camera to free resources and avoid conflict
+          await qr.stop();
+          
+          // Scan file with robust settings
+          // true enables verbose debugging for better format detection
+          const decodedText = await qr.scanFile(f, true);
+          showRes(decodedText);
+          toastFn('✅ تم استخراج البيانات من الصورة');
+          
+          // Restart camera after scan
+          setTimeout(() => startCam(camMode), 500);
+        } catch (err) {
+          console.warn('Scan failed:', err);
+          toastFn('❌ لم يتم العثور على رمز QR واضح. حاول التقاط صورة أقرب.');
+          // Restart camera even on failure
+          setTimeout(() => startCam(camMode), 500);
+        } finally {
+          uploadBtn.classList.remove('loading');
+          uploadBtn.innerHTML = '<i class="fa-solid fa-image"></i> رفع صورة QR من المعرض';
+          fileIn.value = '';
         }
+      };
 
-        function showSmartResult(text) {
-            const card = document.getElementById('smart-result');
-            const content = document.getElementById('res-content');
-            const typeText = document.getElementById('res-type');
-            const icon = document.getElementById('res-icon');
+      const onScan = decoded => {
+        if(isPaused||decoded===lastRes) return;
+        isPaused=true; qr.pause(); document.querySelector('.scan-line')?.stop();
+        showRes(decoded); toastFn('✅ تم التعرف بنجاح');
+        setTimeout(()=>{qr.resume();isPaused=false;lastRes='';document.querySelector('.scan-line')?.start();},2500);
+      };
 
-            content.innerText = text;
-            if(text.startsWith('http')) {
-                typeText.innerText = "رابط مكتشف";
-                icon.innerHTML = '<i class="fas fa-link"></i>';
-            } else {
-                typeText.innerText = "محتوى مكتشف";
-                icon.innerHTML = '<i class="fas fa-barcode"></i>';
-            }
-            card.classList.add('show');
-        }
+      $('copy-all-btn').onclick=()=>{if(lastRes)navigator.clipboard.writeText(lastRes).then(()=>toastFn('📋 تم النسخ'));};
+      openBtn.onclick=()=>isUrl(lastRes)&&window.open(lastRes,'_blank');
+      shareBtn.onclick=()=>{if(navigator.share)navigator.share({title:'ALHYTHAM QR',text:lastRes,url:isUrl(lastRes)?lastRes:undefined});else$('copy-all-btn').click();};
+      soundBtn.onclick=()=>{soundOn=!soundOn;soundBtn.classList.toggle('active',soundOn);toastFn(soundOn?'🔊 الصوت مفعل':'🔇 الصوت صامت');};
+      $('export-hist-btn').onclick=()=>{
+        const h=JSON.parse(localStorage.getItem('qr_hist')||'[]');
+        const txt=h.map(i=>`[${new Date(i.time).toLocaleString()}] ${i.t}`).join('\n')||'السجل فارغ';
+        const blob=new Blob([txt],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`ALHYTHAM_QR_History_${new Date().toISOString().slice(0,10)}.txt`;a.click();toastFn('📥 تم تصدير السجل');
+      };
 
-        function closeSmartResult() {
-            document.getElementById('smart-result').classList.remove('show');
-            currentScanResult = '';
-        }
+      themeBtn.onclick=()=>{document.body.classList.toggle('style-dark');const dark=document.body.classList.contains('style-dark');themeBtn.innerHTML=dark?'<i class="fa-solid fa-sun"></i>':'<i class="fa-solid fa-moon"></i>';localStorage.setItem('theme',dark?'dark':'light');};
+      styleBtn.onclick=()=>modal.classList.add('active'); closeStyle.onclick=()=>modal.classList.remove('active');
+      document.querySelectorAll('.style-opt').forEach(opt=>{opt.onclick=()=>{document.querySelectorAll('.style-opt').forEach(o=>o.classList.remove('selected'));opt.classList.add('selected');document.body.className=document.body.className.replace(/style-\w+/g,'');if(opt.dataset.style)document.body.classList.add(opt.dataset.style);localStorage.setItem('style',opt.dataset.style);};});
 
-        function executeRoyalAction() {
-            const text = document.getElementById('res-content').innerText;
-            if(text.startsWith('http')) {
-                window.open(text, '_blank');
-            } else {
-                navigator.clipboard.writeText(text);
-                showRoyalToast("تم النسخ للمحافظة الملكية");
-            }
-            closeSmartResult();
-        }
-
-        function generateLuxuryQR() {
-            const text = document.getElementById('qr-input').value;
-            if(!text) return showRoyalToast("يرجى إدخال محتوى أولاً");
-            
-            const container = document.getElementById('luxury-qrcode');
-            container.innerHTML = '';
-            
-            new QRCode(container, {
-                text: text,
-                width: 256,
-                height: 256,
-                colorDark: document.getElementById('qr-color').value,
-                colorLight: document.getElementById('qr-bg').value,
-                correctLevel: QRCode.CorrectLevel.H
-            });
-            
-            document.getElementById('qr-output-container').style.display = 'block';
-            statsData.created++;
-            updateStats();
-            showRoyalToast("تم صياغة الكود بنجاح");
-        }
-
-        function downloadLuxuryQR() {
-            const img = document.querySelector('#luxury-qrcode img');
-            if(!img) return;
-            const link = document.createElement('a');
-            link.download = 'Alhytham-Luxury-QR.png';
-            link.href = img.src;
-            link.click();
-        }
-
-        function shareLuxuryQR() {
-            const img = document.querySelector('#luxury-qrcode img');
-            if(!img) return;
-            if (navigator.share) {
-                fetch(img.src)
-                    .then(res => res.blob())
-                    .then(blob => {
-                        const file = new File([blob], "QR.png", { type: 'image/png' });
-                        navigator.share({
-                            files: [file],
-                            title: 'Alhytham QR',
-                            text: 'تفقد هذا الكود الملكي'
-                        });
-                    });
-            } else {
-                showRoyalToast("المشاركة غير مدعومة في متصفحك");
-            }
-        }
-
-        function switchTab(id) {
-            document.querySelectorAll('.royal-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-            
-            document.getElementById(id + '-sec').classList.add('active');
-            // البحث عن التبويب الصحيح وتفعيله
-            const tabs = document.querySelectorAll('.tab-item');
-            tabs.forEach(tab => {
-                if(tab.getAttribute('onclick').includes(`'${id}'`)) tab.classList.add('active');
-            });
-            
-            if(id === 'scan') {
-                initLuxuryCamera();
-            } else {
-                if(stream) {
-                    stream.getTracks().forEach(t => t.stop());
-                    stream = null;
-                }
-            }
-            
-            if(id === 'stats') updateChart();
-        }
-
-        function updateHistoryUI() {
-            const list = document.getElementById('royal-history-list');
-            if(historyData.length === 0) {
-                list.innerHTML = '<p style="text-align:center; color:#555; margin-top:50px;">السجل الملكي فارغ حالياً</p>';
-                return;
-            }
-            list.innerHTML = historyData.map(item => `
-                <div class="history-item" onclick="showSmartResult('${item.text}')">
-                    <div class="result-icon-box" style="width:50px; height:50px; margin:0; font-size:1.2rem; border-width:2px;">
-                        <i class="fas ${item.type === 'link' ? 'fa-link' : 'fa-barcode'}"></i>
-                    </div>
-                    <div style="flex:1; min-width:0;">
-                        <div style="color:var(--gold); font-weight:900; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.text}</div>
-                        <div style="font-size:0.7rem; color:#666;">${item.date}</div>
-                    </div>
-                    <i class="fas fa-chevron-left" style="color:var(--gold); opacity:0.3;"></i>
-                </div>
-            `).join('');
-        }
-
-        function clearHistory() {
-            if(confirm("هل أنت متأكد من مسح السجل الملكي؟")) {
-                historyData = [];
-                localStorage.setItem('luxury_history', JSON.stringify(historyData));
-                updateHistoryUI();
-                showRoyalToast("تم تطهير السجل");
-            }
-        }
-
-        function updateStats() {
-            localStorage.setItem('luxury_stats', JSON.stringify(statsData));
-            document.getElementById('stat-scans').innerText = statsData.scans;
-            document.getElementById('stat-created').innerText = statsData.created;
-        }
-
-        function initChart() {
-            const ctx = document.getElementById('luxuryChart').getContext('2d');
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
-                    datasets: [{
-                        label: 'نشاط المسح',
-                        data: [12, 19, 3, 5, 2, 3, 9],
-                        borderColor: '#d4af37',
-                        tension: 0.4,
-                        fill: true,
-                        backgroundColor: 'rgba(212, 175, 55, 0.1)'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#555' } },
-                        x: { grid: { display: false }, ticks: { color: '#555' } }
-                    }
-                }
-            });
-        }
-
-        function updateChart() {
-            if(!chart) return;
-            chart.data.datasets[0].data = chart.data.datasets[0].data.map(v => v + Math.floor(Math.random() * 5));
-            chart.update();
-        }
-
-        function showRoyalToast(msg) {
-            const toast = document.getElementById('royal-toast');
-            toast.innerText = msg;
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
-        }
-    </script>
+      const savedTheme=localStorage.getItem('theme');if(savedTheme==='dark'){document.body.classList.add('style-dark');themeBtn.innerHTML='<i class="fa-solid fa-sun"></i>';}
+      const savedStyle=localStorage.getItem('style');if(savedStyle){document.body.classList.add(savedStyle);document.querySelectorAll('.style-opt').forEach(o=>o.classList.toggle('selected',o.dataset.style===savedStyle));}
+      loadHist(); startCam(camMode);
+    });
+  </script>
 </body>
 </html>
