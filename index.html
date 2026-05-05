@@ -3,177 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ALHYTHAM QR - النسخة المستقرة</title>
+    <title>ALHYTHAM QR - النسخة النهائية المستقرة</title>
     
     <!-- Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-    <!-- Using a more stable version of the library -->
+    <!-- استخدام مكتبة html5-qrcode بإصدار مستقر جداً -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
+        :root {
+            --primary: #3b82f6;
+            --bg: #000000;
+        }
         body {
             font-family: 'Cairo', sans-serif;
-            background-color: #000;
+            background-color: var(--bg);
             color: #fff;
             margin: 0;
             padding: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            overflow-x: hidden;
         }
         .glass {
-            background: rgba(20, 20, 20, 0.9);
+            background: rgba(20, 20, 20, 0.95);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         #reader {
             width: 100% !important;
             border: none !important;
-            border-radius: 20px;
+            border-radius: 24px;
             overflow: hidden;
+            background: #000;
         }
         #reader video {
             object-fit: cover !important;
-            border-radius: 20px;
+            border-radius: 24px;
         }
-        .nav-active {
+        /* تحسين شكل أزرار المكتبة الافتراضية */
+        #reader__dashboard_section_csr button {
+            background: #3b82f6 !important;
+            color: white !important;
+            border: none !important;
+            padding: 10px 20px !important;
+            border-radius: 12px !important;
+            font-family: 'Cairo' !important;
+            font-weight: bold !important;
+            margin: 5px !important;
+        }
+        .nav-btn.active {
             color: #3b82f6;
-            border-top: 2px solid #3b82f6;
+            border-bottom: 3px solid #3b82f6;
         }
-        /* Custom Switch */
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        /* Switch */
+        .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #333; transition: .4s; border-radius: 20px;
+            background-color: #333; transition: .4s; border-radius: 22px;
         }
         .slider:before {
-            position: absolute; content: ""; height: 14px; width: 14px;
+            position: absolute; content: ""; height: 16px; width: 16px;
             left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;
         }
         input:checked + .slider { background-color: #3b82f6; }
-        input:checked + .slider:before { transform: translateX(20px); }
+        input:checked + .slider:before { transform: translateX(22px); }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
 
     <!-- Header -->
-    <header class="p-4 flex justify-between items-center glass sticky top-0 z-50">
-        <h1 class="text-xl font-black text-blue-500">ALHYTHAM QR</h1>
-        <button onclick="location.reload()" class="text-zinc-400"><i class="fas fa-sync-alt"></i></button>
+    <header class="p-5 flex justify-between items-center glass sticky top-0 z-50">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-qrcode text-blue-500 text-2xl"></i>
+            <h1 class="text-xl font-black tracking-tighter">ALHYTHAM QR</h1>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="location.reload()" class="text-zinc-400 p-2"><i class="fas fa-sync-alt"></i></button>
+        </div>
     </header>
 
     <!-- Main Content -->
-    <main class="flex-1 p-4 overflow-y-auto pb-24">
+    <main class="flex-1 p-4 pb-28 space-y-6">
         
         <!-- Scanner Section -->
-        <div id="section-scan" class="tab-content space-y-4">
-            <div class="relative bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800">
-                <div id="reader"></div>
+        <section id="section-scan" class="tab-content space-y-5">
+            <div class="relative bg-zinc-900 rounded-[32px] overflow-hidden border border-zinc-800 shadow-2xl">
+                <div id="reader" class="w-full aspect-square"></div>
                 
-                <!-- Controls -->
-                <div class="absolute bottom-4 left-4 right-4 flex justify-between items-center z-10">
+                <!-- Floating Controls -->
+                <div class="absolute bottom-5 left-5 right-5 flex justify-between items-center z-10">
                     <div class="flex gap-2">
-                        <button onclick="switchCamera()" class="w-12 h-12 rounded-xl glass flex items-center justify-center"><i class="fas fa-camera-rotate"></i></button>
-                        <button onclick="toggleFlash()" class="w-12 h-12 rounded-xl glass flex items-center justify-center"><i class="fas fa-bolt"></i></button>
+                        <button onclick="toggleCamera()" class="w-12 h-12 rounded-2xl glass flex items-center justify-center text-white shadow-lg"><i class="fas fa-camera-rotate"></i></button>
+                        <button onclick="toggleFlash()" id="flash-btn" class="w-12 h-12 rounded-2xl glass flex items-center justify-center text-white shadow-lg"><i class="fas fa-bolt"></i></button>
                     </div>
-                    <label class="w-12 h-12 rounded-xl bg-blue-600 flex items-center justify-center cursor-pointer">
+                    <label class="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-lg cursor-pointer">
                         <i class="fas fa-image"></i>
-                        <input type="file" accept="image/*" class="hidden" onchange="handleFileUpload(this)">
+                        <input type="file" accept="image/*" class="hidden" onchange="scanFile(this)">
                     </label>
                 </div>
             </div>
 
-            <!-- Settings -->
-            <div class="glass p-4 rounded-2xl flex justify-between items-center">
-                <span class="text-sm font-bold">الفتح التلقائي للروابط</span>
-                <label class="switch">
-                    <input type="checkbox" id="auto-open" checked>
-                    <span class="slider"></span>
-                </label>
+            <!-- Settings & Chrome Intent -->
+            <div class="grid grid-cols-1 gap-3">
+                <div class="glass p-4 rounded-2xl flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-bolt-lightning text-yellow-500"></i>
+                        <span class="text-sm font-bold">الفتح التلقائي للروابط</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="auto-open" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <a href="intent://#Intent;scheme=http;package=com.android.chrome;end" id="chrome-btn" class="glass p-4 rounded-2xl flex items-center justify-center gap-3 text-blue-400 font-bold border-blue-500/20">
+                    <i class="fab fa-chrome"></i>
+                    <span>فتح في متصفح كروم (لحل مشاكل الكاميرا)</span>
+                </a>
             </div>
 
-            <!-- Result -->
-            <div id="result-box" class="hidden glass p-5 rounded-2xl border-r-4 border-blue-500">
-                <p class="text-xs text-blue-500 font-bold mb-2">النتيجة:</p>
-                <p id="result-text" class="text-sm break-all mb-4 font-mono text-left dir-ltr"></p>
-                <div class="flex gap-2">
-                    <button onclick="copyResult()" class="flex-1 bg-zinc-800 py-2 rounded-lg text-sm">نسخ</button>
-                    <a id="result-link" href="#" target="_blank" class="hidden flex-1 bg-blue-600 py-2 rounded-lg text-sm text-center">فتح</a>
+            <!-- Result Card -->
+            <div id="result-card" class="hidden glass p-6 rounded-3xl border-r-4 border-blue-500 animate-pulse-once">
+                <p class="text-xs font-black text-blue-500 mb-2 uppercase">النتيجة المكتشفة</p>
+                <p id="result-text" class="text-lg font-mono break-all mb-6 text-left dir-ltr"></p>
+                <div class="flex gap-3">
+                    <button onclick="copyResult()" class="flex-1 bg-zinc-800 py-3 rounded-xl font-bold">نسخ</button>
+                    <a id="result-link" href="#" target="_blank" class="hidden flex-1 bg-blue-600 py-3 rounded-xl font-bold text-center">زيارة الرابط</a>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Create Section -->
-        <div id="section-create" class="tab-content hidden space-y-4">
-            <div class="glass p-6 rounded-2xl space-y-4">
-                <textarea id="qr-input" rows="3" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 outline-none text-right" placeholder="أدخل النص هنا..."></textarea>
-                <button onclick="generateQR()" class="w-full bg-blue-600 py-3 rounded-xl font-bold">توليد كود QR</button>
-                <div id="qr-output" class="flex flex-col items-center gap-4 hidden pt-4">
-                    <div id="qrcode" class="p-3 bg-white rounded-xl"></div>
-                    <button onclick="downloadQR()" class="text-sm text-blue-400">تحميل الصورة</button>
+        <section id="section-create" class="tab-content hidden space-y-6">
+            <div class="glass p-6 rounded-3xl space-y-4">
+                <textarea id="qr-input" rows="4" class="w-full bg-zinc-900 border border-zinc-800 rounded-2xl p-4 outline-none focus:border-blue-500 transition-all text-right" placeholder="أدخل النص أو الرابط هنا..."></textarea>
+                <button onclick="generateQR()" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-lg">توليد كود QR</button>
+                <div id="qr-output" class="hidden flex flex-col items-center gap-6 pt-6 border-t border-zinc-800">
+                    <div id="qrcode" class="p-4 bg-white rounded-2xl"></div>
+                    <button onclick="downloadQR()" class="text-blue-400 font-bold">تحميل الصورة</button>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- History Section -->
-        <div id="section-history" class="tab-content hidden space-y-2">
-            <div id="history-list"></div>
-        </div>
+        <section id="section-history" class="tab-content hidden space-y-3">
+            <div class="flex justify-between items-center px-2">
+                <h3 class="font-bold">السجل الأخير</h3>
+                <button onclick="clearHistory()" class="text-red-500 text-xs">مسح الكل</button>
+            </div>
+            <div id="history-list" class="space-y-2"></div>
+        </section>
 
     </main>
 
-    <!-- Footer Nav -->
-    <nav class="fixed bottom-0 left-0 right-0 h-16 glass flex items-center justify-around z-50">
-        <button onclick="showTab('scan')" id="nav-scan" class="flex flex-col items-center gap-1 nav-active flex-1 py-2">
-            <i class="fas fa-expand"></i><span class="text-[10px]">ماسح</span>
+    <!-- Bottom Nav -->
+    <nav class="fixed bottom-0 left-0 right-0 h-20 glass flex items-center justify-around z-50 px-4">
+        <button onclick="showTab('scan')" id="nav-scan" class="nav-btn active flex-1 flex flex-col items-center gap-1 py-2">
+            <i class="fas fa-expand"></i><span class="text-[10px] font-bold">ماسح</span>
         </button>
-        <button onclick="showTab('create')" id="nav-create" class="flex flex-col items-center gap-1 text-zinc-500 flex-1 py-2">
-            <i class="fas fa-plus"></i><span class="text-[10px]">إنشاء</span>
+        <button onclick="showTab('create')" id="nav-create" class="nav-btn flex-1 flex flex-col items-center gap-1 py-2 text-zinc-500">
+            <i class="fas fa-plus-circle"></i><span class="text-[10px] font-bold">إنشاء</span>
         </button>
-        <button onclick="showTab('history')" id="nav-history" class="flex flex-col items-center gap-1 text-zinc-500 flex-1 py-2">
-            <i class="fas fa-history"></i><span class="text-[10px]">سجل</span>
+        <button onclick="showTab('history')" id="nav-history" class="nav-btn flex-1 flex flex-col items-center gap-1 py-2 text-zinc-500">
+            <i class="fas fa-history"></i><span class="text-[10px] font-bold">سجل</span>
         </button>
     </nav>
 
     <script>
-        let scanner = null;
-        let currentCameraId = null;
+        let html5QrCode = null;
         let cameras = [];
+        let currentCameraId = null;
         let isFlashOn = false;
 
-        // --- Core Logic ---
-        async function startScanner() {
-            if (scanner) return;
-            scanner = new Html5Qrcode("reader");
+        // --- Scanner Logic ---
+        async function initScanner() {
+            if (html5QrCode && html5QrCode.isScanning) return;
+            
+            html5QrCode = new Html5QrCode("reader");
+            
             try {
-                cameras = await Html5Qrcode.getCameras();
-                if (cameras.length > 0) {
-                    currentCameraId = cameras.find(c => c.label.toLowerCase().includes('back'))?.id || cameras[0].id;
-                    await scanner.start(currentCameraId, { fps: 10, qrbox: 250 }, onScanSuccess);
+                // محاكاة طريقة الموقع المرجعي في طلب الصلاحيات
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                stream.getTracks().forEach(track => track.stop());
+
+                cameras = await Html5QrCode.getCameras();
+                if (cameras && cameras.length > 0) {
+                    // اختيار الكاميرا الخلفية تلقائياً كما في الموقع المرجعي
+                    const backCam = cameras.find(c => c.label.toLowerCase().includes('back') || c.label.toLowerCase().includes('environment'));
+                    currentCameraId = backCam ? backCam.id : cameras[0].id;
+                    startScanner(currentCameraId);
                 } else {
-                    Swal.fire("خطأ", "لم يتم العثور على كاميرا", "error");
+                    showError("لم يتم العثور على كاميرا.");
                 }
-            } catch (e) {
-                console.error(e);
-                Swal.fire("تنبيه", "يرجى السماح بالوصول للكاميرا", "info");
+            } catch (err) {
+                showError("يرجى السماح بالوصول للكاميرا أو فتح الموقع في متصفح كروم.");
             }
+        }
+
+        function startScanner(cameraId) {
+            html5QrCode.start(
+                cameraId, 
+                { fps: 15, qrbox: { width: 250, height: 250 } },
+                onScanSuccess
+            ).catch(err => console.error(err));
         }
 
         function onScanSuccess(text) {
             if (navigator.vibrate) navigator.vibrate(100);
             
-            // Auto Open Logic
+            // الفتح التلقائي الفوري
             if (document.getElementById('auto-open').checked && text.startsWith('http')) {
                 window.location.href = text;
                 return;
             }
 
-            document.getElementById('result-box').classList.remove('hidden');
+            document.getElementById('result-card').classList.remove('hidden');
             document.getElementById('result-text').innerText = text;
             const link = document.getElementById('result-link');
             if (text.startsWith('http')) {
@@ -182,63 +229,58 @@
             } else {
                 link.classList.add('hidden');
             }
-            saveToHistory(text);
+            saveHistory(text);
+            document.getElementById('result-card').scrollIntoView({ behavior: 'smooth' });
         }
 
-        async function switchCamera() {
-            if (!scanner || cameras.length < 2) return;
-            await scanner.stop();
+        async function toggleCamera() {
+            if (!html5QrCode || cameras.length < 2) return;
+            await html5QrCode.stop();
             const idx = cameras.findIndex(c => c.id === currentCameraId);
             currentCameraId = cameras[(idx + 1) % cameras.length].id;
-            await scanner.start(currentCameraId, { fps: 10, qrbox: 250 }, onScanSuccess);
+            startScanner(currentCameraId);
         }
 
         async function toggleFlash() {
-            if (!scanner) return;
+            if (!html5QrCode || !html5QrCode.isScanning) return;
             try {
                 isFlashOn = !isFlashOn;
-                await scanner.applyVideoConstraints({ advanced: [{ torch: isFlashOn }] });
+                await html5QrCode.applyVideoConstraints({ advanced: [{ torch: isFlashOn }] });
+                document.getElementById('flash-btn').classList.toggle('text-yellow-500');
             } catch (e) {
                 Swal.fire({ toast: true, title: "الكشاف غير مدعوم", icon: "info", showConfirmButton: false, timer: 1500 });
             }
         }
 
-        // --- File Upload (Fixed) ---
-        async function handleFileUpload(input) {
+        // --- File Scan (Fixed & Fast) ---
+        async function scanFile(input) {
             if (!input.files.length) return;
             const file = input.files[0];
-            
-            // Use a separate instance for file scanning to avoid conflicts
-            const fileScanner = new Html5Qrcode("reader");
-            Swal.fire({ title: 'جاري الفحص...', didOpen: () => Swal.showLoading() });
+            const tempScanner = new Html5QrCode("reader");
+            Swal.fire({ title: 'جاري فحص الصورة...', didOpen: () => Swal.showLoading() });
             
             try {
-                // If camera is running, we must stop it first
-                if (scanner && scanner.isScanning) await scanner.stop();
-                
-                const result = await fileScanner.scanFile(file, true);
+                const result = await tempScanner.scanFile(file, true);
                 Swal.close();
                 onScanSuccess(result);
-                
-                // Restart camera after file scan
-                if (scanner) startScanner();
             } catch (err) {
                 Swal.fire("خطأ", "لم يتم العثور على كود في الصورة", "error");
-                if (scanner) startScanner();
             }
         }
 
-        // --- UI Logic ---
+        // --- UI & Tabs ---
         function showTab(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active', 'text-blue-500'));
-            document.querySelectorAll('nav button').forEach(b => b.classList.add('text-zinc-500'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active', 'text-blue-500'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.add('text-zinc-500'));
 
             document.getElementById(`section-${id}`).classList.remove('hidden');
-            document.getElementById(`nav-${id}`).classList.add('nav-active', 'text-blue-500');
+            document.getElementById(`nav-${id}`).classList.add('active', 'text-blue-500');
             document.getElementById(`nav-${id}`).classList.remove('text-zinc-500');
 
-            if (id === 'scan') startScanner();
+            if (id === 'scan') initScanner();
+            else if (html5QrCode) html5QrCode.stop().catch(() => {});
+            
             if (id === 'history') renderHistory();
         }
 
@@ -247,29 +289,30 @@
             if (!val) return;
             const out = document.getElementById('qrcode');
             out.innerHTML = '';
-            new QRCode(out, { text: val, width: 150, height: 150 });
+            new QRCode(out, { text: val, width: 200, height: 200 });
             document.getElementById('qr-output').classList.remove('hidden');
         }
 
-        function saveToHistory(text) {
-            let h = JSON.parse(localStorage.getItem('h') || '[]');
+        function saveHistory(text) {
+            let h = JSON.parse(localStorage.getItem('alhytham_h') || '[]');
             h.unshift({ text, date: new Date().toLocaleString('ar-EG') });
-            localStorage.setItem('h', JSON.stringify(h.slice(0, 20)));
+            localStorage.setItem('alhytham_h', JSON.stringify(h.slice(0, 20)));
         }
 
         function renderHistory() {
-            const h = JSON.parse(localStorage.getItem('h') || '[]');
+            const h = JSON.parse(localStorage.getItem('alhytham_h') || '[]');
             const list = document.getElementById('history-list');
             list.innerHTML = h.map(i => `
-                <div class="glass p-3 rounded-xl mb-2 flex justify-between items-center">
-                    <div class="truncate flex-1 mr-2 text-xs font-mono text-left dir-ltr">${i.text}</div>
-                    <button onclick="navigator.clipboard.writeText('${i.text}')" class="text-blue-500 text-xs">نسخ</button>
+                <div class="glass p-4 rounded-2xl flex justify-between items-center">
+                    <div class="truncate flex-1 text-xs font-mono text-left dir-ltr mr-3">${i.text}</div>
+                    <button onclick="copyRaw('${i.text}')" class="text-blue-500"><i class="fas fa-copy"></i></button>
                 </div>
             `).join('') || '<p class="text-center text-zinc-600 py-10">السجل فارغ</p>';
         }
 
-        function copyResult() {
-            navigator.clipboard.writeText(document.getElementById('result-text').innerText);
+        function copyResult() { copyRaw(document.getElementById('result-text').innerText); }
+        function copyRaw(t) {
+            navigator.clipboard.writeText(t);
             Swal.fire({ toast: true, title: "تم النسخ", icon: "success", showConfirmButton: false, timer: 1000 });
         }
 
@@ -277,12 +320,21 @@
             const img = document.querySelector('#qrcode img');
             const a = document.createElement('a');
             a.href = img.src;
-            a.download = 'qr.png';
+            a.download = 'ALHYTHAM-QR.png';
             a.click();
         }
 
-        // Init
-        window.onload = () => startScanner();
+        function showError(msg) {
+            Swal.fire({ title: "تنبيه", text: msg, icon: "warning", confirmButtonText: "حسناً" });
+        }
+
+        // تحديث رابط كروم
+        window.onload = () => {
+            const chromeBtn = document.getElementById('chrome-btn');
+            const currentUrl = window.location.href.replace(/^https?:\/\//, '');
+            chromeBtn.href = `intent://${currentUrl}#Intent;scheme=http;package=com.android.chrome;end`;
+            initScanner();
+        };
     </script>
 </body>
 </html>
