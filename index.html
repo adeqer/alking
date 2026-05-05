@@ -3,32 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ALHYTHAM QR - الاحترافي</title>
+    <title>ALHYTHAM QR - التوجيه السريع</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
         
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: #000;
-            color: #fff;
+        body, html {
             margin: 0;
             padding: 0;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            font-family: 'Cairo', sans-serif;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
         }
 
-        /* حاوية الكاميرا - تأخذ معظم الشاشة لضمان أفضل رؤية */
+        /* حاوية الكاميرا الصافية */
         #reader {
-            flex: 1;
             width: 100% !important;
             height: 100% !important;
-            background: #000;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
 
         #reader video {
@@ -37,243 +35,245 @@
             object-fit: cover !important;
         }
 
-        /* واجهة التحكم العلوية */
-        .top-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+        /* إخفاء كل شيء يخص المكتبة */
+        #reader__dashboard_section_csr, 
+        #reader__dashboard_section_fsit,
+        #reader__header_message,
+        #reader__status_span,
+        #reader img {
+            display: none !important;
+        }
+
+        /* واجهة المستخدم المخصصة والشفافة */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            pointer-events: none;
+        }
+
+        .header {
+            padding: 40px 20px;
             background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
-            padding: 20px;
-            z-index: 100;
             text-align: center;
         }
 
-        .title {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: 2px;
+        .header h1 {
             color: #a855f7;
-            text-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
-            margin: 0;
-        }
-
-        /* واجهة التحكم السفلية */
-        .bottom-controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-            padding: 30px 20px;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .btn-group {
-            display: grid;
-            grid-cols: 2;
-            gap: 10px;
-            display: flex;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 12px;
+            font-size: 28px;
             font-weight: 700;
+            margin: 0;
+            text-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+        }
+
+        .header p {
+            color: #ddd;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* إطار المسح */
+        .scan-area {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(5px);
+            position: relative;
         }
 
-        .btn-primary {
-            background: #a855f7;
-            border: none;
+        .finder {
+            width: 260px;
+            height: 260px;
+            border: 2px solid rgba(168, 85, 247, 0.4);
+            border-radius: 30px;
+            position: relative;
+            box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.5);
         }
 
-        /* مربع المسح المتحرك */
-        .scanner-overlay {
+        /* زوايا الإطار */
+        .corner {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 280px;
-            height: 280px;
-            border: 2px solid rgba(168, 85, 247, 0.5);
-            border-radius: 20px;
-            pointer-events: none;
-            z-index: 50;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #a855f7;
+            border-radius: 10px;
         }
+        .tl { top: -5px; left: -5px; border-right: 0; border-bottom: 0; }
+        .tr { top: -5px; right: -5px; border-left: 0; border-bottom: 0; }
+        .bl { bottom: -5px; left: -5px; border-right: 0; border-top: 0; }
+        .br { bottom: -5px; right: -5px; border-left: 0; border-top: 0; }
 
-        .scanner-overlay::before {
-            content: '';
+        .scan-line {
             position: absolute;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
+            left: 10%;
+            width: 80%;
+            height: 4px;
             background: #a855f7;
-            box-shadow: 0 0 15px #a855f7;
-            animation: moveScan 2s linear infinite;
+            box-shadow: 0 0 20px #a855f7;
+            border-radius: 2px;
+            animation: moveLine 2.5s ease-in-out infinite;
         }
 
-        @keyframes moveScan {
-            0% { top: 0; }
-            100% { top: 100%; }
+        @keyframes moveLine {
+            0%, 100% { top: 10%; opacity: 0.3; }
+            50% { top: 90%; opacity: 1; }
         }
 
-        /* نافذة النتيجة */
-        #resultModal {
+        .footer {
+            padding: 40px 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            pointer-events: auto;
+        }
+
+        .btn-round {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.2s;
+        }
+
+        .btn-round:active {
+            transform: scale(0.9);
+            background: #a855f7;
+        }
+
+        /* شاشة التحميل والتوجيه */
+        #statusOverlay {
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.9);
-            z-index: 200;
-            display: none;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            transition: opacity 0.5s;
         }
 
-        .modal-content {
-            background: #1e1b4b;
-            width: 100%;
-            max-width: 400px;
-            border-radius: 24px;
-            padding: 30px;
-            border: 1px solid #4c1d95;
-            text-align: center;
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #FFF;
+            border-bottom-color: #a855f7;
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
         }
 
-        /* إخفاء أي عناصر غريبة من المكتبة */
-        #reader__dashboard_section_csr, 
-        #reader__dashboard_section_fsit,
-        #reader img[alt="Info icon"],
-        #reader img[alt="Camera menu icon"] {
-            display: none !important;
-        }
-        
-        #reader {
-            border: none !important;
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
 
-    <div class="top-bar">
-        <h1 class="title">ALHYTHAM QR</h1>
-        <p class="text-xs text-gray-400 mt-1">امسح الكود بوضوح للحصول على النتيجة</p>
-    </div>
-
     <div id="reader"></div>
-    
-    <div class="scanner-overlay"></div>
 
-    <div class="bottom-controls">
-        <div class="btn-group">
-            <button onclick="location.reload()" class="btn">
+    <div class="overlay">
+        <div class="header">
+            <h1>ALHYTHAM QR</h1>
+            <p>سيتم توجيهك للرابط تلقائياً عند المسح</p>
+        </div>
+
+        <div class="scan-area">
+            <div class="finder">
+                <div class="corner tl"></div>
+                <div class="corner tr"></div>
+                <div class="corner bl"></div>
+                <div class="corner br"></div>
+                <div class="scan-line"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <button onclick="location.reload()" class="btn-round" title="تحديث">
                 <i class="fas fa-sync-alt"></i>
-                تحديث
             </button>
-            <button onclick="document.getElementById('fileInput').click()" class="btn">
-                <i class="fas fa-image"></i>
-                صورة
+            <button onclick="openInChrome()" class="btn-round" title="Chrome">
+                <i class="fab fa-chrome"></i>
             </button>
-        </div>
-        <button onclick="openInChrome()" class="btn w-full">
-            <i class="fab fa-chrome"></i>
-            فتح في متصفح Chrome
-        </button>
-        <input type="file" id="fileInput" class="hidden" accept="image/*" onchange="scanImage(this)" />
-    </div>
-
-    <!-- Modal النتيجة -->
-    <div id="resultModal">
-        <div class="modal-content">
-            <div class="w-16 h-16 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fas fa-check text-purple-500 text-2xl"></i>
-            </div>
-            <h2 class="text-xl font-bold mb-4">تم المسح بنجاح!</h2>
-            <div class="bg-black/40 p-4 rounded-xl mb-6 break-all font-mono text-sm text-gray-300" id="resultText"></div>
-            <div class="flex flex-col gap-3">
-                <button onclick="copyResult()" class="btn btn-primary py-4">
-                    <i class="fas fa-copy"></i>
-                    نسخ النص
-                </button>
-                <a id="openLink" target="_blank" class="btn hidden py-4 bg-green-600 border-none">
-                    <i class="fas fa-external-link-alt"></i>
-                    فتح الرابط
-                </a>
-                <button onclick="closeModal()" class="btn py-3 text-gray-400 border-none">
-                    إغلاق
-                </button>
-            </div>
         </div>
     </div>
 
-    <canvas id="hiddenCanvas" class="hidden"></canvas>
+    <div id="statusOverlay">
+        <span class="loader"></span>
+        <p id="statusText" class="mt-4 text-purple-400 font-bold">جاري تشغيل الكاميرا...</p>
+    </div>
 
     <script>
         let html5QrCode;
-        const resultModal = document.getElementById('resultModal');
-        const resultText = document.getElementById('resultText');
-        const openLink = document.getElementById('openLink');
+        const statusOverlay = document.getElementById('statusOverlay');
+        const statusText = document.getElementById('statusText');
 
-        async function init() {
+        async function startApp() {
             try {
+                // استخدام Html5Qrcode مباشرة بدلاً من Scanner UI لمنع "التشويش"
                 html5QrCode = new Html5Qrcode("reader");
+                
                 const config = { 
-                    fps: 20, // زيادة الفريمات لسرعة الاستجابة
-                    qrbox: { width: 250, height: 250 },
+                    fps: 25, 
+                    qrbox: { width: 260, height: 260 },
                     aspectRatio: 1.0
                 };
 
-                // محاولة تشغيل الكاميرا الخلفية مباشرة مع إعدادات التركيز
                 await html5QrCode.start(
                     { facingMode: "environment" }, 
                     config,
                     onScanSuccess
                 );
+                
+                // إخفاء شاشة التحميل بمجرد عمل الكاميرا
+                setTimeout(() => {
+                    statusOverlay.style.opacity = '0';
+                    setTimeout(() => statusOverlay.style.display = 'none', 500);
+                }, 1000);
+
             } catch (err) {
                 console.error(err);
-                alert("يرجى التأكد من منح إذن الكاميرا");
+                statusText.innerText = "خطأ: يرجى السماح بالوصول للكاميرا";
+                statusText.classList.replace('text-purple-400', 'text-red-500');
             }
         }
 
         function onScanSuccess(decodedText) {
-            // اهتزاز بسيط عند النجاح
-            if (navigator.vibrate) navigator.vibrate(100);
+            // 1. اهتزاز فوري للتنبيه
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+
+            // 2. إظهار شاشة التوجيه
+            statusOverlay.style.display = 'flex';
+            statusOverlay.style.opacity = '1';
+            statusText.innerText = "تم المسح! جاري التوجيه...";
             
-            resultText.innerText = decodedText;
-            resultModal.style.display = 'flex';
-
-            // التحقق من الرابط
-            if (decodedText.startsWith('http') || decodedText.includes('www.')) {
-                openLink.href = decodedText.startsWith('http') ? decodedText : 'https://' + decodedText;
-                openLink.classList.remove('hidden');
-            } else {
-                openLink.classList.add('hidden');
-            }
-            
-            // إيقاف الكاميرا مؤقتاً عند ظهور النتيجة لتوفير الموارد
-            html5QrCode.pause();
-        }
-
-        function copyResult() {
-            navigator.clipboard.writeText(resultText.innerText);
-            alert("تم النسخ!");
-        }
-
-        function closeModal() {
-            resultModal.style.display = 'none';
-            html5QrCode.resume();
+            // 3. إيقاف الكاميرا فوراً
+            html5QrCode.stop().then(() => {
+                // 4. التوجيه المباشر
+                const targetUrl = decodedText.startsWith('http') ? decodedText : 'https://' + decodedText;
+                
+                // التحقق إذا كان الرابط صالحاً
+                try {
+                    new URL(targetUrl);
+                    window.location.href = targetUrl;
+                } catch (e) {
+                    // إذا لم يكن رابطاً، اعرضه كنص
+                    alert("النتيجة: " + decodedText);
+                    location.reload();
+                }
+            });
         }
 
         function openInChrome() {
@@ -281,29 +281,8 @@
             window.location.href = `intent://${url}#Intent;scheme=https;package=com.android.chrome;end`;
         }
 
-        function scanImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.getElementById('hiddenCanvas');
-                        const ctx = canvas.getContext('2d');
-                        canvas.width = img.width;
-                        canvas.height = img.height;
-                        ctx.drawImage(img, 0, 0);
-                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                        const code = jsQR(imageData.data, imageData.width, imageData.height);
-                        if (code) onScanSuccess(code.data);
-                        else alert("لم يتم العثور على كود");
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', init);
+        // بدء التشغيل
+        window.addEventListener('DOMContentLoaded', startApp);
     </script>
 </body>
 </html>
