@@ -2,81 +2,331 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#2563eb">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1e3a8a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>ALHYTHAM QR - ماسح رمز الاستجابة السريعة</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --bg-color: #f8fafc;
+            --primary: #1e3a8a;
+            --primary-light: #3b82f6;
+            --secondary: #0f172a;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-light: #f8fafc;
             --card-bg: #ffffff;
-            --text-color: #1e293b;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
         }
 
         body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
+            font-family: 'Tajawal', 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--secondary) 0%, #1e3a8a 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
+            padding: 16px;
+            overflow-x: hidden;
+        }
+
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .blob-1 {
+            width: 300px;
+            height: 300px;
+            background: #06b6d4;
+            top: -100px;
+            right: -100px;
+        }
+
+        .blob-2 {
+            width: 250px;
+            height: 250px;
+            background: #3b82f6;
+            bottom: -50px;
+            left: -50px;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(20px); }
         }
 
         .container {
-            background-color: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 500px;
-            padding: 30px;
+            max-width: 480px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 32px 24px;
+            z-index: 10;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
             text-align: center;
+            margin-bottom: 28px;
         }
 
-        h1 {
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            font-size: 24px;
+        .logo {
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 3px;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            animation: fadeInDown 0.8s ease-out;
         }
 
-        p {
-            color: #64748b;
-            margin-bottom: 25px;
+        .title {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+            animation: fadeInDown 0.8s ease-out 0.1s both;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            animation: fadeInDown 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .camera-wrapper {
+            position: relative;
+            margin-bottom: 24px;
+            animation: fadeIn 0.8s ease-out 0.3s both;
         }
 
         #outdiv {
             width: 100%;
-            aspect-ratio: 4/3;
-            background-color: #000;
-            border-radius: 15px;
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 18px;
             overflow: hidden;
-            margin-bottom: 20px;
+            border: 3px solid var(--primary-light);
             position: relative;
-            border: 4px solid var(--primary-color);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
         }
 
         video {
             width: 100% !important;
             height: 100% !important;
             object-fit: cover;
+            display: block;
+        }
+
+        .scan-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #06b6d4, transparent);
+            box-shadow: 0 0 10px #06b6d4;
+            animation: scanDown 2s linear infinite;
+        }
+
+        @keyframes scanDown {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+
+        .corner {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--accent);
+            z-index: 6;
+        }
+
+        .corner-top-left {
+            top: 10px;
+            left: 10px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-top-right {
+            top: 10px;
+            right: 10px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .corner-bottom-left {
+            bottom: 10px;
+            left: 10px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .corner-bottom-right {
+            bottom: 10px;
+            right: 10px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .camera-status {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            text-align: center;
+            z-index: 7;
+            display: none;
+        }
+
+        .camera-status.active {
+            display: block;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .permission-alert {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        .permission-alert.show {
+            display: block;
+        }
+
+        .permission-alert.error {
+            background: #fee2e2;
+            border-color: #fca5a5;
+            color: #991b1b;
+        }
+
+        .permission-alert.success {
+            background: #d1fae5;
+            border-color: #a7f3d0;
+            color: #065f46;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-icon {
+            font-size: 18px;
+            margin-right: 8px;
         }
 
         .button-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.8s ease-out 0.4s both;
         }
 
         .btn {
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-weight: bold;
+            padding: 14px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
@@ -85,55 +335,127 @@
             justify-content: center;
             gap: 8px;
             border: none;
-            font-size: 14px;
+            font-family: 'Tajawal', sans-serif;
+            text-transform: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn-primary {
-            background-color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
             color: white;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
         }
 
         .btn-primary:hover {
-            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
         }
 
-        .btn-outline {
-            background-color: transparent;
-            border: 2px solid var(--primary-color);
-            color: var(--primary-color);
+        .btn-primary:active {
+            transform: translateY(0);
         }
 
-        .btn-outline:hover {
-            background-color: #eff6ff;
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary-light);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: #f0f4ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(0);
+        }
+
+        .btn-full {
+            grid-column: 1 / -1;
+        }
+
+        .icon {
+            font-size: 16px;
+            font-family: "fontello";
+            font-style: normal;
+            font-weight: normal;
+            display: inline-block;
+            text-decoration: inherit;
+            text-align: center;
         }
 
         .footer {
-            margin-top: 30px;
+            text-align: center;
             font-size: 12px;
-            color: #94a3b8;
+            color: var(--text-secondary);
+            animation: fadeIn 0.8s ease-out 0.5s both;
         }
 
-        .footer a {
-            color: var(--primary-color);
+        .footer-link {
+            color: var(--primary-light);
             text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
         }
 
-        /* Scan Animation */
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(to right, transparent, #ff0000, transparent);
-            box-shadow: 0 0 8px #ff0000;
-            animation: scan 2s linear infinite;
-            z-index: 10;
+        .footer-link:hover {
+            color: var(--accent);
         }
 
-        @keyframes scan {
-            0% { top: 0; }
-            100% { top: 100%; }
+        .divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 16px 0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px 16px;
+                border-radius: 20px;
+            }
+
+            .title {
+                font-size: 28px;
+            }
+
+            .button-group {
+                gap: 10px;
+            }
+
+            .btn {
+                padding: 12px 14px;
+                font-size: 13px;
+            }
         }
 
         @font-face {
@@ -146,45 +468,154 @@
             font-weight: normal;
             font-style: normal;
         }
-
-        .icon {
-            font-family: "fontello";
-            font-style: normal;
-            font-weight: normal;
-            display: inline-block;
-            text-decoration: inherit;
-            width: 1em;
-            text-align: center;
-        }
     </style>
-    <script type="text/javascript" src="llqrcode.js"></script>
-    <script type="text/javascript" src="mikhmon_webqr.js?v1"></script>
 </head>
 <body>
+    <div class="background-animation">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
     <div class="container">
-        <h1>ALHYTHAM QR</h1>
-        <p>امسح رمز QR لتسجيل الدخول إلى الشبكة</p>
-        
-        <div id="outdiv">
-            <div class="scan-line"></div>
+        <div class="header">
+            <div class="logo">ماسح ذكي</div>
+            <h1 class="title">ALHYTHAM QR</h1>
+            <p class="subtitle">امسح رمز QR لتسجيل الدخول إلى الشبكة</p>
+        </div>
+
+        <div id="permissionAlert" class="permission-alert">
+            <span class="alert-icon">⚠️</span>
+            <span id="alertMessage">جاري طلب صلاحية الكاميرا...</span>
+        </div>
+
+        <div class="camera-wrapper">
+            <div id="outdiv">
+                <div class="scan-overlay">
+                    <div class="scan-line"></div>
+                    <div class="corner corner-top-left"></div>
+                    <div class="corner corner-top-right"></div>
+                    <div class="corner corner-bottom-left"></div>
+                    <div class="corner corner-bottom-right"></div>
+                </div>
+                <div class="camera-status" id="cameraStatus">
+                    <span class="status-dot"></span>
+                    <span>الكاميرا نشطة</span>
+                </div>
+            </div>
         </div>
 
         <div class="button-group">
-            <button class="btn btn-primary" onclick="location.reload();">
-                <i class="icon">&#xe800;</i> تحديث الكاميرا
+            <button class="btn btn-primary" onclick="reloadCamera();" id="reloadBtn">
+                <i class="icon">&#xe800;</i> تحديث
             </button>
-            <a class="btn btn-outline" href="intent://laksa19.github.io/myqr#Intent;scheme=http;package=com.android.chrome;end">
-                <i class="icon">&#xf268;</i> فتح في كروم
+            <a class="btn btn-secondary" href="intent://laksa19.github.io/myqr#Intent;scheme=http;package=com.android.chrome;end" id="chromeBtn">
+                <i class="icon">&#xf268;</i> كروم
             </a>
         </div>
 
+        <div class="divider"></div>
+
         <div class="footer">
-            ALHYTHAM QR &copy; 2026 <br>
-            مدعوم بواسطة <a href="http://www.webqr.com">webqr.com</a>
+            <strong>ALHYTHAM QR</strong> &copy; 2026<br>
+            مدعوم بواسطة <a href="http://www.webqr.com" class="footer-link" target="_blank">webqr.com</a>
         </div>
     </div>
 
     <canvas style="display:none;" id="qr-canvas" width="800" height="600"></canvas>
-    <script type="text/javascript">load();</script>
+
+    <script type="text/javascript" src="llqrcode.js"></script>
+    <script type="text/javascript" src="mikhmon_webqr.js?v1"></script>
+
+    <script>
+        // متغيرات عامة
+        const permissionAlert = document.getElementById('permissionAlert');
+        const alertMessage = document.getElementById('alertMessage');
+        const cameraStatus = document.getElementById('cameraStatus');
+        const outdiv = document.getElementById('outdiv');
+
+        // دالة للتحقق من صلاحيات الكاميرا
+        async function checkCameraPermissions() {
+            try {
+                // التحقق من دعم الواجهة البرمجية
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    showAlert('متصفحك لا يدعم الوصول إلى الكاميرا', 'error');
+                    return false;
+                }
+
+                // طلب الصلاحيات
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+
+                // إيقاف البث بعد التحقق
+                stream.getTracks().forEach(track => track.stop());
+
+                showAlert('تم منح صلاحية الكاميرا بنجاح ✓', 'success');
+                cameraStatus.classList.add('active');
+                return true;
+
+            } catch (error) {
+                console.error('Camera Permission Error:', error);
+                
+                let errorMessage = 'لم تتمكن من الوصول إلى الكاميرا';
+                
+                if (error.name === 'NotAllowedError') {
+                    errorMessage = 'تم رفض صلاحية الكاميرا. يرجى السماح بالوصول إلى الكاميرا من إعدادات المتصفح.';
+                } else if (error.name === 'NotFoundError') {
+                    errorMessage = 'لم يتم العثور على كاميرا متصلة بجهازك.';
+                } else if (error.name === 'NotReadableError') {
+                    errorMessage = 'الكاميرا قيد الاستخدام من قبل تطبيق آخر.';
+                } else if (error.name === 'SecurityError') {
+                    errorMessage = 'لا يمكن الوصول إلى الكاميرا لأسباب أمنية. تأكد من استخدام HTTPS.';
+                }
+                
+                showAlert(errorMessage, 'error');
+                cameraStatus.classList.remove('active');
+                return false;
+            }
+        }
+
+        // دالة عرض الرسائل
+        function showAlert(message, type = 'warning') {
+            alertMessage.textContent = message;
+            permissionAlert.className = `permission-alert show ${type}`;
+            
+            // إخفاء الرسالة بعد 5 ثوان
+            setTimeout(() => {
+                permissionAlert.classList.remove('show');
+            }, 5000);
+        }
+
+        // دالة تحديث الكاميرا
+        function reloadCamera() {
+            location.reload();
+        }
+
+        // التحقق من الصلاحيات عند تحميل الصفحة
+        window.addEventListener('load', async () => {
+            // إعطاء وقت للصفحة للتحميل الكامل
+            setTimeout(async () => {
+                await checkCameraPermissions();
+                // استدعاء دالة التحميل من mikhmon_webqr.js
+                if (typeof load === 'function') {
+                    load();
+                }
+            }, 500);
+        });
+
+        // التعامل مع الأخطاء غير المتوقعة
+        window.addEventListener('error', (event) => {
+            console.error('Global Error:', event.error);
+        });
+
+        // التعامل مع الأخطاء غير المعالجة في الـ Promises
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled Promise Rejection:', event.reason);
+        });
+    </script>
 </body>
 </html>
